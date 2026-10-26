@@ -1,0 +1,14 @@
+{
+  "annotatedAudioFiles": 33,
+  "characterSyllablePairs": 84,
+  "dictionaryMatches": 83,
+  "contextualReadings": [
+    {
+      "word": "屈臣氏",
+      "jyutping": "wat1 san4 si2",
+      "note": "氏在原课程名称录音中使用变调 si2；字库常用字音为 si6。"
+    }
+  ],
+  "dictionarySource": "https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/",
+  "unexpectedMismatches": 0
+}

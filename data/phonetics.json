@@ -1,0 +1,616 @@
+{
+  "scheme": "香港语言学学会粤拼（Jyutping）",
+  "references": [
+    {
+      "title": "粤拼方案",
+      "url": "https://jyutping.org/jyutping/"
+    },
+    {
+      "title": "香港中文大学粤语审音配词字库",
+      "url": "https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/"
+    },
+    {
+      "title": "原课语音说明",
+      "url": "https://www.ilc.cuhk.edu.hk/workshop/Chinese/Cantonese/OnlineTutorial/courseList_b3.aspx"
+    },
+    {
+      "title": "嬲 nau1 · 字库读音核对",
+      "url": "https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/pho-rel.php?s1=n&s3=1"
+    }
+  ],
+  "entries": {
+    "sound/L1mp3/L1(5)1.mp3": {
+      "title": "h 声母：何・紅",
+      "focus": "h",
+      "examples": [
+        {
+          "text": "何",
+          "jyutping": "ho4",
+          "mandarin": "hé"
+        },
+        {
+          "text": "紅",
+          "jyutping": "hung4",
+          "mandarin": "hóng"
+        }
+      ],
+      "note": "对照两种语言的 h 声母；粤语 h 发音部位靠近喉部。",
+      "authorship": "本页补注"
+    },
+    "sound/L1mp3/L1(5)2.mp3": {
+      "title": "ng 声母：我・眼・硬",
+      "focus": "ng",
+      "examples": [
+        {
+          "text": "我",
+          "jyutping": "ngo5"
+        },
+        {
+          "text": "眼",
+          "jyutping": "ngaan5"
+        },
+        {
+          "text": "硬",
+          "jyutping": "ngaang6"
+        }
+      ],
+      "note": "留意开头的 ng，是舌根鼻音；ng 作为整体发音。",
+      "authorship": "本页补注"
+    },
+    "sound/L1mp3/L1(5)3.mp3": {
+      "title": "圆唇声母：怪・貴・誇・困",
+      "focus": "gw / kw",
+      "examples": [
+        {
+          "text": "怪",
+          "jyutping": "gwaai3"
+        },
+        {
+          "text": "貴",
+          "jyutping": "gwai3"
+        },
+        {
+          "text": "誇",
+          "jyutping": "kwaa1"
+        },
+        {
+          "text": "困",
+          "jyutping": "kwan3"
+        }
+      ],
+      "note": "gw、kw 发音时嘴唇收圆；同时留意 aa 与 a 的长短区别。",
+      "authorship": "本页补注"
+    },
+    "sound/L2mp3/L2(5)1.mp3": {
+      "title": "同音对照：詩人・私人等",
+      "focus": "z / c / s",
+      "examples": [
+        {
+          "text": "詩人",
+          "jyutping": "si1 jan4",
+          "mandarin": "shī rén"
+        },
+        {
+          "text": "私人",
+          "jyutping": "si1 jan4",
+          "mandarin": "sī rén"
+        },
+        {
+          "text": "魚翅",
+          "jyutping": "jyu4 ci3",
+          "mandarin": "yú chì"
+        },
+        {
+          "text": "魚刺",
+          "jyutping": "jyu4 ci3",
+          "mandarin": "yú cì"
+        },
+        {
+          "text": "治理",
+          "jyutping": "zi6 lei5",
+          "mandarin": "zhì lǐ"
+        },
+        {
+          "text": "自理",
+          "jyutping": "zi6 lei5",
+          "mandarin": "zì lǐ"
+        },
+        {
+          "text": "酒後",
+          "jyutping": "zau2 hau6",
+          "mandarin": "jiǔ hòu"
+        },
+        {
+          "text": "走後",
+          "jyutping": "zau2 hau6",
+          "mandarin": "zǒu hòu"
+        }
+      ],
+      "note": "每两个词是一组对照。粤拼中同写第 1 声的音，在不同口音里可有高平、高降的差别。",
+      "authorship": "本页补注"
+    },
+    "sound/L2mp3/L2(5)2.mp3": {
+      "title": "声母对照：基・奇・希・居・區・虛",
+      "focus": "g / k / h",
+      "examples": [
+        {
+          "text": "基",
+          "jyutping": "gei1",
+          "mandarin": "jī"
+        },
+        {
+          "text": "奇",
+          "jyutping": "kei4",
+          "mandarin": "qí"
+        },
+        {
+          "text": "希",
+          "jyutping": "hei1",
+          "mandarin": "xī"
+        },
+        {
+          "text": "居",
+          "jyutping": "geoi1",
+          "mandarin": "jū"
+        },
+        {
+          "text": "區",
+          "jyutping": "keoi1",
+          "mandarin": "qū"
+        },
+        {
+          "text": "虛",
+          "jyutping": "heoi1",
+          "mandarin": "xū"
+        }
+      ],
+      "note": "这些例字的普通话声母是 j、q、x；粤语声母分别是 g、k、h。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)2_1.mp3": {
+      "title": "韵尾 -m：喊",
+      "focus": "-m",
+      "examples": [
+        {
+          "text": "喊",
+          "jyutping": "haam3",
+          "mandarin": "hǎn"
+        }
+      ],
+      "note": "粤语读到韵尾 -m 时双唇闭合。两种语言的读音分别标在对应一行。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)2_2.mp3": {
+      "title": "韵尾 -m：三",
+      "focus": "-m",
+      "examples": [
+        {
+          "text": "三",
+          "jyutping": "saam1",
+          "mandarin": "sān"
+        }
+      ],
+      "note": "粤语读到韵尾 -m 时双唇闭合。两种语言的读音分别标在对应一行。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)2_3.mp3": {
+      "title": "韵尾 -m：甘",
+      "focus": "-m",
+      "examples": [
+        {
+          "text": "甘",
+          "jyutping": "gam1",
+          "mandarin": "gān"
+        }
+      ],
+      "note": "粤语读到韵尾 -m 时双唇闭合。两种语言的读音分别标在对应一行。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)2_4.mp3": {
+      "title": "韵尾 -m：深",
+      "focus": "-m",
+      "examples": [
+        {
+          "text": "深",
+          "jyutping": "sam1",
+          "mandarin": "shēn"
+        }
+      ],
+      "note": "粤语读到韵尾 -m 时双唇闭合。两种语言的读音分别标在对应一行。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)2_5.mp3": {
+      "title": "韵尾 -m：金",
+      "focus": "-m",
+      "examples": [
+        {
+          "text": "金",
+          "jyutping": "gam1",
+          "mandarin": "jīn"
+        }
+      ],
+      "note": "粤语读到韵尾 -m 时双唇闭合。两种语言的读音分别标在对应一行。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)2_6.mp3": {
+      "title": "韵尾 -m：心",
+      "focus": "-m",
+      "examples": [
+        {
+          "text": "心",
+          "jyutping": "sam1",
+          "mandarin": "xīn"
+        }
+      ],
+      "note": "粤语读到韵尾 -m 时双唇闭合。两种语言的读音分别标在对应一行。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)2_7.mp3": {
+      "title": "韵尾 -m：鹹",
+      "focus": "-m",
+      "examples": [
+        {
+          "text": "鹹",
+          "jyutping": "haam4",
+          "mandarin": "xián"
+        }
+      ],
+      "note": "粤语读到韵尾 -m 时双唇闭合。两种语言的读音分别标在对应一行。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)2_8.mp3": {
+      "title": "韵尾 -m：鹽",
+      "focus": "-m",
+      "examples": [
+        {
+          "text": "鹽",
+          "jyutping": "jim4",
+          "mandarin": "yán"
+        }
+      ],
+      "note": "粤语读到韵尾 -m 时双唇闭合。两种语言的读音分别标在对应一行。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)1_1_1.mp3": {
+      "title": "长短元音：買・米",
+      "focus": "aa / a",
+      "examples": [
+        {
+          "text": "買",
+          "jyutping": "maai5"
+        },
+        {
+          "text": "米",
+          "jyutping": "mai5"
+        }
+      ],
+      "note": "两字都读第 5 声；留意 maai 与 mai 的元音长度。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)1_1_2.mp3": {
+      "title": "短元音 a：係・嬲・恨等",
+      "focus": "a",
+      "examples": [
+        {
+          "text": "係",
+          "jyutping": "hai6"
+        },
+        {
+          "text": "嬲",
+          "jyutping": "nau1"
+        },
+        {
+          "text": "恨",
+          "jyutping": "han6"
+        },
+        {
+          "text": "今",
+          "jyutping": "gam1"
+        },
+        {
+          "text": "黑",
+          "jyutping": "hak1"
+        },
+        {
+          "text": "乜",
+          "jyutping": "mat1"
+        },
+        {
+          "text": "十",
+          "jyutping": "sap6"
+        }
+      ],
+      "note": "留意短元音 a 以及 ai、au、an、am、ak、at、ap 的韵尾。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)1_2_1.mp3": {
+      "title": "元音 o：火・幫・早",
+      "focus": "o / ou",
+      "examples": [
+        {
+          "text": "火",
+          "jyutping": "fo2"
+        },
+        {
+          "text": "幫",
+          "jyutping": "bong1"
+        },
+        {
+          "text": "早",
+          "jyutping": "zou2"
+        }
+      ],
+      "note": "留意「早」的 ou，以及「火」「幫」的 o。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)1_2_2.mp3": {
+      "title": "o 韵母：開・漢・康・渴・各",
+      "focus": "oi / on / ong / ot / ok",
+      "examples": [
+        {
+          "text": "開",
+          "jyutping": "hoi1"
+        },
+        {
+          "text": "漢",
+          "jyutping": "hon3"
+        },
+        {
+          "text": "康",
+          "jyutping": "hong1"
+        },
+        {
+          "text": "渴",
+          "jyutping": "hot3"
+        },
+        {
+          "text": "各",
+          "jyutping": "gok3"
+        }
+      ],
+      "note": "从元音 o 出发，听清各字的韵尾。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)1_3_1.mp3": {
+      "title": "元音 e：謝・靚・石",
+      "focus": "e",
+      "examples": [
+        {
+          "text": "謝",
+          "jyutping": "ze6"
+        },
+        {
+          "text": "靚",
+          "jyutping": "leng3"
+        },
+        {
+          "text": "石",
+          "jyutping": "sek6"
+        }
+      ],
+      "note": "留意 e 在开音节，以及 -ng、-k 韵尾前的发音。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)1_3_2.mp3": {
+      "title": "韵母 ei：畀・四",
+      "focus": "ei",
+      "examples": [
+        {
+          "text": "畀",
+          "jyutping": "bei2"
+        },
+        {
+          "text": "四",
+          "jyutping": "sei3"
+        }
+      ],
+      "note": "两个例字都含 ei，声调分别为 2 和 3。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)1_4.mp3": {
+      "title": "i 的变体：平・食",
+      "focus": "i / ing / ik",
+      "examples": [
+        {
+          "text": "平",
+          "jyutping": "ping4"
+        },
+        {
+          "text": "食",
+          "jyutping": "sik6"
+        }
+      ],
+      "note": "i 接 -ng、-k 时发音较短，开口也较大。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)1_5.mp3": {
+      "title": "u 的变体：公・屋",
+      "focus": "u / ung / uk",
+      "examples": [
+        {
+          "text": "公",
+          "jyutping": "gung1"
+        },
+        {
+          "text": "屋",
+          "jyutping": "uk1"
+        }
+      ],
+      "note": "留意 u 在 -ng、-k 韵尾前的音色。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)1_6.mp3": {
+      "title": "oe 韵母：張・香・腳・著",
+      "focus": "oeng / oek",
+      "examples": [
+        {
+          "text": "張",
+          "jyutping": "zoeng1"
+        },
+        {
+          "text": "香",
+          "jyutping": "hoeng1"
+        },
+        {
+          "text": "腳",
+          "jyutping": "goek3"
+        },
+        {
+          "text": "著",
+          "jyutping": "zoek3"
+        }
+      ],
+      "note": "「著」此处按原课的 zoek3 读音练习；多音字要结合词义选择读音。",
+      "authorship": "本页补注"
+    },
+    "sound/L3mp3/L3(5)1_7.mp3": {
+      "title": "eo 韵母：去・信・出",
+      "focus": "eoi / eon / eot",
+      "examples": [
+        {
+          "text": "去",
+          "jyutping": "heoi3"
+        },
+        {
+          "text": "信",
+          "jyutping": "seon3"
+        },
+        {
+          "text": "出",
+          "jyutping": "ceot1"
+        }
+      ],
+      "note": "留意 eoi、eon、eot 的共同元音与不同韵尾。",
+      "authorship": "本页补注"
+    },
+    "sound/L4mp3/L4(5)1_1.mp3": {
+      "title": "入声韵尾：急",
+      "focus": "-p",
+      "examples": [
+        {
+          "text": "急",
+          "jyutping": "gap1",
+          "mandarin": "jí"
+        }
+      ],
+      "note": "结尾的 p 短促收住。粤拼的入声仍用 1、3、6 标调。",
+      "authorship": "本页补注"
+    },
+    "sound/L4mp3/L4(5)1_2.mp3": {
+      "title": "入声韵尾：鴨",
+      "focus": "-p",
+      "examples": [
+        {
+          "text": "鴨",
+          "jyutping": "aap3",
+          "mandarin": "yā"
+        }
+      ],
+      "note": "结尾的 p 短促收住。粤拼的入声仍用 1、3、6 标调。",
+      "authorship": "本页补注"
+    },
+    "sound/L4mp3/L4(5)1_3.mp3": {
+      "title": "入声韵尾：合",
+      "focus": "-p",
+      "examples": [
+        {
+          "text": "合",
+          "jyutping": "hap6",
+          "mandarin": "hé"
+        }
+      ],
+      "note": "结尾的 p 短促收住。粤拼的入声仍用 1、3、6 标调。",
+      "authorship": "本页补注"
+    },
+    "sound/L4mp3/L4(5)1_4.mp3": {
+      "title": "入声韵尾：必",
+      "focus": "-t",
+      "examples": [
+        {
+          "text": "必",
+          "jyutping": "bit1",
+          "mandarin": "bì"
+        }
+      ],
+      "note": "结尾的 t 短促收住。粤拼的入声仍用 1、3、6 标调。",
+      "authorship": "本页补注"
+    },
+    "sound/L4mp3/L4(5)1_5.mp3": {
+      "title": "入声韵尾：節",
+      "focus": "-t",
+      "examples": [
+        {
+          "text": "節",
+          "jyutping": "zit3",
+          "mandarin": "jié"
+        }
+      ],
+      "note": "结尾的 t 短促收住。粤拼的入声仍用 1、3、6 标调。",
+      "authorship": "本页补注"
+    },
+    "sound/L4mp3/L4(5)1_6.mp3": {
+      "title": "入声韵尾：別",
+      "focus": "-t",
+      "examples": [
+        {
+          "text": "別",
+          "jyutping": "bit6",
+          "mandarin": "bié"
+        }
+      ],
+      "note": "结尾的 t 短促收住。粤拼的入声仍用 1、3、6 标调。",
+      "authorship": "本页补注"
+    },
+    "sound/L4mp3/L4(5)1_7.mp3": {
+      "title": "入声韵尾：識",
+      "focus": "-k",
+      "examples": [
+        {
+          "text": "識",
+          "jyutping": "sik1",
+          "mandarin": "shí"
+        }
+      ],
+      "note": "结尾的 k 短促收住。粤拼的入声仍用 1、3、6 标调。",
+      "authorship": "本页补注"
+    },
+    "sound/L4mp3/L4(5)1_8.mp3": {
+      "title": "入声韵尾：尺",
+      "focus": "-k",
+      "examples": [
+        {
+          "text": "尺",
+          "jyutping": "cek3",
+          "mandarin": "chǐ"
+        }
+      ],
+      "note": "结尾的 k 短促收住。粤拼的入声仍用 1、3、6 标调。",
+      "authorship": "本页补注"
+    },
+    "sound/L4mp3/L4(5)1_9.mp3": {
+      "title": "入声韵尾：食",
+      "focus": "-k",
+      "examples": [
+        {
+          "text": "食",
+          "jyutping": "sik6",
+          "mandarin": "shí"
+        }
+      ],
+      "note": "结尾的 k 短促收住。粤拼的入声仍用 1、3、6 标调。",
+      "authorship": "本页补注"
+    },
+    "sound/L4mp3/L4(5)2.mp3": {
+      "title": "入声例词：屈臣氏",
+      "focus": "-t",
+      "examples": [
+        {
+          "text": "屈臣氏",
+          "jyutping": "wat1 san4 si2"
+        }
+      ],
+      "note": "「氏」在这个名称里按原课读变调 si2，常用字音为 si6。",
+      "authorship": "本页补注"
+    }
+  }
+}

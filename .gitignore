@@ -1,0 +1,13 @@
+.DS_Store
+__pycache__/
+*.pyc
+*.har
+*.tmp
+*.zip
+source/
+directory.html
+mobile-preview.png
+data/download-plan.json
+data/sync-log.txt
+data/sync-errors.json
+audio/first.mp3

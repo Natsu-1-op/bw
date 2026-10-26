@@ -1,0 +1,30 @@
+{
+  "units": 15,
+  "tracks": 643,
+  "audioFiles": 631,
+  "bytes": 109446387,
+  "uniqueAudioMinutes": 112.3,
+  "repairedLinks": [
+    {
+      "track": "b9-48",
+      "originalUrl": "https://www.ilc.cuhk.edu.hk/workshop/Chinese/Cantonese/OnlineTutorial/sound/L9mp3/L9-6-c-6.mp3",
+      "url": "https://www.ilc.cuhk.edu.hk/workshop/Chinese/Cantonese/OnlineTutorial/sound/L8mp3/L8-6-d-6.mp3"
+    },
+    {
+      "track": "b9-49",
+      "originalUrl": "https://www.ilc.cuhk.edu.hk/workshop/Chinese/Cantonese/OnlineTutorial/sound/L9mp3/L9-6-c-7.mp3",
+      "url": "https://www.ilc.cuhk.edu.hk/workshop/Chinese/Cantonese/OnlineTutorial/sound/L8mp3/L8-6-d-7.mp3"
+    },
+    {
+      "track": "b9-50",
+      "originalUrl": "https://www.ilc.cuhk.edu.hk/workshop/Chinese/Cantonese/OnlineTutorial/sound/L9mp3/L9-6-c-8.mp3",
+      "url": "https://www.ilc.cuhk.edu.hk/workshop/Chinese/Cantonese/OnlineTutorial/sound/L8mp3/L8-6-d-8.mp3"
+    },
+    {
+      "track": "b10-14",
+      "originalUrl": "https://www.ilc.cuhk.edu.hk/workshop/Chinese/Cantonese/OnlineTutorial/sound/L10mp3/L10-2-4.mp3",
+      "url": "https://www.ilc.cuhk.edu.hk/workshop/Chinese/Cantonese/OnlineTutorial/sound/L10mp3/L10-4.mp3"
+    }
+  ],
+  "audioReadErrors": 0
+}
