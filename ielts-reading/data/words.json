@@ -663,5 +663,43 @@
     ],
     "note": "",
     "page": 87
+  },
+  {
+    "id": "C14T4:bolster",
+    "book": "C14T4",
+    "term": "bolster",
+    "meaning": "支持；加强",
+    "source": "C14T4 · Academic Reading Passage 2 第 E 段",
+    "sentence": "Procedures such as capturing and moving at-risk or dangerous individuals are bolstered by knowledge gained in zoos about doses for anaesthetics, and by experience in handling and transporting animals.",
+    "translation": "捕捉和转移面临危险或具有危险性的动物等工作，可以得到动物园积累的麻醉剂剂量知识，以及处理和运输动物的经验的支持。",
+    "target": "bolstered",
+    "extensions": [
+      {
+        "meaning": "也可指增强信心、支持论点或改善经济。",
+        "example": "The evidence bolstered her argument.",
+        "translation": "这些证据增强了她论点的说服力。"
+      }
+    ],
+    "note": "原句中 are bolstered 是被动形式，表示“得到支持”。",
+    "page": 87
+  },
+  {
+    "id": "C14T4:anaesthetic",
+    "book": "C14T4",
+    "term": "anaesthetic",
+    "meaning": "麻醉剂",
+    "source": "C14T4 · Academic Reading Passage 2 第 E 段",
+    "sentence": "Procedures such as capturing and moving at-risk or dangerous individuals are bolstered by knowledge gained in zoos about doses for anaesthetics, and by experience in handling and transporting animals.",
+    "translation": "捕捉和转移面临危险或具有危险性的动物等工作，可以得到动物园积累的麻醉剂剂量知识，以及处理和运输动物的经验的支持。",
+    "target": "anaesthetics",
+    "extensions": [
+      {
+        "meaning": "也可作形容词，表示“麻醉的”；美式拼写为 anesthetic。",
+        "example": "The dentist gave her a local anaesthetic.",
+        "translation": "牙医给她使用了局部麻醉剂。"
+      }
+    ],
+    "note": "原句用复数 anaesthetics；anaesthesia 表示麻醉状态。",
+    "page": 87
   }
 ]
