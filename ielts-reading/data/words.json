@@ -853,5 +853,24 @@
     ],
     "note": "",
     "page": 91
+  },
+  {
+    "id": "C14T4:interrogate",
+    "book": "C14T4",
+    "term": "interrogate",
+    "meaning": "深入审视；质询",
+    "source": "C14T4 · Academic Reading Passage 3 第 13 自然段（原文 Interrogating）",
+    "sentence": "Interrogating the existing scientific literature can help ecologists figure out which problems really need addressing, and which ones they’d be better off – like the mussels – absorbing and ignoring.",
+    "translation": "仔细审视现有科学文献，可以帮助生态学家弄清哪些问题确实需要解决，哪些问题则像贻贝那样接纳并不予理会可能更好。",
+    "target": "Interrogating",
+    "extensions": [
+      {
+        "meaning": "常指讯问某人；在学术语境也可指深入审视观点或证据。",
+        "example": "Researchers interrogated the assumptions behind the theory.",
+        "translation": "研究人员深入审视了这一理论背后的假设。"
+      }
+    ],
+    "note": "原句用动名词 Interrogating 作主语。",
+    "page": 91
   }
 ]
