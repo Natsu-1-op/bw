@@ -36,6 +36,15 @@
     },
     "$other": {
       ".validate": false
+    },
+    "catalog": {
+      ".read": true,
+      ".write": true,
+      "entries": {
+        "$id": {
+          ".validate": "$id.matches(/^[A-Za-z0-9_-]{1,512}$/) && newData.hasChildren(['id','book','term','meaning','source','sentence','translation','target','extensions']) && newData.child('id').isString() && newData.child('term').isString() && newData.child('sentence').isString() && newData.child('target').isString()"
+        }
+      }
     }
   }
 }

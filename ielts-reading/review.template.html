@@ -1,5 +1,5 @@
 <!doctype html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f5f7fb"><title>雅思阅读 · 原句与拓展</title><link rel="stylesheet" href="style.css"></head><body>
-<header><div class="wrap brand"><a class="brand-name" href="./"><span class="mark" aria-hidden="true">读</span>雅思阅读</a><a class="home-link" href="../">随身粤语 ↗</a><details class="more-menu"><summary aria-label="备份与更多选项">⋯</summary><div class="menu-panel"><button id="export">导出进度</button><button id="import">导入进度</button><button id="cloudRetry">重试同步</button><input id="file" type="file" accept="application/json,.json" hidden><p>本地文件版的旧进度，可导出 JSON 后在这里导入。</p></div></details></div></header>
+<header><div class="wrap brand"><a class="brand-name" href="./"><span class="mark" aria-hidden="true">读</span>雅思阅读</a><a class="home-link" href="../">随身粤语 ↗</a><details class="more-menu"><summary aria-label="备份与更多选项">⋯</summary><div class="menu-panel"><a href="manage.html">管理词库</a><button id="export">导出进度</button><button id="import">导入进度</button><button id="cloudRetry">重试同步</button><input id="file" type="file" accept="application/json,.json" hidden><p>本地文件版的旧进度，可导出 JSON 后在这里导入。</p></div></details></div></header>
 <main class="wrap"><section class="intro"><div><div class="eyebrow">READING RECALL</div><h1>读懂一句，<span>记住一词。</span></h1></div><span id="cloudStatus" class="cloud-state" role="status">正在连接…</span></section>
 <section class="stats"><div class="stat"><b id="total">0</b>标记表达</div><div class="stat"><b id="due">0</b>待复习</div><div class="stat"><b id="stable">0</b>熟悉以上</div><div class="stat"><b id="today">0</b>今日回忆</div></section>
 <section class="controls"><div class="controlrow"><details class="study-settings"><summary><span class="setting-name">复习设置</span><span id="settingSummary">原句认义 · 全部套题</span></summary><div class="settings-panel"><div class="selectors"><label>来源<select id="book" aria-label="来源筛选"><option value="">全部套题</option></select></label><label>练习方式<select id="mode" aria-label="练习方式"><option value="context">原句认义</option><option value="cloze">原句填空</option><option value="zh">中文回忆英文</option><option value="extension">拓展语境</option><option value="mix">原句 / 填空混合</option></select></label><label>练习范围<select id="scope" aria-label="练习范围"><option value="due">到期和未学</option><option value="weak">还不熟（0–2级）</option><option value="all">全部表达</option></select></label></div><p id="modeNote" class="sub"></p></div></details><button id="start" class="primary">开始一组</button></div></section>
@@ -14,7 +14,8 @@
 <script src="sync-core.js"></script>
 <script src="cloud-sync.js"></script>
 <script>
-const WORDS=__DATA__,KEY='ielts.reading.recall.v1',DAY=86400000,LEVELS=['待复习','初步记住','渐熟','较熟','熟悉','稳固'];
+let WORDS=__DATA__;
+const KEY='ielts.reading.recall.v1',DAY=86400000,LEVELS=['待复习','初步记住','渐熟','较熟','熟悉','稳固'];
 const DIMS={recognition:'认义',recall:'英文提取',transfer:'拓展迁移'};
 let state={},legacy={},queue=[],index=0,current=null,revealed=false,hinted=false,spellingMismatch=false,sessionStarted=false;
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -25,7 +26,7 @@ function key(w,d){return w.id+'::'+d}
 function rec(w,d){return state[key(w,d)]||{level:0,due:0,reviews:0,history:[],lastGoodDay:'',dailyStamp:'',dailyCount:0}}
 function valid(r){return r&&Number.isInteger(r.level)&&r.level>=0&&r.level<=5&&Number.isFinite(r.due)&&r.due>=0&&Number.isInteger(r.reviews)&&r.reviews>=0&&Array.isArray(r.history)&&r.history.every(h=>Number.isFinite(h.at)&&['again','hard','good'].includes(h.rate)&&Number.isInteger(h.level)&&h.level>=0&&h.level<=5)}
 function mergeRecord(old,r){return (r.history.at(-1)?.at||0)>=(old?.history?.at(-1)?.at||0)?r:old}
-function load(){try{const raw=JSON.parse(localStorage.getItem(KEY)||'{}');if(raw?.version===2){for(const w of WORDS)for(const d of Object.keys(DIMS)){let k=key(w,d);if(valid(raw.progress?.[k]))state[k]=raw.progress[k]}legacy=raw.legacyProgress||{}}else if(raw&&typeof raw==='object'&&!Array.isArray(raw)){for(const w of WORDS)if(valid(raw[w.id]))legacy[w.id]=raw[w.id];if(Object.keys(legacy).length)say('已保留旧版综合记录；新维度将分别累计实际表现。')}}catch(e){say('本地记录读取失败，可以导入备份恢复。')}}
+function load(){try{const raw=JSON.parse(localStorage.getItem(KEY)||'{}');if(raw?.version===2){for(const [k,r] of Object.entries(raw.progress||{})){if(valid(r))state[k]=r}legacy=raw.legacyProgress||{}}else if(raw&&typeof raw==='object'&&!Array.isArray(raw)){for(const w of WORDS)if(valid(raw[w.id]))legacy[w.id]=raw[w.id];if(Object.keys(legacy).length)say('已保留旧版综合记录；新维度将分别累计实际表现。')}}catch(e){say('本地记录读取失败，可以导入备份恢复。')}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify({version:2,progress:state,legacyProgress:legacy}))}catch(e){say('浏览器未能保存，请及时导出进度。')}window.ReadingCloud?.changed()}
 function matching(){return WORDS.filter(w=>!$('book').value||w.book===$('book').value)}
 function modes(){return $('mode').value==='mix'?['context','cloze']:[$('mode').value]}
@@ -46,8 +47,17 @@ for(let id of ['book','mode','scope'])$(id).onchange=()=>{stopSession();stats()}
 function download(obj){let url=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='IELTS-reading-progress-'+day()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
 $('export').onclick=()=>download({version:2,exportedAt:new Date().toISOString(),progress:state,legacyProgress:legacy,words:WORDS});$('import').onclick=()=>$('file').click();
 $('file').onchange=async e=>{try{let f=e.target.files[0];if(!f)return;let x=JSON.parse(await f.text());if(![1,2].includes(x.version)||!x.progress||typeof x.progress!=='object'||Array.isArray(x.progress))throw Error();let pending={...state},old={...legacy},n=0;for(let w of WORDS){if(x.version===1){let r=x.progress[w.id];if(r){if(!valid(r))throw Error();old[w.id]=mergeRecord(old[w.id],r);n++}}else{for(let d of Object.keys(DIMS)){let k=key(w,d),r=x.progress[k];if(r){if(!valid(r)||!Number.isInteger(r.dailyCount)||r.dailyCount<0||typeof r.dailyStamp!=='string'||typeof r.lastGoodDay!=='string')throw Error();pending[k]=mergeRecord(pending[k],{...r,history:r.history.slice(-30)});n++}}let r=x.legacyProgress?.[w.id];if(r){if(!valid(r))throw Error();old[w.id]=mergeRecord(old[w.id],r)}}}state=pending;legacy=old;save();stopSession();stats();say(x.version===1?`已保留${n}条旧版记录；三个维度需分别复习后累计。`:`已处理${n}条匹配记录，保留较新的进度。`)}catch(e){say('导入失败：请选择本工具导出的有效 JSON；已有记录未改动。')}finally{e.target.value=''}};
-for(let book of [...new Set(WORDS.map(w=>w.book))]){let o=document.createElement('option');o.value=book;o.textContent=book;$('book').append(o)}load();stats();
-window.ReadingCloud.init({
+async function initWords(){
+  const cacheKey='ielts.reading.catalog.v1';
+  try{const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');if(Array.isArray(cached)&&cached.length)WORDS=cached}catch(e){}
+  try{
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),4000);
+    const response=await fetch(window.READING_FIREBASE_CONFIG.databaseURL+'/ieltsReading/catalog/entries.json',{signal:controller.signal,cache:'no-store'});clearTimeout(timer);
+    if(!response.ok)throw Error('词库不可用');const entries=await response.json();
+    if(entries&&typeof entries==='object'){const words=Object.values(entries);if(words.length&&words.every(w=>w.id&&w.term&&w.sentence&&w.target&&Array.isArray(w.extensions)&&w.extensions.length)){WORDS=words;try{localStorage.setItem(cacheKey,JSON.stringify(words))}catch(e){}}}
+  }catch(e){say('暂用本机词库；联网后刷新可获取更新。')}
+  for(let book of [...new Set(WORDS.map(w=>w.book))]){let o=document.createElement('option');o.value=book;o.textContent=book;$('book').append(o)}load();stats();$('start').disabled=false;
+  window.ReadingCloud.init({
  get(){return {progress:state,legacyProgress:legacy}},
  merge(remote){
    const core=window.ReadingSyncCore;
@@ -58,5 +68,7 @@ window.ReadingCloud.init({
    try{localStorage.setItem(KEY,JSON.stringify({version:2,progress:state,legacyProgress:legacy}))}catch(e){say('浏览器未能保存，请导出进度备份。')}
    stats();
  }
-});
+  });
+}
+$('start').disabled=true;initWords();
 </script></body></html>

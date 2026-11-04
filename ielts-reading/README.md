@@ -11,21 +11,20 @@ GitHub Pages 子页面：`/bw/ielts-reading/`。根目录播放器只增加入�
 - 本地文件和GitHub Pages属于不同来源。旧文件版的进度应先导出JSON，在网页导入一次。
 - 每维保留最近30次明细和累计次数，评分规则不因云同步改变。
 
-## 资料和生成
+## 词库管理
 
-`data/words.json` 是发布用词库，包含原句、译文和教师自拟拓展例句，不包含本机附件路径。改词库后：
+词条保存在 Firebase Realtime Database 的 `ieltsReading/catalog/entries`；进度继续使用 `ieltsReading/v2`。页面首次迁移保留内置词库作离线后备，成功读取云端后缓存在当前浏览器，刷新复习页获取更新。词条 ID 保持稳定以保留熟练度。
 
-```sh
-python3 tools/build.py
-```
-
-从学习记忆导入新增词：
+- 网页 `manage.html`：选择已有词条编辑，或填写新词条后保存；同一 ID 的熟练度保留。
+- Agent 批量更新：先按记忆流程补齐原句和语境，然后运行：
 
 ```sh
-python3 tools/sync_from_memory.py "/path/to/reading memory"
+python3 tools/sync_from_memory.py "/path/to/reading memory" --publish
 ```
 
-`review.template.html` 控制页面和原有学习逻辑，`cloud-sync.js` 只负责同步，`sync-core.js` 负责数据规范化和逐词合并。
+这个命令只向数据库添加云端不存在的词条，不重建页面，不覆盖管理页面已修改的词条。单个词条需要有意覆盖时用 `python3 tools/catalog.py upsert word.json`；`python3 tools/catalog.py list` 可导出云端词库。ID 一经使用，修改表达时保持 ID 不变。
+
+未加参数的 `sync_from_memory.py` 仅用于更新仓库的离线初始快照并重建页面。首次迁移后，不必为生词提交或部署网页。
 
 ## Firebase
 
@@ -33,7 +32,7 @@ python3 tools/sync_from_memory.py "/path/to/reading memory"
 
 `firebase/ielts-reading.rules.json` **只是新增节点片段，不是完整数据库规则**。在Firebase控制台将其 `ieltsReading` 字段加入现有 `rules`，保留全部原有节点（包括其他项目新增的节点）。不要用这个文件覆盖整套规则，也不要直接部署 tutoring-booking 尚未提交的本地规则。
 
-本次按用户要求，`ieltsReading/v2` 允许免登录读写，其余节点的权限保持原状。不存预约、财务等业务数据。
+按用户要求，`ieltsReading/v2` 和 `ieltsReading/catalog` 允许免登录读写；词库任何知道数据库地址的人均可读写，其余节点的权限保持原状。不存预约、财务等业务数据。
 
 ## 检查
 
