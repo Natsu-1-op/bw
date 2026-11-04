@@ -51,3 +51,7 @@ python3 tools/sync_audio.py
 读音参考：
 - https://jyutping.org/jyutping/
 - https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/
+
+## 雅思阅读复习子页面
+
+打开 [雅思阅读复习](ielts-reading/)。包含原句回顾、文中义、常见拓展用法及三维熟练度，进度自动保存到现有 Firebase 项目 `class-optic`。详情和维护方法见 [子页面说明](ielts-reading/README.md)。

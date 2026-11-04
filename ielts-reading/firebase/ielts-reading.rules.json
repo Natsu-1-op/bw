@@ -1,0 +1,31 @@
+{
+  "ieltsReading": {
+    "v2": {
+      ".read": true,
+      ".write": true,
+      ".validate": "newData.hasChildren(['version','updatedAt'])",
+      "version": {
+        ".validate": "newData.val() === 2"
+      },
+      "updatedAt": {
+        ".validate": "newData.isNumber()"
+      },
+      "progress": {
+        "$id": {
+          ".validate": "$id.matches(/^[A-Za-z0-9_-]{1,512}$/) && newData.hasChildren(['level','due','reviews']) && newData.child('level').isNumber() && newData.child('level').val() >= 0 && newData.child('level').val() <= 5 && newData.child('due').isNumber() && newData.child('due').val() >= 0 && newData.child('reviews').isNumber() && newData.child('reviews').val() >= 0 && newData.child('history').numChildren() <= 30 && (!newData.child('lastAnswer').exists() || (newData.child('lastAnswer').isString() && newData.child('lastAnswer').val().length <= 300))"
+        }
+      },
+      "legacyProgress": {
+        "$id": {
+          ".validate": "$id.matches(/^[A-Za-z0-9_-]{1,512}$/) && newData.hasChildren(['level','due','reviews']) && newData.child('level').isNumber() && newData.child('level').val() >= 0 && newData.child('level').val() <= 5 && newData.child('due').isNumber() && newData.child('due').val() >= 0 && newData.child('reviews').isNumber() && newData.child('reviews').val() >= 0 && newData.child('history').numChildren() <= 30 && (!newData.child('lastAnswer').exists() || (newData.child('lastAnswer').isString() && newData.child('lastAnswer').val().length <= 300))"
+        }
+      },
+      "$other": {
+        ".validate": false
+      }
+    },
+    "$other": {
+      ".validate": false
+    }
+  }
+}
