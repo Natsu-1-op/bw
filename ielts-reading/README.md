@@ -41,3 +41,7 @@ python3 tools/sync_from_memory.py "/path/to/reading memory"
 node tests/review.test.cjs
 node tests/sync.test.cjs
 ```
+
+## 手机显示
+
+沿用主站的蓝白配色、系统字体、7–10px圆角和按钮风格。手机端默认收起筛选与说明，开始后底部固定揭晓/提示/跳过或评级按钮。揭晓后聚焦答案与原句回顾，避免上下重复展示同一句。改样式编辑 `style.css`，改结构编辑 `review.template.html` 后重建。

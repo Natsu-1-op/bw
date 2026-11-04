@@ -2,9 +2,9 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const path=require('node:path');const root=path.resolve(__dirname,'..');const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const code=html.split('<script>')[1].split('</script>')[0];
 let stored=null;const els={},rates=['again','hard','good'].map(rate=>({dataset:{rate},disabled:false}));
-function el(id){return els[id]||(els[id]={value:id==='mode'?'context':id==='scope'?'due':'',classList:{add(){},remove(){}},style:{},append(){},textContent:'',innerHTML:'',disabled:false})}
-const c=vm.createContext({document:{getElementById:el,querySelectorAll:()=>rates,querySelector:()=>rates[2],createElement:()=>({})},localStorage:{getItem:()=>stored,setItem(k,v){stored=v}},console,Blob,URL,setTimeout});
-const run=s=>vm.runInContext(s,c);c.window=c;c.ReadingCloud={init(){},changed(){}};vm.runInContext(fs.readFileSync(path.join(root,'sync-core.js'),'utf8'),c);vm.runInContext(code,c);
+function el(id){return els[id]||(els[id]={value:id==='mode'?'context':id==='scope'?'due':'',selectedOptions:[{textContent:id==='mode'?'原句认义':'全部套题'}],classList:{add(){},remove(){}},style:{},append(){},textContent:'',innerHTML:'',disabled:false,blur(){},scrollIntoView(){}})}
+const c=vm.createContext({document:{body:{classList:{add(){},remove(){}}},getElementById:el,querySelectorAll:()=>rates,querySelector:()=>rates[2],createElement:()=>({})},localStorage:{getItem:()=>stored,setItem(k,v){stored=v}},console,Blob,URL,setTimeout});
+const run=s=>vm.runInContext(s,c);c.window=c;c.matchMedia=()=>({matches:false});c.ReadingCloud={init(){},changed(){}};vm.runInContext(fs.readFileSync(path.join(root,'sync-core.js'),'utf8'),c);vm.runInContext(code,c);
 assert.equal(run('WORDS.length'),35);assert.equal(run('new Set(WORDS.map(w=>w.id)).size'),35);
 assert(run('WORDS.every(w=>w.sentence.includes(w.target)||w.sentence.toLowerCase().includes(w.target.toLowerCase()))'));
 el('start').onclick();assert.equal(run('queue.length'),10);assert.equal(run('new Set(queue.map(t=>t.w.id)).size'),10);
