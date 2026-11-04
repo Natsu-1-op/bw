@@ -12,12 +12,22 @@
       },
       "progress": {
         "$id": {
-          ".validate": "$id.matches(/^[A-Za-z0-9_-]{1,512}$/) && newData.hasChildren(['level','due','reviews']) && newData.child('level').isNumber() && newData.child('level').val() >= 0 && newData.child('level').val() <= 5 && newData.child('due').isNumber() && newData.child('due').val() >= 0 && newData.child('reviews').isNumber() && newData.child('reviews').val() >= 0 && newData.child('history').numChildren() <= 30 && (!newData.child('lastAnswer').exists() || (newData.child('lastAnswer').isString() && newData.child('lastAnswer').val().length <= 300))"
+          ".validate": "$id.matches(/^[A-Za-z0-9_-]{1,512}$/) && newData.hasChildren(['level','due','reviews']) && newData.child('level').isNumber() && newData.child('level').val() >= 0 && newData.child('level').val() <= 5 && newData.child('due').isNumber() && newData.child('due').val() >= 0 && newData.child('reviews').isNumber() && newData.child('reviews').val() >= 0 && (!newData.child('lastAnswer').exists() || (newData.child('lastAnswer').isString() && newData.child('lastAnswer').val().length <= 300))",
+          "history": {
+            "$index": {
+              ".validate": "$index.matches(/^([0-9]|[12][0-9])$/) && newData.hasChildren(['at','rate','level']) && newData.child('at').isNumber() && (newData.child('rate').val() === 'again' || newData.child('rate').val() === 'hard' || newData.child('rate').val() === 'good') && newData.child('level').isNumber() && newData.child('level').val() >= 0 && newData.child('level').val() <= 5"
+            }
+          }
         }
       },
       "legacyProgress": {
         "$id": {
-          ".validate": "$id.matches(/^[A-Za-z0-9_-]{1,512}$/) && newData.hasChildren(['level','due','reviews']) && newData.child('level').isNumber() && newData.child('level').val() >= 0 && newData.child('level').val() <= 5 && newData.child('due').isNumber() && newData.child('due').val() >= 0 && newData.child('reviews').isNumber() && newData.child('reviews').val() >= 0 && newData.child('history').numChildren() <= 30 && (!newData.child('lastAnswer').exists() || (newData.child('lastAnswer').isString() && newData.child('lastAnswer').val().length <= 300))"
+          ".validate": "$id.matches(/^[A-Za-z0-9_-]{1,512}$/) && newData.hasChildren(['level','due','reviews']) && newData.child('level').isNumber() && newData.child('level').val() >= 0 && newData.child('level').val() <= 5 && newData.child('due').isNumber() && newData.child('due').val() >= 0 && newData.child('reviews').isNumber() && newData.child('reviews').val() >= 0 && (!newData.child('lastAnswer').exists() || (newData.child('lastAnswer').isString() && newData.child('lastAnswer').val().length <= 300))",
+          "history": {
+            "$index": {
+              ".validate": "$index.matches(/^([0-9]|[12][0-9])$/) && newData.hasChildren(['at','rate','level']) && newData.child('at').isNumber() && (newData.child('rate').val() === 'again' || newData.child('rate').val() === 'hard' || newData.child('rate').val() === 'good') && newData.child('level').isNumber() && newData.child('level').val() >= 0 && newData.child('level').val() <= 5"
+            }
+          }
         }
       },
       "$other": {
