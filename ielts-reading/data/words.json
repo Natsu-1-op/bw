@@ -701,5 +701,157 @@
     ],
     "note": "原句用复数 anaesthetics；anaesthesia 表示麻醉状态。",
     "page": 87
+  },
+  {
+    "id": "C14T4:dismal",
+    "book": "C14T4",
+    "term": "dismal",
+    "meaning": "令人沮丧的；惨淡的",
+    "source": "C14T4 · Academic Reading Passage 3 第 1 自然段",
+    "sentence": "Chelsea Rochman, an ecologist at the University of California, Davis, has been trying to answer a dismal question: Is everything terrible, or are things just very, very bad?",
+    "translation": "加州大学戴维斯分校生态学家罗克曼一直试图回答一个令人沮丧的问题：一切都糟透了，还是只是非常非常糟？",
+    "target": "dismal",
+    "extensions": [
+      {
+        "meaning": "也可形容表现、天气等惨淡或糟糕。",
+        "example": "The team had a dismal season.",
+        "translation": "球队经历了一个糟糕的赛季。"
+      }
+    ],
+    "note": "",
+    "page": 90
+  },
+  {
+    "id": "C14T4:perceived dangers",
+    "book": "C14T4",
+    "term": "perceived dangers",
+    "meaning": "被认为存在的危害",
+    "source": "C14T4 · Academic Reading Passage 3 第 5 自然段",
+    "sentence": "In 83 percent of cases, the perceived dangers of ocean trash were proven true.",
+    "translation": "在83%的案例中，海洋垃圾被认为可能带来的危害得到了证实。",
+    "target": "perceived dangers",
+    "extensions": [
+      {
+        "meaning": "perceived risk 指被认为存在的风险，不代表已经证实。",
+        "example": "The perceived risk influenced their decision.",
+        "translation": "人们认为存在的风险影响了他们的决定。"
+      }
+    ],
+    "note": "",
+    "page": 90
+  },
+  {
+    "id": "C14T4:ingest",
+    "book": "C14T4",
+    "term": "ingest",
+    "meaning": "摄入；吞入",
+    "source": "C14T4 · Academic Reading Passage 3 第 6 自然段（原文 ingesting）",
+    "sentence": "Strikingly, Rochman says, only one well-designed study failed to find the effect it was looking for, an investigation of mussels ingesting microscopic plastic bits.",
+    "translation": "罗克曼说，值得注意的是，只有一项设计良好的研究没有发现预期的影响：这项研究调查贻贝摄入微小塑料碎片的情况。",
+    "target": "ingesting",
+    "extensions": [
+      {
+        "meaning": "ingest 可指人或动物吞入食物、药物或有害物质。",
+        "example": "Animals may ingest harmful chemicals.",
+        "translation": "动物可能摄入有害化学物质。"
+      }
+    ],
+    "note": "",
+    "page": 90
+  },
+  {
+    "id": "C14T4:entangle",
+    "book": "C14T4",
+    "term": "entangle",
+    "meaning": "缠住；使纠缠",
+    "source": "C14T4 · Academic Reading Passage 3 第 8 自然段（原文 getting entangled in）",
+    "sentence": "Most of the dangers also involved large pieces of debris – animals getting entangled in trash, for example, or eating it and severely injuring themselves.",
+    "translation": "大多数危害还涉及大块垃圾，例如动物被垃圾缠住，或吞食垃圾而严重受伤。",
+    "target": "entangled",
+    "extensions": [
+      {
+        "meaning": "become entangled in 可用于被网、绳等缠住。",
+        "example": "The bird became entangled in the net.",
+        "translation": "鸟被网缠住了。"
+      }
+    ],
+    "note": "",
+    "page": 90
+  },
+  {
+    "id": "C14T4:toiletries",
+    "book": "C14T4",
+    "term": "toiletries",
+    "meaning": "个人护理用品",
+    "source": "C14T4 · Academic Reading Passage 3 第 9 自然段",
+    "sentence": "These may be ingredients used in cosmetics and toiletries, fibers shed by synthetic clothing in the wash, or eroded remnants of larger debris.",
+    "translation": "这些可能是化妆品和个人护理用品中的成分、合成衣物洗涤时脱落的纤维，或大块垃圾被侵蚀后的残片。",
+    "target": "toiletries",
+    "extensions": [
+      {
+        "meaning": "常用复数，指牙膏、肥皂等个人清洁护理用品。",
+        "example": "Please pack your toiletries in a small bag.",
+        "translation": "请把个人护理用品装进一个小袋子。"
+      }
+    ],
+    "note": "",
+    "page": 90
+  },
+  {
+    "id": "C14T4:synthetic",
+    "book": "C14T4",
+    "term": "synthetic",
+    "meaning": "合成的；人造的",
+    "source": "C14T4 · Academic Reading Passage 3 第 9 自然段（synthetic clothing）",
+    "sentence": "These may be ingredients used in cosmetics and toiletries, fibers shed by synthetic clothing in the wash, or eroded remnants of larger debris.",
+    "translation": "这些可能是化妆品和个人护理用品中的成分、合成衣物洗涤时脱落的纤维，或大块垃圾被侵蚀后的残片。",
+    "target": "synthetic",
+    "extensions": [
+      {
+        "meaning": "常用于 synthetic material 或 synthetic fibre，指人工合成的材料或纤维。",
+        "example": "The coat is made from synthetic fibres.",
+        "translation": "这件外套由合成纤维制成。"
+      }
+    ],
+    "note": "",
+    "page": 90
+  },
+  {
+    "id": "C14T4:concentration",
+    "book": "C14T4",
+    "term": "concentration",
+    "meaning": "浓度",
+    "source": "C14T4 · Academic Reading Passage 3 第 10 自然段（原文 concentrations）",
+    "sentence": "And in the lab, scientists often use higher concentrations of plastic than what’s really in the ocean.",
+    "translation": "在实验室里，科学家使用的塑料浓度往往高于海洋中的实际浓度。",
+    "target": "concentrations",
+    "extensions": [
+      {
+        "meaning": "也指专注、注意力集中。",
+        "example": "The noise made concentration difficult.",
+        "translation": "噪音让人难以集中注意力。"
+      }
+    ],
+    "note": "",
+    "page": 91
+  },
+  {
+    "id": "C14T4:conjure up",
+    "book": "C14T4",
+    "term": "conjure up",
+    "meaning": "使人联想到；使脑海中浮现",
+    "source": "C14T4 · Academic Reading Passage 3 第 12 自然段",
+    "sentence": "For example, the name of the ‘Great Pacific Garbage Patch’ – a collection of marine debris in the northern Pacific Ocean – might conjure up a vast, floating trash island.",
+    "translation": "例如，“太平洋大垃圾带”这个名称可能让人联想到一座巨大的漂浮垃圾岛；它指的是北太平洋中聚集的海洋垃圾。",
+    "target": "conjure up",
+    "extensions": [
+      {
+        "meaning": "也可指唤起回忆、感情或景象。",
+        "example": "The song conjured up memories of home.",
+        "translation": "这首歌唤起了对家的回忆。"
+      }
+    ],
+    "note": "",
+    "page": 91
   }
 ]
