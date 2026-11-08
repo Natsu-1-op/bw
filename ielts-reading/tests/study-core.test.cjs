@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+const ctx=vm.createContext({Intl,Date,Math});vm.runInContext(fs.readFileSync(path.join(__dirname,'../study-core.js'),'utf8'),ctx);const S=ctx.ReadingStudy, t=Date.UTC(2026,10,8,12), STEP=180000, DAY=86400000;
+let r=S.answer(null,'again',t).record;assert.equal(r.phase,'learning');assert.equal(r.streak,0);assert.equal(r.due,t+STEP);
+let early=S.answer(r,'good',t+STEP-1).record;assert.equal(early.streak,0);assert.equal(early.due,r.due);
+r=S.answer(r,'good',t+STEP).record;assert.equal(r.streak,1);assert.equal(r.level,0);assert.equal(r.due,t+2*STEP);
+r=S.answer(r,'good',t+2*STEP).record;assert.equal(r.streak,2);
+r=S.answer(r,'good',t+3*STEP).record;assert.equal(r.streak,3);assert.equal(r.level,0);assert.equal(r.due,t+DAY);
+early=S.answer(r,'good',t+DAY-1).record;assert.equal(early.streak,3);assert.equal(early.level,0);
+r=S.answer(r,'good',t+DAY).record;assert.equal(r.phase,'review');assert.equal(r.level,1);assert.equal(r.due,t+2*DAY);
+r=S.answer(r,'good',t+2*DAY).record;assert.equal(r.level,2);assert.equal(r.due,t+5*DAY);
+let failed=S.answer(r,'again',t+3*DAY).record;assert.equal(failed.streak,0);assert.equal(failed.level,0);assert.equal(failed.due,t+3*DAY+STEP);
+failed=S.answer(failed,'good',t+3*DAY+STEP).record;failed=S.answer(failed,'again',t+3*DAY+STEP*2).record;assert.equal(failed.streak,0);assert.equal(failed.lastFail,t+3*DAY+STEP*2);
+let slow=S.answer(null,'again',t).record;for(let i=1;i<=3;i++)slow=S.answer(slow,'good',t+DAY+i*STEP).record;assert.equal(slow.phase,'learning');assert.equal(slow.streak,3);assert(slow.due>=t+DAY+4*STEP);
+let old={level:2,due:t+300000,reviews:1,history:[{at:t,rate:'hard',level:2}]};let migrated=S.migrate(old);assert.equal(migrated.phase,'learning');assert.equal(migrated.streak,0);assert.equal(migrated.level,2);
+const words=Array.from({length:100},(_,i)=>({id:'w'+i}));const state=w=>Number(w.id.slice(1))<40?null:Number(w.id.slice(1))<70?{...S.base(),reviews:1,phase:'learning',lapses:1,due:t-100}: {...S.base(),reviews:1,due:t-100};let selected=S.select(words,state,30,t);assert.equal(selected.length,30);assert.equal(new Set(selected).size,30);assert(selected.some(x=>+x.slice(1)<40));assert(selected.some(x=>+x.slice(1)>=40&&+x.slice(1)<70));assert(selected.some(x=>+x.slice(1)>=70));assert.equal(S.day(Date.UTC(2026,0,1,16)), '2026-01-02');
+console.log('PASS: memory phases, 3-minute spacing, 24-hour verification, overdue, migration and weighted selection');

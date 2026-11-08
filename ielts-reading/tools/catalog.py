@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Manage the shared IELTS catalog without rebuilding or redeploying the page."""
-import argparse,base64,json,sys,urllib.request,urllib.error
+import argparse,base64,json,sys,time,urllib.request,urllib.error
 from pathlib import Path
 BASE='https://class-optic-default-rtdb.asia-southeast1.firebasedatabase.app/ieltsReading/catalog/entries'
 def key(id): return base64.urlsafe_b64encode(id.encode()).decode().rstrip('=')
@@ -22,8 +22,11 @@ try:
  else:
   data=json.loads(a.file.read_text());words=data if isinstance(data,list) else [data]; clean=[validate(w) for w in words]
   if len({w['id'] for w in clean})!=len(clean):raise ValueError('Duplicate ids')
-  existing=request(BASE+'.json') or {} if a.new_only else {}
-  patch={key(w['id']):w for w in clean if key(w['id']) not in existing}
+  existing=request(BASE+'.json') or {}
+  for w in clean:
+   old=existing.get(key(w['id']),{})
+   w['addedAt']=old.get('addedAt') or w.get('addedAt') or int(time.time()*1000)
+  patch={key(w['id']):w for w in clean if not a.new_only or key(w['id']) not in existing}
   if patch: request(BASE+'.json','PATCH',patch)
   print(f'已更新 {len(patch)} 个词条；跳过 {len(clean)-len(patch)} 个已有词条')
 except (OSError,ValueError,KeyError,urllib.error.HTTPError) as e:print('词库操作失败:',e,file=sys.stderr);sys.exit(1)

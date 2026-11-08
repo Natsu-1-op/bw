@@ -13,6 +13,7 @@
     let history = Array.isArray(r.history) ? r.history : Object.values(r.history || {});
     history = history.sort((a,b) => a.at - b.at).slice(-30).map(h => ({at:h.at,rate:h.rate,level:h.level,mode:typeof h.mode==='string'?h.mode:'context',hinted:!!h.hinted}));
     let value = {level:r.level,due:r.due,reviews:r.reviews,history,lastGoodDay:typeof r.lastGoodDay==='string'?r.lastGoodDay:'',dailyStamp:typeof r.dailyStamp==='string'?r.dailyStamp:'',dailyCount:Number.isInteger(r.dailyCount)&&r.dailyCount>=0?r.dailyCount:0,lastAnswer:typeof r.lastAnswer==='string'?r.lastAnswer.slice(0,300):''};
+    if (r.studyV === 1 && ['learning','review'].includes(r.phase) && Number.isInteger(r.streak) && r.streak>=0 && r.streak<=3 && Number.isFinite(r.lastFail) && r.lastFail>=0 && Number.isFinite(r.lastStep) && r.lastStep>=0 && Number.isInteger(r.lapses) && r.lapses>=0) Object.assign(value,{studyV:1,phase:r.phase,streak:r.streak,lastFail:r.lastFail,lastStep:r.lastStep,lapses:r.lapses});
     return valid(value) ? value : null;
   }
   function merge(left={},right={}) {
@@ -30,5 +31,5 @@
   function decode(s) {return decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4))))}
   function pack(map) {const result={};for(let [key,r] of Object.entries(merge({},map))) result[encode(key)]=r;return result}
   function unpack(map) {const result=Object.create(null);for(let [key,r] of Object.entries(map||{}))try{let id=decode(key),v=clean(r);if(safeKey(id)&&v)result[id]=v}catch(_){}return result}
-  root.ReadingSyncCore=Object.freeze({valid,clean,merge,pack,unpack});
+  root.ReadingSyncCore=Object.freeze({valid,clean,merge,pack,unpack,encode});
 })(typeof window!=='undefined'?window:globalThis);

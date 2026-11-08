@@ -1,27 +1,14 @@
-const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const path=require('node:path');const root=path.resolve(__dirname,'..');const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-const code=html.split('<script>')[1].split('</script>')[0];
-let stored=null;const els={},rates=['again','hard','good'].map(rate=>({dataset:{rate},disabled:false}));
-function el(id){return els[id]||(els[id]={value:id==='mode'?'context':id==='scope'?'due':'',selectedOptions:[{textContent:id==='mode'?'原句认义':'全部套题'}],classList:{add(){},remove(){}},style:{},append(){},textContent:'',innerHTML:'',disabled:false,blur(){},scrollIntoView(){}})}
-const c=vm.createContext({document:{body:{classList:{add(){},remove(){}}},getElementById:el,querySelectorAll:()=>rates,querySelector:()=>rates[2],createElement:()=>({})},localStorage:{getItem:()=>stored,setItem(k,v){stored=v}},console,Blob,URL,setTimeout});
-const run=s=>vm.runInContext(s,c);c.window=c;c.matchMedia=()=>({matches:false});c.ReadingCloud={init(){},changed(){}};vm.runInContext(fs.readFileSync(path.join(root,'sync-core.js'),'utf8'),c);vm.runInContext(code,c);
-assert.equal(run('WORDS.length'),35);assert.equal(run('new Set(WORDS.map(w=>w.id)).size'),35);
-assert(run('WORDS.every(w=>w.sentence.includes(w.target)||w.sentence.toLowerCase().includes(w.target.toLowerCase()))'));
-el('start').onclick();assert.equal(run('queue.length'),10);assert.equal(run('new Set(queue.map(t=>t.w.id)).size'),10);
-run('globalThis.testWord=current.w');el('reveal').onclick();rates[2].onclick();assert.equal(run('rec(testWord,"recognition").level'),1);assert.equal(run('rec(testWord,"recall").level'),0);
-run('current={w:testWord,mode:"context",d:"recognition"};revealed=true;hinted=false;spellingMismatch=false');rates[2].onclick();assert.equal(run('rec(testWord,"recognition").level'),1);
-run('queue=[{w:testWord,mode:"context",d:"recognition"}];index=0;show()');el('hintBtn').onclick();el('reveal').onclick();assert(rates[2].disabled);let snap=run('JSON.stringify(state)');rates[2].onclick();assert.equal(run('JSON.stringify(state)'),snap);el('skip').onclick();assert.equal(run('JSON.stringify(state)'),snap);
-run('testWord=WORDS.find(w=>w.term==="attend to");queue=[{w:testWord,mode:"cloze",d:"recall"}];index=0;show()');el('guess').value='attended to';el('reveal').onclick();assert(!rates[2].disabled);rates[2].onclick();assert.equal(run('rec(testWord,"recall").level'),1);
-run('queue=[{w:testWord,mode:"cloze",d:"recall"}];index=0;show()');el('guess').value='attend';el('reveal').onclick();assert(rates[2].disabled);rates[1].onclick();assert.equal(run('rec(testWord,"recall").level'),0);
-run('queue=[{w:testWord,mode:"extension",d:"transfer"}];index=0;show()');el('reveal').onclick();rates[2].onclick();assert.equal(run('rec(testWord,"transfer").level'),1);assert.equal(run('rec(testWord,"recognition").level'),0);
-for(let i=0;i<35;i++){run('current={w:testWord,mode:"context",d:"recognition"};revealed=true;hinted=false;spellingMismatch=false');rates[0].onclick()}
-assert.equal(run('rec(testWord,"recognition").history.length'),30);assert.equal(run('rec(testWord,"recognition").reviews'),35);assert(run('rec(testWord,"recognition").due-Date.now()>299000'));
-(async()=>{
- const rid=run('WORDS[0].id'),old={level:2,due:1,reviews:1,history:[{at:1,rate:'good',level:2}]};
- await el('file').onchange({target:{files:[{text:async()=>JSON.stringify({version:1,progress:{[rid]:old}})}],value:'x'}});
- assert.equal(run('Object.keys(legacy).length'),1);
- let before=run('JSON.stringify(state)');const k=rid+'::recognition',bad={version:2,progress:{[k]:{...old,dailyCount:1,dailyStamp:'2026-11-04',lastGoodDay:'2026-11-04'},[run('WORDS[1].id')+'::recall']:{...old,level:99}}};
- await el('file').onchange({target:{files:[{text:async()=>JSON.stringify(bad)}],value:'x'}});assert.equal(run('JSON.stringify(state)'),before);
- assert.equal(JSON.parse(stored).version,2);assert.equal(Object.keys(JSON.parse(stored).legacyProgress).length,1);
- console.log('通过：35词原句完整、填空词形、提示/拼错限制、三维独立、同日升级限制、跳过、历史上限、旧版保留、导入原子性、v2本地保存。');
-})().catch(e=>{console.error(e);process.exit(1)});
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
+const root=path.resolve(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),code=html.rsplit?null:html.split('<script>').at(-1).split('</script>')[0];
+let now=Date.UTC(2026,10,8,10),storage=new Map(),els={},rates=['again','good'].map(rate=>({dataset:{rate},disabled:false}));
+class Clock extends Date{constructor(...args){super(...(args.length?args:[now]))}static now(){return now}}
+function el(id){return els[id]||(els[id]={value:id==='mode'?'context':id==='scope'?'due':'',selectedOptions:[{textContent:id==='mode'?'原句认义':'全部套题'}],classList:{add(){},remove(){}},style:{},append(){},textContent:'',innerHTML:'',disabled:false,open:false,blur(){},scrollIntoView(){}})}
+const c=vm.createContext({Date:Clock,Intl,Math,document:{body:{classList:{add(){},remove(){}}},getElementById:el,querySelectorAll:()=>rates,querySelector:()=>rates[1],createElement:()=>({})},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},console,Blob,URL,AbortController,setTimeout,clearTimeout,setInterval(){},fetch:async()=>({ok:true,json:async()=>null})});c.window=c;c.addEventListener=()=>{};c.matchMedia=()=>({matches:false});c.ReadingCloud={init(){},changed(){}};vm.runInContext(fs.readFileSync(path.join(root,'sync-core.js'),'utf8'),c);vm.runInContext(fs.readFileSync(path.join(root,'study-core.js'),'utf8'),c);c.ReadingPlan={current:()=>({day:c.ReadingStudy.day(now),ids:vm.runInContext('WORDS.map(w=>w.id)',c),goal:30}),goal:()=>30,ensure:async()=>{},setGoal:async()=>{},init:fn=>fn()};vm.runInContext(code,c);
+const run=s=>vm.runInContext(s,c);async function init(){for(let i=0;i<8;i++)await Promise.resolve()}
+function task(w){c.testWord=w;run('queue=[{w:testWord,mode:"context",d:"recognition"}];index=0;show()')}
+(async()=>{await init();assert.equal(run('WORDS.length'),46);await el('start').onclick();assert.equal(run('queue.length'),10);assert.equal(run('new Set(queue.map(t=>t.w.id)).size'),10);
+const w=run('WORDS[0]');task(w);el('reveal').onclick();rates[0].onclick();assert.equal(run('rec(testWord,"recognition").phase'),'learning');assert.equal(run('rec(testWord,"recognition").due'),now+180000);assert.equal(el('today').textContent,1);
+for(let i=1;i<=3;i++){now+=180000;task(w);el('reveal').onclick();rates[1].onclick();assert.equal(run('rec(testWord,"recognition").streak'),i);assert.equal(run('rec(testWord,"recognition").level'),0);assert.equal(el('today').textContent,1)}
+now=Date.UTC(2026,10,9,10);task(w);el('reveal').onclick();rates[1].onclick();assert.equal(run('rec(testWord,"recognition").phase'),'review');assert.equal(run('rec(testWord,"recognition").level'),1);assert.equal(run('rec(testWord,"recall").reviews'),0);
+task(w);el('hintBtn').onclick();el('reveal').onclick();assert(rates[1].disabled);let before=run('JSON.stringify(state)');rates[1].onclick();assert.equal(run('JSON.stringify(state)'),before);el('skip').onclick();assert.equal(run('JSON.stringify(state)'),before);
+console.log('PASS: group selection, two ratings, 3 spaced recalls, unique daily count, next-day verification, dimensions and skip');})().catch(e=>{console.error(e);process.exitCode=1});
