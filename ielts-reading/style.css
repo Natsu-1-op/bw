@@ -26,3 +26,11 @@ button{border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:10px 1
 .selectors input[type=number]{display:block;margin-top:5px;width:100%;min-height:44px;border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:9px;color:var(--ink);font-size:16px}
 
 .daily-target{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 10px;flex-wrap:wrap}.daily-target #planNote{margin:0}.goal-editor{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.goal-editor input{width:66px;min-height:40px;border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:7px;text-align:center;font-size:16px;color:var(--ink)}.goal-editor button{min-height:40px;padding:7px 13px;color:var(--primary)}
+
+/* 音标：复习卡、词表、组次回顾与管理页共用 */
+.phonetic{font-size:15.5px;color:#475569;font-weight:400;letter-spacing:.02em;margin:-8px 0 15px;line-height:1.5;overflow-wrap:anywhere}
+.phonetic:empty{display:none}
+.ipa{font-size:.74em;color:#475569;font-weight:400;white-space:nowrap;letter-spacing:.01em}
+.answer .ipa{font-size:.7em}
+.review-item .ipa{margin-left:2px}
+@media(max-width:600px){.phonetic{font-size:14px;margin:-6px 0 13px}.answer-open .phonetic{font-size:13px}}

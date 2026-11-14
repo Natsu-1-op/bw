@@ -31,6 +31,12 @@ python3 tools/sync_from_memory.py "/path/to/reading memory" --publish
 
 未加参数的 `sync_from_memory.py` 仅用于更新仓库的离线初始快照并重建页面。首次迁移后，不必为生词提交或部署网页。
 
+## 音标
+
+- 复习卡题目、揭晓后的答案、词汇库表格和组次回顾都会显示英式（RP）音标；「中文回忆英文」模式在揭晓前不显示，避免提前泄露答案。
+- `phonetics.js` 是离线兜底表，按词条小写匹配；词条若自带 `phonetic` 字段则优先使用该字段。
+- 管理页新增或编辑词条时可填写「音标」（不含斜杠），保存后写入词条的 `phonetic` 字段。新词未填时可先在 `phonetics.js` 补一行，再重建页面。
+
 ## Firebase
 
 复用 tutoring-booking 的 `class-optic` 项目。Web配置可公开，未使用服务端凭据。
