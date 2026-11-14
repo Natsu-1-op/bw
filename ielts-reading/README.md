@@ -33,9 +33,10 @@ python3 tools/sync_from_memory.py "/path/to/reading memory" --publish
 
 ## 音标
 
-- 复习卡题目、揭晓后的答案、词汇库表格和组次回顾都会显示英式（RP）音标；「中文回忆英文」模式在揭晓前不显示，避免提前泄露答案。
-- `phonetics.js` 是离线兜底表，按词条小写匹配；词条若自带 `phonetic` 字段则优先使用该字段。
-- 管理页新增或编辑词条时可填写「音标」（不含斜杠），保存后写入词条的 `phonetic` 字段。新词未填时可先在 `phonetics.js` 补一行，再重建页面。
+- 页面从 GitHub Pages 加载约 4 KB 的 `phonetics.js` 静态词表，再按词条查找英式音标。复习和查词无需为音标请求 Firebase 或外部词典。
+- 原句认义和拓展练习可在题面看音标；原句填空和中文回忆英文在揭晓后才显示。词汇库和组次回顾也能查看。
+- 管理页的「自定义英式音标」可覆盖词表中的默认读法。留空即可自动查词表，只有手动填写的值会随词条保存到 Firebase。清空已有覆盖并保存后恢复默认读法。
+- 篇末批量收录新词时，按原文词性核对英式音标后，把小写词条和读法追加到 `phonetics.js`，一并提交推送。新增音标只需改静态词表，页面无需重建；音标未确认时可暂缺。音标对应词条形式，短语提供一种英式读法。可查阅 [Cambridge Dictionary 英式音标说明](https://dictionary.cambridge.org/help/phonetics.html)。
 
 ## Firebase
 
