@@ -81,6 +81,13 @@
     "envisage": "ɪnˈvɪzɪdʒ",
     "fallacy": "ˈfæləsi",
     "subsistence agriculture": "səbˈsɪstəns ˈæɡrɪkʌltʃə",
+    // C17T1
+    "slum": "slʌm",
+    "vocal": "ˈvəʊkəl",
+    "solicitor": "səˈlɪsɪtə",
+    "parliament": "ˈpɑːləmənt",
+    "means": "miːnz",
+    "not without": "nɒt wɪˈðaʊt",
     // 乐器学习的益处
     "cast doubt on": "kɑːst daʊt ɒn",
     "impaired hearing": "ɪmˈpeəd ˈhɪərɪŋ",
