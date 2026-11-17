@@ -77,12 +77,12 @@ $('file').onchange=async e=>{try{let f=e.target.files[0];if(!f)return;let x=JSON
 function scheduleMidnight(){const delay=Math.max(100,window.ReadingStudy.midnightAfter(Date.now())-Date.now()+200);setTimeout(()=>{stats();scheduleMidnight()},delay)}
 async function initWords(){
   const cacheKey='ielts.reading.catalog.v1';
-  try{const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');if(Array.isArray(cached)&&cached.length)WORDS=cached}catch(e){}
+  try{const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');if(Array.isArray(cached))WORDS=cached}catch(e){}
   try{
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),4000);
     const response=await fetch(window.READING_FIREBASE_CONFIG.databaseURL+'/ieltsReading/catalog/entries.json',{signal:controller.signal,cache:'no-store'});clearTimeout(timer);
     if(!response.ok)throw Error('词库不可用');const entries=await response.json();
-    if(entries&&typeof entries==='object'){const words=Object.values(entries);if(words.length&&words.every(w=>w.id&&w.term&&w.sentence&&w.target&&Array.isArray(w.extensions)&&w.extensions.length)){WORDS=words;try{localStorage.setItem(cacheKey,JSON.stringify(words))}catch(e){}}}
+    if(entries&&typeof entries==='object'){const words=Object.values(entries);if(words.length&&words.every(w=>w.id&&w.term&&w.sentence&&w.target&&Array.isArray(w.extensions)&&w.extensions.length)){WORDS=words.filter(w=>!w.deletedAt);try{localStorage.setItem(cacheKey,JSON.stringify(WORDS))}catch(e){}}}
   }catch(e){say('暂用本机词库；联网后刷新可获取更新。')}
   for(let book of [...new Set(WORDS.map(w=>w.book))]){let o=document.createElement('option');o.value=book;o.textContent=book;$('book').append(o)}load();stats();renderRecentGroups();$('start').disabled=false;
   window.ReadingCloud.init({

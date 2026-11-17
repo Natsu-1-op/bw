@@ -21,6 +21,7 @@ GitHub Pages 子页面：`/bw/ielts-reading/`。根目录播放器只增加入�
 词条保存在 Firebase Realtime Database 的 `ieltsReading/catalog/entries`；进度继续使用 `ieltsReading/v2`。页面首次迁移保留内置词库作离线后备，成功读取云端后缓存在当前浏览器，刷新复习页获取更新。词条 ID 保持稳定以保留熟练度。
 
 - 网页 `manage.html`：选择已有词条编辑，或填写新词条后保存；同一 ID 的熟练度保留。
+- 在管理页选中词条并确认删除后，联网刷新复习页即可移除该词。云端保留删除标记，篇末批量同步时同一 ID 不会重新加入。
 - Agent 批量更新：先按记忆流程补齐原句和语境，然后运行：
 
 ```sh
