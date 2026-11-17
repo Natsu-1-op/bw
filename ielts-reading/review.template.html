@@ -1,9 +1,9 @@
 <!doctype html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f5f7fb"><title>雅思阅读 · 原句与拓展</title><link rel="stylesheet" href="style.css?v=20261114b"></head><body>
 <header><div class="wrap brand"><a class="brand-name" href="./"><span class="mark" aria-hidden="true">读</span>雅思阅读</a><a class="home-link" href="../">随身粤语 ↗</a><details class="more-menu"><summary aria-label="备份与更多选项">⋯</summary><div class="menu-panel"><a href="manage.html">管理词库</a><button id="export">导出进度</button><button id="import">导入进度</button><button id="cloudRetry">重试同步</button><input id="file" type="file" accept="application/json,.json" hidden><p>本地文件版的旧进度，可导出 JSON 后在这里导入。</p></div></details></div></header>
 <main class="wrap"><section class="intro"><div><div class="eyebrow">READING RECALL</div><h1>读懂一句，<span>记住一词。</span></h1></div><span id="cloudStatus" class="cloud-state" role="status">正在连接…</span></section>
-<section class="stats"><div class="stat"><b id="total">0</b>标记表达</div><div class="stat"><b id="due">0</b>待复习</div><div class="stat"><b id="stable">0</b>熟悉以上</div><div class="stat"><b id="today">0</b>今日已复习词</div></section>
+<section class="stats"><div class="stat"><b id="total">0</b>标记表达</div><div class="stat"><b id="due">0</b>现在可练</div><div class="stat"><b id="stable">0</b>熟悉以上</div><div class="stat"><b id="today">0</b>今日已复习词</div></section>
 <section class="controls"><div class="controlrow"><details class="study-settings"><summary><span class="setting-name">复习设置</span><span id="settingSummary">原句认义 · 全部套题</span></summary><div class="settings-panel"><div class="selectors"><label>来源<select id="book" aria-label="来源筛选"><option value="">全部套题</option></select></label><label>练习方式<select id="mode" aria-label="练习方式"><option value="context">原句认义</option><option value="cloze">原句填空</option><option value="zh">中文回忆英文</option><option value="extension">拓展语境</option><option value="mix">原句 / 填空混合</option></select></label><label>练习范围<select id="scope" aria-label="练习范围"><option value="due">到期和未学</option><option value="weak">还不熟（0–2级）</option><option value="all">全部表达（额外练习）</option></select></label></div><p id="modeNote" class="sub"></p></div></details><button id="start" class="primary">开始一组</button></div></section>
-<div class="daily-target"><p id="planNote" class="sub" role="status">每日词单尚未生成</p><div class="goal-editor"><label for="dailyGoal">每日目标</label><input id="dailyGoal" type="number" min="1" max="200" value="30" inputmode="numeric"><span>词</span><button id="saveGoal" type="button">保存</button></div></div><div id="notice" class="notice" role="status"></div><div class="progress"><i id="progress" style="width:0"></i></div>
+<div class="daily-target"><p id="planNote" class="sub" role="status">每日词单尚未生成</p><div class="goal-editor"><label for="dailyGoal">每日目标</label><input id="dailyGoal" type="number" min="1" max="200" value="30" inputmode="numeric"><span>词</span><button id="saveGoal" type="button">保存</button></div></div><p id="availability" class="sub" role="status"></p><button id="allToday" type="button" hidden>查看全部今日词</button><div id="notice" class="notice" role="status"></div><div class="progress"><i id="progress" style="width:0"></i></div>
 <section id="studyCard" class="card" aria-live="polite"><div id="meta" class="tag">每组最多 10 个表达</div><div id="prompt" class="prompt">从熟悉的句子，<br>找回那个词。</div><div id="phonetic" class="phonetic" aria-live="polite"></div><div id="sentence" class="sentence"></div><p id="instruction" class="sub">点“开始一组”，先回忆，再揭晓。原句、文中义与拓展用法都会保留。</p><textarea id="guess" aria-label="你的回忆" placeholder="写下你的回忆，也可以先在心里回答……" disabled></textarea><div id="answer" class="answer hidden"></div></section>
 <section id="sessionReview" class="card session-review hidden" aria-label="本组回顾" aria-live="polite"></section>
 <div class="help-area"><details class="reference"><summary>最近的组次回顾</summary><p class="sub">保留最近10组，联网后跨设备同步；点开组次和表达查看原句与拓展。</p><p id="groupSyncStatus" class="sub" role="status">正在连接组次记录…</p><div id="recentGroupList"></div></details><details class="reference"><summary>建议怎么练？</summary><p>先用原句认义回顾语境，再用原句填空或中文回忆英文练习提取。较熟后练拓展语境；每组最多10个表达，不必一次记住所有义项。</p></details><details class="reference"><summary>熟练度与旧版记录</summary><p>认义、英文提取、拓展迁移独立记录。忘记后每隔3分钟巩固一次，连续独立记起3次，当天完成后进入1、3、7、14、30天复习计划；未完成的词在北京时间零点回到0/3，可立即开始巩固。没想起、模糊或拼错都按“不记得”。间隔是实用规则，非精确遗忘预测。</p><p>旧版综合记录单独保留。拼错或读过解释，都不自动算独立回忆。</p><div id="legacy" class="sub"></div></details><details class="reference" id="libraryReference"><summary>词汇库与复习记录</summary><input id="search" type="search" placeholder="搜索表达、释义或来源"><div class="tablewrap"><table><thead><tr><th>表达 / 来源</th><th>文中义与资料</th><th>认义 / 英文提取 / 拓展迁移</th></tr></thead><tbody id="rows"></tbody></table></div></details></div>
@@ -15,7 +15,7 @@
 <script src="sync-core.js?v=20261108"></script>
 <script src="phonetics.js"></script>
 <script src="study-core.js?v=20261117d"></script>
-<script src="daily-plan.js?v=20261117b"></script>
+<script src="daily-plan.js?v=20261117e"></script>
 <script src="cloud-sync.js?v=20261108"></script>
 <script>
 let WORDS=__DATA__;
@@ -38,15 +38,27 @@ function matching(){return WORDS.filter(w=>!$('book').value||w.book===$('book').
 function modes(){return $('mode').value==='mix'?['context','cloze']:[$('mode').value]}
 function bestRecord(w,now=Date.now()){return modes().map(m=>rec(w,dim(m))).sort((a,b)=>window.ReadingStudy.priority(a,now)-window.ReadingStudy.priority(b,now)||a.due-b.due)[0]}
 function todayWords(){const ids=new Set();for(const w of catalog)for(const d of Object.keys(DIMS))if(rec(w,d).dailyStamp===day())ids.add(w.id);return ids}
-function candidates(){const now=Date.now(),scope=$('scope').value,plan=window.ReadingPlan.current(),ids=new Set(plan?.day===day()?plan.ids:[]),done=todayWords();return matching().flatMap(w=>modes().map(mode=>({w,mode,d:dim(mode)})).filter(t=>{let r=rec(w,t.d);if(scope==='all')return true;if(scope==='weak')return (done.has(w.id)||(done.size<window.ReadingPlan.goal()&&ids.has(w.id)))&&(r.phase==='learning'||r.level<=2)&&r.due<=now;return (done.has(w.id)||(done.size<window.ReadingPlan.goal()&&ids.has(w.id)))&&r.due<=now}))}
+function availability(words=matching(),scope=$('scope').value,now=Date.now(),done=todayWords()){
+ const plan=window.ReadingPlan;
+ const ids=new Set(plan.preview(WORDS,bestRecord,now,[...done]));
+ const eligible=words.flatMap(w=>modes().map(mode=>({w,mode,d:dim(mode)})).filter(task=>{
+  const record=rec(w,task.d);
+  return scope==='all'||(record.due<=now&&(scope!=='weak'||record.phase==='learning'||record.level<=2));
+ }));
+ const tasks=eligible.filter(({w})=>scope==='all'||done.has(w.id)||(done.size<plan.goal()&&ids.has(w.id)));
+ const count=new Set(tasks.map(({w})=>w.id)).size;
+ return {tasks,count,outside:new Set(eligible.map(({w})=>w.id)).size-count};
+}
+function candidates(){return availability().tasks;}
+
 
 function marked(s,target){let at=s.toLowerCase().indexOf(target.toLowerCase());return at<0?esc(s):esc(s.slice(0,at))+'<mark>'+esc(s.slice(at,at+target.length))+'</mark>'+esc(s.slice(at+target.length))}
 function blank(w){let at=w.sentence.toLowerCase().indexOf(w.target.toLowerCase());return w.sentence.slice(0,at)+'[ ________ ]'+w.sentence.slice(at+w.target.length)}
 function details(w){return `<p class="label">当时读到的原句</p><div class="sentence">${marked(w.sentence,w.target)}</div><p>${esc(w.translation)}</p><p class="sub">${esc(w.source)}${w.page?' · PDF第'+w.page+'页':''}</p><p class="label">常见拓展义 / 搭配 · 教师自拟例句</p>${w.extensions.map(e=>`<div class="panel"><p>${esc(e.meaning)}</p><p lang="en">${esc(e.example)}</p><p class="sub">${esc(e.translation)}</p></div>`).join('')}${w.note?'<p class="sub">用法提醒：'+esc(w.note)+'</p>':''}`}
 function rows(){let q=$('search').value.toLowerCase();$('rows').innerHTML=matching().filter(w=>(w.term+w.meaning+w.source).toLowerCase().includes(q)).map(w=>`<tr><td>${esc(w.term)} ${ipa(w)}<div class="tag">${esc(w.source)}</div></td><td>${esc(w.meaning)}<details><summary>回看原句与拓展</summary>${details(w)}</details></td><td>${Object.entries(DIMS).map(([d,n])=>{let r=rec(w,d);return `<div class="dim">${n}：${r.level} ${LEVELS[r.level]}</div><div class="tag">${r.due?new Date(r.due).toLocaleString('zh-CN'):'尚未复习'}</div>`}).join('')}</td></tr>`).join('')}
 function recoveryNote(){
- const now=Date.now(),done=todayWords(),plan=window.ReadingPlan.current();
- const scheduled=new Set(plan?.day===day(now)?plan.ids:[]);
+ const now=Date.now(),done=todayWords();
+ const scheduled=new Set(window.ReadingPlan.preview(WORDS,bestRecord,now,[...done]));
  const dimensions=[...new Set(modes().map(dim))];
  const waiting=matching().map(w=>{
   if($('scope').value!=='all'&&!done.has(w.id)&&!(done.size<window.ReadingPlan.goal()&&scheduled.has(w.id)))return Infinity;
@@ -61,7 +73,11 @@ function recoveryNote(){
  });
  return `${waiting.length} 词待巩固 · 最早 ${time}（北京时间）`;
 }
-function stats(){$('settingSummary').textContent=$('mode').selectedOptions[0].textContent+' · '+($('book').value||'全部套题');let all=matching(),ds=[...new Set(modes().map(dim))];$('total').textContent=all.length;$('due').textContent=all.filter(w=>ds.some(d=>rec(w,d).due<=Date.now())).length;$('stable').textContent=all.filter(w=>ds.every(d=>rec(w,d).phase==='review'&&rec(w,d).level>=4)).length;let done=todayWords().size;$('today').textContent=done;let plan=window.ReadingPlan.current(),goal=window.ReadingPlan.goal();if(!goalEditing)$('dailyGoal').value=goal;let scheduled=plan?.day===day()?plan.ids.length:0;const wait=recoveryNote();$('planNote').textContent=`今日 ${done} / ${goal} 词 · 已选 ${scheduled} 词${wait?' · '+wait:''}`;$('legacy').textContent=`保留旧版记录 ${Object.keys(legacy).length} 条。`;$('modeNote').textContent='到点的巩固词优先，然后是新词和普通到期词；同一优先级内乱序。切换“全部表达”可额外练习。';if($('libraryReference').open)rows()}
+function stats(){$('settingSummary').textContent=$('mode').selectedOptions[0].textContent+' · '+($('book').value||'全部套题');let all=matching(),ds=[...new Set(modes().map(dim))];$('total').textContent=all.length;const available=availability();$('due').textContent=available.count;
+const filtered=Boolean($('book').value)||$('scope').value==='weak'||$('mode').value!=='context';
+$('allToday').hidden=!filtered||$('scope').value==='all';
+$('availability').textContent=(available.outside?`当前筛选下，今日名额外到期 ${available.outside} 词。`:'')+
+ (!available.count&&filtered&&$('scope').value!=='all'?' 当前筛选下暂无可练词，可查看全部今日词。':'');$('stable').textContent=all.filter(w=>ds.every(d=>rec(w,d).phase==='review'&&rec(w,d).level>=4)).length;let done=todayWords().size;$('today').textContent=done;let plan=window.ReadingPlan.current(),goal=window.ReadingPlan.goal();if(!goalEditing)$('dailyGoal').value=goal;let scheduled=plan?.day===day()?plan.ids.length:0;const wait=recoveryNote();$('planNote').textContent=`今日 ${done} / ${goal} 词 · 已选 ${scheduled} 词${wait?' · '+wait:''}`;$('legacy').textContent=`保留旧版记录 ${Object.keys(legacy).length} 条。`;$('modeNote').textContent='到点的巩固词优先，然后是新词和普通到期词；同一优先级内乱序。切换“全部表达”可额外练习。';if($('libraryReference').open)rows()}
 
 function reviewGroups(results){
  const sections=[{title:'不记得',rates:['again','hard']},{title:'记得',rates:['good']},{title:'跳过',rates:['skip']}];
@@ -82,12 +98,23 @@ function renderSessionReview(){const content=reviewGroups(sessionResults);$('ses
 
 function stopSession(){document.body.classList.remove('is-studying','answer-open');sessionStarted=false;queue=[];index=0;current=null;revealed=false;$('rating').classList.add('hidden');$('answer').classList.add('hidden');$('sentence').textContent='';$('phonetic').textContent='';$('guess').value='';$('guess').disabled=true;$('reveal').disabled=true;$('progress').style.width='0';$('meta').textContent='选择模式后重新开始一组';$('prompt').textContent='把词放回句子里。'}
 function show(){document.body.classList.remove('answer-open');revealed=false;spellingMismatch=false;while(queue[index]&&$('scope').value!=='all'&&todayWords().size>=window.ReadingPlan.goal()&&!todayWords().has(queue[index].w.id))index++;current=queue[index];$('rating').classList.add('hidden');$('answer').classList.add('hidden');$('guess').value='';$('sentence').textContent='';$('progress').style.width=(queue.length?index/queue.length*100:0)+'%';if(!current){document.body.classList.remove('is-studying');$('meta').textContent=`本组完成 · ${sessionResults.length}个表达`;$('prompt').textContent='这一组完成了。';$('phonetic').textContent='';$('instruction').textContent=queue.length?'本组记录已保存，可以在下方回顾。':'当前范围暂无到期词。';if(sessionResults.length)renderSessionReview();$('guess').disabled=true;$('reveal').disabled=true;stats();return}document.body.classList.add('is-studying');let {w,mode,d}=current;$('meta').textContent=`${index+1} / ${queue.length} · ${w.source} · ${DIMS[d]} ${rec(w,d).phase==='learning'?'待巩固 '+rec(w,d).streak+'/3':rec(w,d).level+'级'}`;$('prompt').textContent=mode==='zh'?w.meaning:mode==='cloze'?'补回原句中缺失的表达':w.term;$('phonetic').innerHTML=mode==='zh'||mode==='cloze'?'':ipa(w);$('sentence').innerHTML=mode==='context'?marked(w.sentence,w.target):mode==='cloze'?esc(blank(w)):mode==='extension'?esc(w.extensions[0].example):'';$('instruction').textContent=mode==='context'?'解释高亮表达在这句话中的意思，也可以尝试翻译整句。评分以目标表达为准。':mode==='cloze'?'回忆原句中的准确形式，注意复数、词形和拼写。':mode==='zh'?'回忆你标记过的英文表达，注意拼写。':'这条新例句中，目标词或其词根是什么意思？与原文义是否相同？';$('guess').disabled=false;$('reveal').disabled=false;document.querySelector('[data-rate="good"]').disabled=false;if(window.matchMedia('(max-width:600px)').matches)requestAnimationFrame(()=>$('studyCard').scrollIntoView({behavior:'smooth',block:'start'}))}
-$('start').onclick=async()=>{$('start').disabled=true;try{await window.ReadingPlan.ensure(WORDS,bestRecord,Date.now(),[...todayWords()]);sessionResults=[];$('sessionReview').classList.add('hidden');$('sessionReview').innerHTML='';const now=Date.now(),study=window.ReadingStudy;let tasks=study.shuffle(candidates()).map(task=>({task,rank:study.priority(rec(task.w,task.d),now)})).sort((a,b)=>a.rank-b.rank).map(({task})=>task),seen=new Set();queue=tasks.filter(t=>{if(seen.has(t.w.id))return false;seen.add(t.w.id);return true}).slice(0,10);index=0;sessionStarted=true;say(queue.length?'':'今日暂时没有到期词；可查看最近巩固时间，或选择“全部表达”额外练习。');show()}catch(e){say('词单暂时不可用，请重试。')}finally{$('start').disabled=false;stats()}};
+$('start').onclick=async()=>{$('start').disabled=true;try{await window.ReadingPlan.ensure(WORDS,bestRecord,Date.now(),[...todayWords()]);sessionResults=[];$('sessionReview').classList.add('hidden');$('sessionReview').innerHTML='';const now=Date.now(),study=window.ReadingStudy;let tasks=study.shuffle(candidates()).map(task=>({task,rank:study.priority(rec(task.w,task.d),now)})).sort((a,b)=>a.rank-b.rank).map(({task})=>task),seen=new Set();queue=tasks.filter(t=>{if(seen.has(t.w.id))return false;seen.add(t.w.id);return true}).slice(0,10);index=0;sessionStarted=true;say(queue.length?'':'当前筛选下暂无可练词。');show()}catch(e){say('词单暂时不可用，请重试。')}finally{$('start').disabled=false;stats()}};
 $('dailyGoal').oninput=()=>{goalEditing=true};$('saveGoal').onclick=async()=>{const n=Number($('dailyGoal').value);if(!Number.isInteger(n)||n<1||n>200){say('每日目标请输入1到200之间的整数。');return}$('saveGoal').disabled=true;try{await window.ReadingPlan.setGoal(n,WORDS,bestRecord,Date.now(),[...todayWords()]);goalEditing=false;stats();say(window.ReadingPlan.current()?.pending?'目标已保存在本机，联网后同步。':'每日目标已保存并同步。')}catch(e){say('保存失败，请联网后重试。')}finally{$('saveGoal').disabled=false}};
 
 $('reveal').onclick=()=>{if(!current||revealed)return;revealed=true;document.body.classList.add('answer-open');$('guess').blur();let {w,mode}=current,guess=$('guess').value.trim(),expected=mode==='cloze'?w.target:w.term;spellingMismatch=(mode==='zh'||mode==='cloze')&&guess!==''&&norm(guess)!==norm(expected);$('answer').innerHTML=`<p class="label">本题回忆重点</p><strong>${esc(mode==='extension'?w.extensions[0].meaning:mode==='cloze'?w.target:mode==='zh'?w.term:w.meaning)}</strong>${spellingMismatch?'<p class="hint">你的拼写与目标表达不同，请核对；本次请按“不记得”记录。</p>':''}<details open><summary>原句 · 文中义 · 常见拓展</summary><p><b>${esc(w.term)}</b> ${ipa(w)}：${esc(w.meaning)}</p>${details(w)}</details><p class="sub">只按揭晓前的表现评价。本次仅更新${DIMS[current.d]}；阅读扩展说明不会自动升级其他维度。</p>`;$('answer').classList.remove('hidden');$('rating').classList.remove('hidden');$('reveal').disabled=true;document.querySelector('[data-rate="good"]').disabled=spellingMismatch};
 document.querySelectorAll('[data-rate]').forEach(b=>b.onclick=()=>{if(!current||!revealed)return;let rate=b.dataset.rate;if(rate==='good'&&spellingMismatch)return;let {w,d,mode}=current,now=Date.now(),result=window.ReadingStudy.answer(state[key(w,d)],rate,now,mode,false,$('guess').value);state[key(w,d)]=result.record;sessionResults.push({...current,rate});save();stats();index++;show();say(result.message)});
 
+$('allToday').onclick=()=>{
+ $('book').value='';$('scope').value='due';
+ if(!availability().count){
+  for(const mode of ['mix','extension']){
+   $('mode').value=mode;
+   if(availability().count)break;
+  }
+  if(!availability().count)$('mode').value='context';
+ }
+ stopSession();stats();
+};
 for(let id of ['book','mode','scope'])$(id).onchange=()=>{stopSession();stats()};$('search').oninput=rows;$('libraryReference').ontoggle=()=>{if($('libraryReference').open)rows()};
 function download(obj){let url=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='IELTS-reading-progress-'+day()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
 $('export').onclick=()=>download({version:2,exportedAt:new Date().toISOString(),progress:state,legacyProgress:legacy,words:WORDS});$('import').onclick=()=>$('file').click();

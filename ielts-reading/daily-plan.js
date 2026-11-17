@@ -15,15 +15,26 @@
  }
  function goal(){return valid(cache)?cache.goal:30}
  function fill(old,words,getRecord,limit,now,completed){
-  const done=new Set(completed||[]),active=new Set(words.map(w=>w.id));
+  const done=new Set(completed),active=new Set(words.map(w=>w.id));
   const existing=[...new Set(old||[])].filter(id=>active.has(id)||done.has(id));
-  const room=Math.max(0,limit-new Set([...done,...existing]).size);
-  const extra=room?S.select(words.filter(w=>!done.has(w.id)&&!existing.includes(w.id)),getRecord,room,now):[];
-  return [...existing,...extra].slice(0,200);
+  const finished=existing.filter(id=>done.has(id));
+  const capacity=Math.max(0,limit-done.size);
+  if(!capacity)return finished;
+  const recovery=words.filter(w=>!done.has(w.id)&&S.priority(S.migrate(getRecord(w,now),now),now)===0);
+  const urgent=recovery.length?S.select(recovery,getRecord,capacity,now):[];
+  const selected=[...new Set([...urgent,...existing.filter(id=>!done.has(id))])].slice(0,capacity);
+  const reserved=new Set([...done,...selected]);
+  const room=capacity-selected.length;
+  const extra=room?S.select(words.filter(w=>!reserved.has(w.id)),getRecord,room,now):[];
+  return [...finished,...selected,...extra];
+ }
+ function preview(words,getRecord,now=Date.now(),completed=[]){
+  const today=S.day(now);
+  return fill(cache?.day===today?cache.ids:[],words,getRecord,goal(),now,completed);
  }
  async function ensure(words,getRecord,now=Date.now(),completed=[]){
   if(valid(cache)&&cache.day===S.day(now)){
-   const ids=fill(cache.ids,words,getRecord,cache.goal,now,completed);
+   const ids=preview(words,getRecord,now,completed);
    if(ids.length!==cache.ids.length||ids.some((id,i)=>id!==cache.ids[i]))return write({...cache,ids,updatedAt:now});
    return cache;
   }
@@ -39,5 +50,5 @@
  }
 
  function current(){return cache}
- root.ReadingPlan=Object.freeze({init,ensure,setGoal,current,goal});
+ root.ReadingPlan=Object.freeze({init,ensure,setGoal,current,goal,preview});
 })(window);
