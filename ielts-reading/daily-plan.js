@@ -15,7 +15,8 @@
  }
  function goal(){return valid(cache)?cache.goal:30}
  function fill(old,words,getRecord,limit,now,completed){
-  const done=new Set(completed||[]),existing=[...new Set(old||[])];
+  const done=new Set(completed||[]),active=new Set(words.map(w=>w.id));
+  const existing=[...new Set(old||[])].filter(id=>active.has(id)||done.has(id));
   const room=Math.max(0,limit-new Set([...done,...existing]).size);
   const extra=room?S.select(words.filter(w=>!done.has(w.id)&&!existing.includes(w.id)),getRecord,room,now):[];
   return [...existing,...extra].slice(0,200);
@@ -23,7 +24,7 @@
  async function ensure(words,getRecord,now=Date.now(),completed=[]){
   if(valid(cache)&&cache.day===S.day(now)){
    const ids=fill(cache.ids,words,getRecord,cache.goal,now,completed);
-   if(ids.length>cache.ids.length)return write({...cache,ids,updatedAt:now});
+   if(ids.length!==cache.ids.length||ids.some((id,i)=>id!==cache.ids[i]))return write({...cache,ids,updatedAt:now});
    return cache;
   }
   const proposal={day:S.day(now),goal:goal(),ids:fill([],words,getRecord,goal(),now,completed),updatedAt:now};
@@ -33,7 +34,7 @@
  function setGoal(n,words,getRecord,now=Date.now(),completed=[]){
   n=Math.max(1,Math.min(200,Math.floor(Number(n))||30));
   const today=S.day(now),done=new Set(completed),old=valid(cache)&&cache.day===today?cache.ids:[];
-  const doneSelected=old.filter(id=>done.has(id)),reserved=old.filter(id=>!done.has(id)).slice(0,Math.max(0,n-done.size));
+  const doneSelected=old.filter(id=>done.has(id)),reserved=old.filter(id=>!done.has(id)&&words.some(w=>w.id===id)).slice(0,Math.max(0,n-done.size));
   return write({day:today,goal:n,ids:fill([...doneSelected,...reserved],words,getRecord,n,now,completed),updatedAt:now});
  }
 
