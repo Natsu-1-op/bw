@@ -48,23 +48,31 @@
   r.history=[...r.history,{at:now,rate,level:r.level,mode,hinted:!!hinted}].slice(-30);
   return {record:r,message};
  }
+ // Rank eligible cards before shuffling within each priority.
+ function priority(record,now){
+  if(record.due>now)return 3;
+  if(record.phase==='learning')return 0;
+  return record.reviews===0?1:2;
+ }
  // Deterministic weighted lottery: same word/day has same draw, but varied by day.
  function hash(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)/4294967296}
  function select(words,getRecord,goal,now){
-  goal=Math.max(1,Math.min(200,Math.floor(goal)||30));let buckets={new:[],forgot:[],due:[]};
-  for(const w of words){const r=migrate(getRecord(w),now);const endOfDay=Date.parse(day(now)+'T00:00:00+08:00')+DAY;if(r.reviews&&r.due>=endOfDay)continue;
-   let type=r.phase==='learning'||r.lapses>0?'forgot':r.reviews===0?'new':'due';
+  goal=Math.max(1,Math.min(200,Math.floor(goal)||30));let buckets={recovery:[],new:[],forgot:[],due:[]};
+  for(const w of words){const r=migrate(getRecord(w,now),now);const endOfDay=Date.parse(day(now)+'T00:00:00+08:00')+DAY;if(r.reviews&&r.due>=endOfDay)continue;
+   let type=priority(r,now)===0?'recovery':r.phase==='learning'||r.lapses>0?'forgot':r.reviews===0?'new':'due';
    const overdue=r.due?Math.max(0,(now-r.due)/DAY):0;
-   const weight=(type==='new'?(w.addedAt?5:3):type==='forgot'?4:1)+Math.min(4,overdue/3)+(type==='forgot'?Math.min(3,r.lapses||1):0);
+   const forgotten=type==='forgot'||type==='recovery';
+   const weight=(type==='new'?(w.addedAt?5:3):forgotten?4:1)+Math.min(4,overdue/3)+(forgotten?Math.min(3,r.lapses||1):0);
    const u=Math.max(1e-9,hash(day(now)+'|'+w.id));buckets[type].push({w,rank:-Math.log(u)/weight});
   }
   for(const v of Object.values(buckets))v.sort((a,b)=>a.rank-b.rank);
   // Reserve some space for previously forgotten and regular due words; fill unused slots globally.
   const picked=[],take=(name,n)=>{while(n-->0&&buckets[name].length&&picked.length<goal)picked.push(buckets[name].shift())};
+  take('recovery',goal);
   if(goal>=3){take('forgot',Math.min(buckets.forgot.length,Math.max(1,Math.floor(goal*.2))));take('due',Math.min(buckets.due.length,Math.max(1,Math.floor(goal*.2))))}
   let rest=[...buckets.new,...buckets.forgot,...buckets.due].sort((a,b)=>a.rank-b.rank);picked.push(...rest.slice(0,goal-picked.length));
   return picked.map(x=>x.w.id);
  }
  function shuffle(items,random=Math.random){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
- root.ReadingStudy=Object.freeze({DAY,STEP,day,midnightAfter,base,migrate,answer,select,shuffle});
+ root.ReadingStudy=Object.freeze({DAY,STEP,day,midnightAfter,base,migrate,answer,select,shuffle,priority});
 })(typeof window!=='undefined'?window:globalThis);
