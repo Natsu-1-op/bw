@@ -4,25 +4,42 @@
  const day=at=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(at));
  const midnightAfter=at=>Date.parse(day(at)+'T00:00:00+08:00')+DAY;
  const base=()=>({level:0,due:0,reviews:0,history:[],lastGoodDay:'',dailyStamp:'',dailyCount:0,studyV:1,phase:'review',streak:0,lastFail:0,lastStep:0,lapses:0});
- function migrate(record){
+ function migrate(record,now=Date.now()){
   const r={...base(),...(record||{})};r.history=Array.isArray(r.history)?r.history:[];
-  if(record && record.studyV===1){if(r.phase==='learning'&&r.streak===3&&r.lastFail)r.due=Math.max(midnightAfter(r.lastFail),r.lastStep+STEP);else if(r.phase==='review'&&r.level>0&&r.due)r.due=Date.parse(day(r.due)+'T00:00:00+08:00');return r;}
-  r.studyV=1;r.phase='review';r.streak=0;r.lastFail=0;r.lastStep=0;r.lapses=0;
-  // Only the last known attempt is used. Never infer old same-day repetitions.
-  const last=r.history.at(-1);if(last&&(last.rate==='again'||last.rate==='hard')){r.phase='learning';r.lastFail=last.at;r.lastStep=last.at;r.lapses=1;r.due=Math.max(r.due||0,last.at+STEP)}
+  if(record?.studyV!==1){
+   r.studyV=1;r.phase='review';r.streak=0;r.lastFail=0;r.lastStep=0;r.lapses=0;
+   const last=r.history.at(-1);
+   if(last&&(last.rate==='again'||last.rate==='hard')){
+    r.phase='learning';r.lastFail=last.at;r.lastStep=last.at;r.lapses=1;r.due=Math.max(r.due||0,last.at+STEP);
+   }
+  }
+  const lastPractice=r.lastStep||r.lastFail;
+  if(r.phase==='learning'&&lastPractice&&now>=midnightAfter(lastPractice)){
+   r.level=0;
+   r.streak=0;
+   r.due=midnightAfter(lastPractice);
+  }
   if(r.phase==='review'&&r.level>0&&r.due)r.due=Date.parse(day(r.due)+'T00:00:00+08:00');
   return r;
  }
  function answer(record,rate,now,mode='',hinted=false,answerText=''){
   if(!['good','again'].includes(rate)||!Number.isFinite(now))throw Error('Invalid response');
-  const r=migrate(record),today=day(now),oldDue=r.due||0;let message='';
+  const r=migrate(record,now),today=day(now),oldDue=r.due||0;let message='';
   if(rate==='again'){
    r.level=0;r.phase='learning';r.streak=0;r.lastFail=now;r.lastStep=now;r.lapses=(r.lapses||0)+1;r.due=now+STEP;message='3分钟后开始巩固，连续记得3次。';
   }else if(r.phase==='learning'){
    if(now<oldDue){message='还没到本次巩固时间；这次不计入次数。';}
-   else if(r.streak<3){r.streak++;r.lastStep=now;if(r.streak===3){r.due=Math.max(midnightAfter(r.lastFail),now+STEP);message='三次巩固完成；北京时间次日零点后再检验。'}else{r.due=now+STEP;message=`已完成 ${r.streak}/3 次巩固，3分钟后继续。`}}
-   else if(now<midnightAfter(r.lastFail)){message='还没到次日零点，不计为跨天记住。';}
-   else{r.phase='review';r.streak=0;r.level=1;r.lastGoodDay=today;r.due=midnightAfter(now);message='通过跨天回忆，1天后复习。'}
+   else {
+    r.streak++;
+    r.lastStep=now;
+    if(r.streak>=3){
+     r.phase='review';r.streak=0;r.level=1;r.lastGoodDay=today;r.due=midnightAfter(now);
+     message='今天已完成3次巩固，明天复习。';
+    }else{
+     r.due=now+STEP;
+     message=`已完成 ${r.streak}/3 次巩固，3分钟后继续。`;
+    }
+   }
   }else if(r.reviews===0||oldDue===0||now>=oldDue){
    if(r.lastGoodDay===today&&r.reviews>0){message='今天已完成这一阶段；下次按计划复习。'}
    else{r.level=Math.min(5,r.level+1);r.lastGoodDay=today;r.due=midnightAfter(now)+(INTERVALS[r.level-1]-1)*DAY;message=`已记住，${INTERVALS[r.level-1]}天后复习。`}
@@ -35,7 +52,7 @@
  function hash(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)/4294967296}
  function select(words,getRecord,goal,now){
   goal=Math.max(1,Math.min(200,Math.floor(goal)||30));let buckets={new:[],forgot:[],due:[]};
-  for(const w of words){const r=migrate(getRecord(w));const endOfDay=Date.parse(day(now)+'T00:00:00+08:00')+DAY;if(r.reviews&&r.due>=endOfDay)continue;
+  for(const w of words){const r=migrate(getRecord(w),now);const endOfDay=Date.parse(day(now)+'T00:00:00+08:00')+DAY;if(r.reviews&&r.due>=endOfDay)continue;
    let type=r.phase==='learning'||r.lapses>0?'forgot':r.reviews===0?'new':'due';
    const overdue=r.due?Math.max(0,(now-r.due)/DAY):0;
    const weight=(type==='new'?(w.addedAt?5:3):type==='forgot'?4:1)+Math.min(4,overdue/3)+(type==='forgot'?Math.min(3,r.lapses||1):0);
