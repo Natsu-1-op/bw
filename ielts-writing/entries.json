@@ -12,8 +12,8 @@
   "extensions": [
    {
     "meaning": "换语境用：腾出时间",
-    "example": "Working from home can free up time for exercise.",
-    "translation": "在家工作能腾出时间锻炼。"
+    "example": "Sharing the housework can free up time for exercise.",
+    "translation": "分担家务可以腾出时间锻炼。"
    }
   ],
   "note": "比 save time 更强调“时间被释放出来”。save up 是攒钱物，不接时间。",
@@ -36,7 +36,7 @@
     "translation": "员工能用省下的时间学新技能。"
    }
   ],
-  "note": "承接上句时别只说 the time，补 they save 才扣得住。",
+  "note": "the time they save 能明确接上前面说的“省下来的时间”。上下文已经清楚时，the time 也可以。",
   "page": ""
  },
  {
@@ -76,7 +76,7 @@
     "translation": "明确的目标能让员工更有动力工作。"
    }
   ],
-  "note": "make + 宾语 + 形容词，中间不加 be；become 需换成 help them become。",
+  "note": "make + 宾语 + 形容词。也可以说 help them become more motivated，语气更温和。",
   "page": ""
  },
  {
@@ -177,6 +177,46 @@
    }
   ],
   "note": "class 上课；course 整门课程；subject 科目，三者不混用。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:focus too much on",
+  "book": "写作-WARMUP-001",
+  "term": "focus too much on",
+  "meaning": "过于关注",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "Some students may focus too much on exam scores.",
+  "translation": "有些学生可能过于关注考试分数。",
+  "target": "focus too much on",
+  "extensions": [
+   {
+    "meaning": "换语境用：过于关注",
+    "example": "Some employees focus too much on small details.",
+    "translation": "有些员工过于关注小细节。"
+   }
+  ],
+  "note": "too much 表示过度，放在 focus 和 on 之间。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:this may distract them",
+  "book": "写作-WARMUP-001",
+  "term": "this may distract them",
+  "meaning": "这可能让他们分心",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "Some students often look at their phones in class. This may distract them.",
+  "translation": "有些学生上课时经常看手机。这可能让他们分心。",
+  "target": "This may distract them",
+  "extensions": [
+   {
+    "meaning": "换语境用：这可能让他们分心",
+    "example": "Some employees work in a noisy room. This may distract them.",
+    "translation": "有些员工在吵闹的房间工作。这可能让他们分心。"
+   }
+  ],
+  "note": "This 可以承接前面的行为或情景，them 指受到影响的人。",
   "page": ""
  }
 ]

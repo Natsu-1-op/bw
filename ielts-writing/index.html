@@ -1,1 +1,148 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>雅思写作 · 复习</title><link rel="stylesheet" href="style.css"></head><body><header><div class="wrap brand"><a class="brand-name" href="../"><span class="mark">W</span> IELTS Writing</a><a class="home-link" href="../ielts-reading/">阅读复习</a></div></header><main class="wrap"><section class="intro"><div><div class="eyebrow">WRITING PRACTICE</div><h1>写作<span>复习</span></h1><p class="sub">回忆表达，再用自己的话写出来。</p></div><span id="cloudStatus" class="cloud-state">连接中</span></section><div class="selectors"><label>练习分组<select id="group"><option value="">全部写作</option></select></label><label>题型<select id="mode"><option value="mixed">混合练习</option><option value="recall">中文回忆英文</option><option value="blank">原句填空</option></select></label><label>每次词数<input id="limit" type="number" min="1" max="50" value="10"></label></div><p id="notice" class="notice" aria-live="polite"></p><p><button id="start" class="primary">开始复习</button> <button id="cloudRetry">重新同步</button></p><section id="card" class="card hidden"><div id="tag" class="tag"></div><div id="prompt" class="prompt"></div><textarea id="input" placeholder="先尝试输入英文，再揭晓答案"></textarea><p><button id="reveal" class="primary">查看答案</button></p><div id="answer" class="answer hidden"><strong id="term"></strong><p id="sentence" class="sentence"></p><p id="translation"></p><p id="note" class="sub"></p><div class="actions"><button data-rate="again">忘记了</button> <button data-rate="hard">模糊</button> <button data-rate="good">独立想起</button></div></div></section><section id="finish" class="card hidden"><h2>本次练习完成</h2><p>选一个新观点，写观点、理由和一个具体结果。检查第二句解释了什么，第三句怎样接上。</p><div id="transfer"></div><div id="summary"></div></section><details class="reference"><summary>备份与恢复</summary><button id="export">导出 JSON</button> <label>导入 JSON <input type="file" id="import" accept="application/json"></label></details></main><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="firebase-config.js"></script><script src="sync-core.js"></script><script src="cloud-sync.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="description" content="用手机回忆写作词块，写一句或一段并自行检查。">
+  <title>雅思写作 · 每日复习</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="sync-core.js"></script>
+  <script defer src="study-core.js"></script>
+  <script defer src="data.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="wrap brand">
+    <a class="brand-name" href="./"><span class="mark" aria-hidden="true">写</span>雅思写作</a>
+    <a class="home-link" href="../ielts-reading/">阅读复习</a>
+  </header>
+  <main class="wrap">
+    <section class="intro">
+      <h1>写作复习</h1>
+      <span id="cloudStatus" class="cloud-state" role="status">正在读取进度</span>
+    </section>
+
+    <section class="card" aria-labelledby="review-title">
+      <div class="section-head">
+        <div>
+          <h2 id="review-title">词块复习</h2>
+          <p id="availability" class="sub" role="status">正在读取词库…</p>
+        </div>
+        <button id="start" type="button" class="primary" disabled>开始复习</button>
+      </div>
+      <details id="settings" class="reference">
+        <summary>复习设置</summary>
+        <div class="selectors">
+          <label for="group">练习分组<select id="group"><option value="">全部写作</option></select></label>
+          <label for="mode">题型
+            <select id="mode">
+              <option value="mixed">混合练习</option>
+              <option value="recall">中文回忆英文</option>
+              <option value="blank">原句填空</option>
+            </select>
+          </label>
+          <label for="limit">每组题量
+            <select id="limit">
+              <option value="1">1 张</option>
+              <option value="2">2 张</option>
+              <option value="3" selected>3 张</option>
+              <option value="5">5 张</option>
+              <option value="10">10 张</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <div id="card" class="exercise" hidden>
+        <div class="exercise-head">
+          <p id="tag" class="tag"></p>
+          <button id="end" type="button" class="quiet">结束本轮</button>
+        </div>
+        <h3 id="prompt" class="prompt" tabindex="-1"></h3>
+        <label class="sr-only" for="input">你的词块答案</label>
+        <textarea id="input" rows="2" placeholder="先试着写出英文，也可以在心里作答"></textarea>
+        <div id="question-actions" class="actions">
+          <button id="reveal" type="button" class="primary">查看答案</button>
+          <button id="hint" type="button">提示首字母</button>
+          <button id="skip" type="button" class="quiet">跳过</button>
+        </div>
+        <p id="hint-text" class="sub hint" role="status" hidden></p>
+        <div id="answer" class="answer" hidden>
+          <h3 id="term" class="english" lang="en" tabindex="-1"></h3>
+          <p id="sentence" class="sentence" lang="en"></p>
+          <p id="translation"></p>
+          <p id="note" class="sub"></p>
+          <div class="actions ratings" aria-label="自评">
+            <button type="button" data-rate="again">忘记了</button>
+            <button type="button" data-rate="hard">模糊</button>
+            <button id="good" type="button" data-rate="good" class="primary">独立想起</button>
+          </div>
+          <p id="hint-warning" class="sub" hidden>使用了提示，请选择「模糊」或「忘记了」。</p>
+        </div>
+      </div>
+      <div id="finish" class="exercise" hidden>
+        <h3 id="finish-title" tabindex="-1">本轮回顾</h3>
+        <p id="finish-note" class="sub"></p>
+        <div id="summary"></div>
+        <div class="actions">
+          <button id="practice-recent" type="button" hidden>用本轮词块写一句</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="practice-title">
+      <h2 id="practice-title">自主写作</h2>
+      <details class="reference practice" id="scene">
+        <summary>换个情景写一句</summary>
+        <p id="scene-empty" class="sub">正在读取词库…</p>
+        <div id="scene-content" hidden>
+          <p id="scene-prompt" class="practice-prompt"></p>
+          <label class="sr-only" for="scene-input">我的英文句子</label>
+          <textarea id="scene-input" aria-describedby="scene-prompt" rows="3" maxlength="2000" placeholder="先写一个完整的英文句子"></textarea>
+          <div class="actions">
+            <button id="scene-reveal" type="button" aria-controls="scene-answer" aria-expanded="false">查看参考</button>
+            <button id="scene-next" type="button" class="quiet">换一题</button>
+          </div>
+          <div class="panel" id="scene-answer" hidden>
+            <p id="scene-reference" class="english" lang="en"></p>
+            <p id="scene-note" class="sub"></p>
+            <p class="sub">检查你的句子是否保留了中文意思，词块是否用对。</p>
+          </div>
+        </div>
+      </details>
+      <details class="reference practice" id="paragraph">
+        <summary>每周写一个短段</summary>
+        <p id="paragraph-prompt" class="practice-prompt"></p>
+        <p id="paragraph-instruction" class="sub">用英文写三句：给出一个观点，解释原因，说出一个具体结果。</p>
+        <label class="sr-only" for="paragraph-input">我的英文短段</label>
+        <textarea id="paragraph-input" aria-describedby="paragraph-prompt paragraph-instruction" rows="5" maxlength="3000"></textarea>
+        <div class="actions">
+          <button id="paragraph-reveal" type="button" aria-controls="paragraph-answer" aria-expanded="false">查看自查与示范</button>
+          <button id="paragraph-next" type="button" class="quiet">换一题</button>
+        </div>
+        <div class="panel" id="paragraph-answer" hidden>
+          <ul class="checklist">
+            <li>第二句有没有补充一个具体原因？</li>
+            <li>第三句的结果能不能从前面推出来？</li>
+          </ul>
+          <p id="paragraph-reference" class="english" lang="en"></p>
+          <p id="paragraph-check" class="sub"></p>
+        </div>
+      </details>
+      <p id="draft-status" class="sub" role="status">自练草稿保存在本机。</p>
+    </section>
+
+    <details class="reference backup">
+      <summary>备份与恢复</summary>
+      <p class="sub">备份词库和词块复习进度。使用文件可在其他设备恢复。</p>
+      <div class="actions">
+        <button id="export" type="button">导出备份</button>
+        <button id="import" type="button">导入备份</button>
+        <button id="cloudRetry" type="button">重试同步</button>
+        <input id="backup-file" type="file" accept=".json,application/json" hidden>
+      </div>
+      <p id="notice" class="sub" role="status"></p>
+    </details>
+  </main>
+</body>
+</html>
