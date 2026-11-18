@@ -1,0 +1,182 @@
+[
+ {
+  "id": "写作-WARMUP-001:free up time",
+  "book": "写作-WARMUP-001",
+  "term": "free up time",
+  "meaning": "腾出时间",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "It will free up time if students are not required to attend all classes.",
+  "translation": "如果不要求所有课都上，就能腾出时间。",
+  "target": "free up time",
+  "extensions": [
+   {
+    "meaning": "换语境用：腾出时间",
+    "example": "Working from home can free up time for exercise.",
+    "translation": "在家工作能腾出时间锻炼。"
+   }
+  ],
+  "note": "比 save time 更强调“时间被释放出来”。save up 是攒钱物，不接时间。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:the time they save",
+  "book": "写作-WARMUP-001",
+  "term": "the time they save",
+  "meaning": "他们省下来的时间",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "Students can use the time they save to study the subjects they are interested in.",
+  "translation": "学生可以用省下的时间学自己感兴趣的科目。",
+  "target": "the time they save",
+  "extensions": [
+   {
+    "meaning": "换语境用：他们省下来的时间",
+    "example": "Employees can use the time they save to learn new skills.",
+    "translation": "员工能用省下的时间学新技能。"
+   }
+  ],
+  "note": "承接上句时别只说 the time，补 they save 才扣得住。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:the subjects they are interested in",
+  "book": "写作-WARMUP-001",
+  "term": "the subjects they are interested in",
+  "meaning": "自己感兴趣的科目",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "Students can use the time they save to study the subjects they are interested in.",
+  "translation": "学生可以用省下的时间学自己感兴趣的科目。",
+  "target": "the subjects they are interested in",
+  "extensions": [
+   {
+    "meaning": "换语境用：自己感兴趣的科目",
+    "example": "Many teenagers prefer to study the subjects they are interested in.",
+    "translation": "很多青少年更愿意学自己感兴趣的科目。"
+   }
+  ],
+  "note": "等于 subjects they like；class 是要上的课，科目是 subject。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:make them more motivated to study",
+  "book": "写作-WARMUP-001",
+  "term": "make them more motivated to study",
+  "meaning": "让他们更有动力学习",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "This can make them more motivated to study.",
+  "translation": "这能让他们更有动力去学习。",
+  "target": "make them more motivated to study",
+  "extensions": [
+   {
+    "meaning": "换语境用：让他们更有动力学习",
+    "example": "Clear goals can make employees more motivated to work.",
+    "translation": "明确的目标能让员工更有动力工作。"
+   }
+  ],
+  "note": "make + 宾语 + 形容词，中间不加 be；become 需换成 help them become。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:compulsory attendance",
+  "book": "写作-WARMUP-001",
+  "term": "compulsory attendance",
+  "meaning": "强制出勤",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "For this reason, compulsory attendance of all classes may not be the best approach.",
+  "translation": "因此，强制上所有的课未必是最好的做法。",
+  "target": "compulsory attendance",
+  "extensions": [
+   {
+    "meaning": "换语境用：强制出勤",
+    "example": "Compulsory attendance is common in secondary schools.",
+    "translation": "强制出勤在中学很常见。"
+   }
+  ],
+  "note": "可替换 required to attend；compulsory 是形容词“强制的”。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:may not be the best approach",
+  "book": "写作-WARMUP-001",
+  "term": "may not be the best approach",
+  "meaning": "未必是最好的做法",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "For this reason, compulsory attendance of all classes may not be the best approach.",
+  "translation": "因此，强制上所有的课未必是最好的做法。",
+  "target": "may not be the best approach",
+  "extensions": [
+   {
+    "meaning": "换语境用：未必是最好的做法",
+    "example": "Banning phones in class may not be the best approach.",
+    "translation": "在课堂上禁用手机未必是最好的做法。"
+   }
+  ],
+  "note": "比 is not 委婉；attendance 是制度安排，不是 method，说做法用 approach。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:this, in turn, can",
+  "book": "写作-WARMUP-001",
+  "term": "this, in turn, can",
+  "meaning": "这进而能",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "This, in turn, can make them more motivated to study.",
+  "translation": "这进而能让他们更有动力去学习。",
+  "target": "in turn",
+  "extensions": [
+   {
+    "meaning": "换语境用：这进而能",
+    "example": "Better sleep improves mood, which, in turn, can raise productivity.",
+    "translation": "睡得好能改善情绪，进而提高效率。"
+   }
+  ],
+  "note": "一段用一次就够，比 as a result 更强调先后链条。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:spend more time on",
+  "book": "写作-WARMUP-001",
+  "term": "spend more time on",
+  "meaning": "花更多时间在",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "College students can spend more time on the subjects they like.",
+  "translation": "大学生可以花更多时间学自己喜欢的科目。",
+  "target": "spend more time on",
+  "extensions": [
+   {
+    "meaning": "换语境用：花更多时间在",
+    "example": "Many people spend too much time on social media.",
+    "translation": "很多人花太多时间在社交媒体上。"
+   }
+  ],
+  "note": "另有 spend time doing sth；主语是人，别用 cost。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:required to attend all classes",
+  "book": "写作-WARMUP-001",
+  "term": "required to attend all classes",
+  "meaning": "被要求上所有的课",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "Students are not required to attend all classes.",
+  "translation": "学生不被要求上所有的课。",
+  "target": "required to attend all classes",
+  "extensions": [
+   {
+    "meaning": "换语境用：被要求上所有的课",
+    "example": "All staff are required to attend the training session.",
+    "translation": "所有员工都必须参加这次培训。"
+   }
+  ],
+  "note": "class 上课；course 整门课程；subject 科目，三者不混用。",
+  "page": ""
+ }
+]
