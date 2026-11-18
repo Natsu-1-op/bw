@@ -18,7 +18,7 @@
 [hidden] { display: none !important; }
 html { scroll-padding: 16px; }
 body { margin: 0; min-height: 100vh; }
-button, select, textarea { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button, summary { cursor: pointer; }
 button:disabled { cursor: default; opacity: .5; }
 a { color: var(--primary); }
@@ -102,7 +102,7 @@ button.quiet { border-color: transparent; color: var(--muted); }
 .reference[open] > summary::after { content: "−"; }
 .selectors { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr)); gap: 8px; padding-bottom: 8px; }
 .selectors label { color: var(--muted); font-size: 13px; }
-select, textarea {
+input[type=text], select, textarea {
   color: var(--ink);
   display: block;
   width: 100%;
@@ -112,6 +112,7 @@ select, textarea {
 }
 select { margin-top: 4px; min-height: 44px; padding-inline: 8px; }
 textarea { min-height: 70px; resize: vertical; padding: 10px 12px; }
+input[type=text] { min-height: 44px; padding: 8px; }
 textarea[readonly] { background: #f8fafc; }
 textarea::placeholder { color: var(--muted); font-size: 14px; }
 .exercise { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 12px; }
@@ -132,6 +133,11 @@ mark { color: #1d4ed8; background: var(--accent); border-radius: 3px; font-weigh
 .practice-prompt { color: var(--heading); font-weight: 600; margin-top: 1px; }
 .panel { border-radius: 7px; background: var(--paper); padding: 9px 12px; margin-top: 10px; }
 .checklist { margin: 0; padding-left: 20px; }
+.cues { margin: 4px 0 8px; }
+.cues ul { padding-bottom: 8px; }
+.update-panel { margin: 0 0 12px; }
+.record-text { white-space: pre-wrap; }
+#practice-count { margin-left: auto; }
 #draft-status { margin-bottom: 0; }
 .sr-only {
   position: absolute;

@@ -10,6 +10,8 @@
   <script defer src="sync-core.js"></script>
   <script defer src="study-core.js"></script>
   <script defer src="data.js"></script>
+  <script defer src="practice-prompts.js"></script>
+  <script defer src="practice-records.js"></script>
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -22,6 +24,10 @@
       <h1>写作复习</h1>
       <span id="cloudStatus" class="cloud-state" role="status">正在读取进度</span>
     </section>
+    <div id="update-panel" class="panel update-panel" hidden>
+      <button id="update" type="button">有新版 · 更新并重开</button>
+      <span id="update-status" class="sub" role="status"></span>
+    </div>
 
     <section class="card" aria-labelledby="review-title">
       <div class="section-head">
@@ -102,6 +108,7 @@
           <div class="actions">
             <button id="scene-reveal" type="button" aria-controls="scene-answer" aria-expanded="false">查看参考</button>
             <button id="scene-next" type="button" class="quiet">换一题</button>
+            <button id="scene-save" type="button" class="quiet" disabled>保存这一版</button>
           </div>
           <div class="panel" id="scene-answer" hidden>
             <p id="scene-reference" class="english" lang="en"></p>
@@ -111,30 +118,45 @@
         </div>
       </details>
       <details class="reference practice" id="paragraph">
-        <summary>每周写一个短段</summary>
+        <summary>写短段或正文段</summary>
+        <div class="selectors">
+          <label for="paragraph-mode">练习长度<select id="paragraph-mode"><option value="short">三句短段</option><option value="body">一段正文</option></select></label>
+        </div>
         <p id="paragraph-prompt" class="practice-prompt"></p>
         <p id="paragraph-instruction" class="sub">用英文写三句：给出一个观点，解释原因，说出一个具体结果。</p>
+        <details id="paragraph-cues" class="reference cues">
+          <summary>卡住了？看中文要点</summary>
+          <ul id="paragraph-cue-list" class="checklist"></ul>
+        </details>
         <label class="sr-only" for="paragraph-input">我的英文短段</label>
         <textarea id="paragraph-input" aria-describedby="paragraph-prompt paragraph-instruction" rows="5" maxlength="3000"></textarea>
+        <p id="paragraph-word-count" class="sub"></p>
         <div class="actions">
           <button id="paragraph-reveal" type="button" aria-controls="paragraph-answer" aria-expanded="false">查看自查与示范</button>
           <button id="paragraph-next" type="button" class="quiet">换一题</button>
+          <button id="paragraph-save" type="button" class="quiet" disabled>保存这一版</button>
         </div>
         <div class="panel" id="paragraph-answer" hidden>
           <ul class="checklist">
-            <li>第二句有没有补充一个具体原因？</li>
-            <li>第三句的结果能不能从前面推出来？</li>
+            <li id="reason-check">第二句有没有补充一个具体原因？</li>
+            <li id="result-check">第三句的结果能不能从前面推出来？</li>
           </ul>
           <p id="paragraph-reference" class="english" lang="en"></p>
           <p id="paragraph-check" class="sub"></p>
+          <label for="practice-focus" class="sub">下次留意什么（可选）</label>
+          <input id="practice-focus" type="text" maxlength="160" placeholder="例如：用一个例子说明原因">
         </div>
       </details>
       <p id="draft-status" class="sub" role="status">自练草稿保存在本机。</p>
+      <details class="reference" id="practice-history">
+        <summary>练习记录 <span id="practice-count" class="sub"></span></summary>
+        <div id="practice-list"></div>
+      </details>
     </section>
 
     <details class="reference backup">
       <summary>备份与恢复</summary>
-      <p class="sub">备份词库和词块复习进度。使用文件可在其他设备恢复。</p>
+      <p class="sub">备份包含词块进度、草稿和已保存的写作原文。可在另一台设备导入。</p>
       <div class="actions">
         <button id="export" type="button">导出备份</button>
         <button id="import" type="button">导入备份</button>

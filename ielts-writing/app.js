@@ -4,31 +4,14 @@
   const $ = id => document.getElementById(id);
   const study = window.WritingStudy;
   const data = window.WritingData;
+  const records = window.WritingRecords;
   const ratings = {good: '独立想起', hard: '模糊', again: '忘记了', skip: '跳过'};
   const settingsKey = 'ielts-writing-settings-v1';
   const draftKey = 'ielts-writing-drafts-v1';
   const paragraphKey = 'ielts-writing-paragraph-v1';
-
-  const paragraphs = [
-    {
-      id: 'library',
-      prompt: '你认为社区图书馆应该延长开放时间吗？',
-      example: 'Public libraries should stay open later. Many adults work during the day and cannot get to the library before it closes. With longer opening hours, they could borrow books or study after work.',
-      check: '第二句交代了上班的人为什么赶不上。第三句说清延长开放时间后，他们能做什么。',
-    },
-    {
-      id: 'sports',
-      prompt: '你认为大学应该在周末开放体育馆吗？',
-      example: 'Universities should keep their sports halls open at weekends. Some students have classes or part-time jobs on weekdays and struggle to find time for exercise. Opening the sports halls at weekends would give them more chances to stay active.',
-      check: '第二句解释了工作日为什么难以锻炼。第三句把周末开放和增加锻炼机会连了起来。',
-    },
-    {
-      id: 'fees',
-      prompt: '你认为博物馆应该向学生免收门票吗？',
-      example: 'Museums should offer free admission to students. Students often have limited budgets and may find regular visits too expensive. With free admission, they could visit more often and explore different exhibitions.',
-      check: '第二句交代费用如何影响学生参观。第三句具体说明免票后会有什么变化。',
-    },
-  ];
+  const paragraphModeKey = 'ielts-writing-paragraph-mode-v1';
+  const supportKey = 'ielts-writing-support-v1';
+  const paragraphs = window.WritingPrompts;
 
   function readLocal(key, fallback) {
     try {
@@ -52,10 +35,13 @@
   let catalogReady = false;
   let groupSignature = '';
   let session = null;
+  let workerRegistration;
   let sceneId;
   let paragraphIndex = paragraphs.findIndex(item => item.id === readLocal(paragraphKey, 'library'));
   if (paragraphIndex < 0) paragraphIndex = 0;
   const drafts = Object.assign(Object.create(null), readLocal(draftKey, {}));
+  const supports = Object.assign(Object.create(null), readLocal(supportKey, {}));
+  $('paragraph-mode').value = readLocal(paragraphModeKey, 'short') === 'body' ? 'body' : 'short';
   const settings = readLocal(settingsKey, {});
   let requestedGroup = typeof settings.group === 'string' ? settings.group : '';
 
@@ -96,6 +82,7 @@
       label('availability', due ? '现在可练 ' + due + ' 张 · 共 ' + total + ' 张' : '暂时没有到期词块' + nextTime);
     }
     $('start').disabled = Boolean(session) || due === 0;
+    visible('update-panel', Boolean(workerRegistration?.waiting) && !session);
   }
 
   function formatTime(timestamp) {
@@ -276,21 +263,54 @@
     label('scene-reference', extension.example);
     label('scene-note', chosen.note || '');
     $('scene-input').value = drafts['scene:' + sceneId] || '';
+    $('scene-save').disabled = !$('scene-input').value.trim();
     $('scene-next').disabled = pool.length < 2;
     setReference('scene', false);
   }
 
   function showParagraph() {
     const item = paragraphs[paragraphIndex];
+    const bodyMode = $('paragraph-mode').value === 'body';
     label('paragraph-prompt', item.prompt);
-    label('paragraph-reference', item.example);
+    label('paragraph-instruction', bodyMode
+      ? '写一段正文。提出一个观点，解释为什么，再补一个具体情景或结果。'
+      : '用英文写三句：给出一个观点，解释原因，说出一个具体结果。');
+    label('reason-check', bodyMode ? '解释有没有给出一个具体的原因？' : '第二句有没有补充一个具体原因？');
+    label('result-check', bodyMode ? '例子或结果有没有支持段落的观点？' : '第三句的结果能不能从前面推出来？');
+    label('paragraph-reference', bodyMode ? item.body : item.example);
     label('paragraph-check', item.check);
-    $('paragraph-input').value = drafts['paragraph:' + item.id] || '';
+    $('paragraph-cues').open = false;
+    $('paragraph-cue-list').replaceChildren(...item.cues.map(text => {
+      const li = document.createElement('li');
+      li.textContent = text;
+      return li;
+    }));
+    $('paragraph-input').value = drafts[paragraphDraftId()] || '';
+    $('practice-focus').value = drafts['focus:' + paragraphDraftId()] || '';
+    updateParagraphCount();
     setReference('paragraph', false);
+  }
+
+  function paragraphDraftId() {
+    const kind = $('paragraph-mode').value === 'body' ? 'body' : 'paragraph';
+    return kind + ':' + paragraphs[paragraphIndex].id;
+  }
+
+  function updateParagraphCount() {
+    const text = $('paragraph-input').value;
+    const words = text.match(/[A-Za-z0-9]+(?:[’'-][A-Za-z0-9]+)*/g) || [];
+    label('paragraph-word-count', words.length + ' 词');
+    $('paragraph-save').disabled = !text.trim();
+  }
+
+  function markSupport(draftId, flag) {
+    supports[draftId] = (supports[draftId] || 0) | flag;
+    writeLocal(supportKey, supports);
   }
 
   function setReference(exercise, show) {
     visible(exercise + '-answer', show);
+    if (show) markSupport(exercise === 'scene' ? 'scene:' + sceneId : paragraphDraftId(), 2);
     $(exercise + '-reveal').setAttribute('aria-expanded', String(show));
     const closedLabel = exercise === 'scene' ? '查看参考' : '查看自查与示范';
     label(exercise + '-reveal', show ? '收起参考' : closedLabel);
@@ -303,6 +323,37 @@
     label('draft-status', writeLocal(draftKey, drafts)
       ? '自练草稿保存在本机。'
       : '浏览器暂时无法保存草稿，请先复制你写的内容。');
+  }
+
+  function savePractice(kind, draftId, prompt, text, focus = '') {
+    if (!text.trim()) return;
+    const support = ['', '中文要点', '参考示范', '中文要点和参考示范'][supports[draftId]] || '';
+    label('draft-status', records.save({kind, prompt, text, focus, support})
+      ? '这一版已保存在练习记录。'
+      : '浏览器暂时无法保存练习，请先复制你写的内容。');
+  }
+
+  function importPractice(writing) {
+    let retained = 0;
+    if (writing?.drafts && typeof writing.drafts === 'object' && !Array.isArray(writing.drafts)) {
+      for (const [key, value] of Object.entries(writing.drafts)) {
+        if (typeof value !== 'string' || !value || value.length > 3000
+          || !/^(focus:)?(scene|paragraph|body):.{1,320}$/u.test(key)) continue;
+        if (!drafts[key]) drafts[key] = value;
+        else if (drafts[key] !== value) retained++;
+      }
+    }
+    if (writing?.supports && typeof writing.supports === 'object' && !Array.isArray(writing.supports)) {
+      for (const [key, flag] of Object.entries(writing.supports)) {
+        if (drafts[key] && Number.isInteger(flag) && flag >= 0 && flag <= 3) supports[key] = (supports[key] || 0) | flag;
+      }
+    }
+    const writingSaved = records.import(writing?.records);
+    const draftsSaved = writeLocal(draftKey, drafts);
+    const supportsSaved = writeLocal(supportKey, supports);
+    showScene(sceneId);
+    showParagraph();
+    return {saved: writingSaved && draftsSaved && supportsSaved, retained};
   }
 
   $('group').onchange = () => {
@@ -323,8 +374,29 @@
 
   $('scene-reveal').onclick = () => setReference('scene', $('scene-answer').hidden);
   $('paragraph-reveal').onclick = () => setReference('paragraph', $('paragraph-answer').hidden);
-  $('scene-input').oninput = () => saveDraft('scene-input', 'scene:' + sceneId);
-  $('paragraph-input').oninput = () => saveDraft('paragraph-input', 'paragraph:' + paragraphs[paragraphIndex].id);
+  $('scene-input').oninput = () => {
+    saveDraft('scene-input', 'scene:' + sceneId);
+    $('scene-save').disabled = !$('scene-input').value.trim();
+  };
+  $('paragraph-input').oninput = () => {
+    saveDraft('paragraph-input', paragraphDraftId());
+    updateParagraphCount();
+  };
+  $('practice-focus').oninput = () => saveDraft('practice-focus', 'focus:' + paragraphDraftId());
+  $('paragraph-cues').ontoggle = () => {
+    if ($('paragraph-cues').open) markSupport(paragraphDraftId(), 1);
+  };
+  $('paragraph-mode').onchange = () => {
+    writeLocal(paragraphModeKey, $('paragraph-mode').value);
+    showParagraph();
+  };
+  $('scene-save').onclick = () => savePractice(
+    'scene', 'scene:' + sceneId, $('scene-prompt').textContent, $('scene-input').value
+  );
+  $('paragraph-save').onclick = () => savePractice(
+    $('paragraph-mode').value === 'body' ? 'body' : 'paragraph',
+    paragraphDraftId(), paragraphs[paragraphIndex].prompt, $('paragraph-input').value, $('practice-focus').value
+  );
   $('scene-next').onclick = () => {
     const pool = scenePool();
     if (pool.length < 2) return;
@@ -340,7 +412,9 @@
   };
 
   $('export').onclick = () => {
-    const payload = JSON.stringify(data.exportBackup(), null, 2);
+    const payload = JSON.stringify({
+      ...data.exportBackup(), writing: {drafts, supports, records: records.export()}
+    }, null, 2);
     const url = URL.createObjectURL(new Blob([payload], {type: 'application/json'}));
     const link = document.createElement('a');
     link.href = url;
@@ -357,8 +431,12 @@
     const file = event.target.files[0];
     if (!file) return;
     try {
-      const saved = await data.importBackup(JSON.parse(await file.text()));
-      label('notice', saved === false ? '已读取备份，但本机保存失败。请保留原文件。' : '已导入备份。');
+      const backup = JSON.parse(await file.text());
+      const saved = await data.importBackup(backup);
+      const writing = importPractice(backup.writing);
+      label('notice', !saved || !writing.saved
+        ? '已读取备份，但部分内容未能保存在本机。请保留原文件。'
+        : writing.retained ? '已导入备份。同题草稿有冲突时保留了本机版本。' : '已导入备份。');
     } catch {
       label('notice', '未能导入，请选择写作复习页导出的 JSON 备份。');
     } finally {
@@ -380,7 +458,35 @@
     }
   };
 
+  async function enableOffline() {
+    const workers = navigator.serviceWorker;
+    if (!workers) return;
+    let reloading = false;
+    try {
+      workerRegistration = await workers.register('./sw.js');
+    } catch {
+      return;
+    }
+    updateOverview();
+    workerRegistration.addEventListener('updatefound', () => {
+      workerRegistration.installing?.addEventListener('statechange', updateOverview);
+    });
+    workers.addEventListener('controllerchange', () => {
+      if (reloading) window.location.reload();
+      else updateOverview();
+    });
+    $('update').onclick = () => {
+      const waiting = workerRegistration.waiting;
+      if (!waiting || session || reloading) return;
+      reloading = true;
+      $('update').disabled = true;
+      label('update-status', '更新中…');
+      waiting.postMessage('ACTIVATE_UPDATE');
+    };
+  }
+
   showParagraph();
+  enableOffline();
   data.init(state => {
     const previousCatalog = catalog;
     catalog = state.catalog;

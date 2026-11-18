@@ -1,11 +1,21 @@
 const CACHE_PREFIX = 'ielts-writing-';
-const CACHE = CACHE_PREFIX + 'offline-v1';
-const ASSETS = ['./', './index.html', './style.css', './app.js', './sync-core.js', './study-core.js', './data.js', './entries.json'];
+const CACHE = CACHE_PREFIX + 'offline-v2';
+const ASSETS = [
+  './', './index.html', './style.css', './app.js', './sync-core.js', './study-core.js',
+  './data.js', './entries.json', './practice-prompts.js', './practice-records.js'
+];
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(
-    ASSETS.map(url => new Request(url, {cache: 'reload'}))
-  )));
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await cache.addAll(ASSETS.map(url => new Request(url, {cache: 'reload'})));
+    // The first offline release has no update button, so migrate it on its next refresh.
+    if (await caches.has(CACHE_PREFIX + 'offline-v1')) await self.skipWaiting();
+  })());
+});
+
+self.addEventListener('message', event => {
+  if (event.data === 'ACTIVATE_UPDATE') event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', event => {

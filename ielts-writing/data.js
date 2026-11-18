@@ -157,7 +157,6 @@
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') schedule();
       });
-      navigator.serviceWorker?.register('./sw.js').catch(() => {});
     },
     saveReview(id, record) {
       progress = sync.merge(progress, {[id]: record});
