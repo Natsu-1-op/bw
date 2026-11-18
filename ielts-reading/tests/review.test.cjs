@@ -18,6 +18,21 @@ for (const mode of ['context', 'extension', 'cloze', 'zh']) {
   el('reveal').onclick();
   assert(el('answer').innerHTML.includes('/ˈkɒnstrʌkt/'), mode);
 }
+c.testWord={...run('WORDS[0]'),term:'intuition',target:'human instinct',sentence:'Experimentation and human instinct lead to new ideas.'};
+task(c.testWord);
+assert.equal(el('prompt').textContent,'intuition');
+assert.match(el('sentence').innerHTML,/词条：.*intuition.*原文高亮：.*<mark>human instinct<\/mark>/);
+assert.match(run('details(testWord)'),/原文高亮：/);
+for(const [mode,answer,incorrect] of [['cloze','human instinct','intuition'],['zh','intuition','human instinct']]){
+  c.testMode=mode;
+  for(const guess of [incorrect,answer]){
+    run('queue=[{w:testWord,mode:testMode,d:dim(testMode)}];index=0;show()');
+    assert(!el('sentence').innerHTML.includes(answer));
+    el('guess').value=guess;
+    el('reveal').onclick();
+    assert.equal(rates[1].disabled,guess===incorrect);
+  }
+}
 const previewAll=c.ReadingPlan.preview;
 c.ReadingPlan.preview=()=>run('WORDS.slice(0,1).map(w=>w.id)');
 run('stats()');
