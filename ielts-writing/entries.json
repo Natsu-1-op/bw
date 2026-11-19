@@ -218,5 +218,45 @@
   ],
   "note": "This 可以承接前面的行为或情景，them 指受到影响的人。",
   "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:meet deadlines",
+  "book": "写作-WARMUP-001",
+  "term": "meet deadlines",
+  "meaning": "按时完成任务",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "In a part-time job, students may have to deal with customers and meet deadlines.",
+  "translation": "做兼职时，学生可能需要和客户打交道，并按时完成任务。",
+  "target": "meet deadlines",
+  "extensions": [
+   {
+    "meaning": "换语境用：按时完成任务",
+    "example": "Working on group projects teaches students how to meet deadlines.",
+    "translation": "做小组项目能教会学生如何按时完成任务。"
+   }
+  ],
+  "note": "meet a deadline 指赶上一次截止时间，meet deadlines 泛指按时完成任务。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:deal with customers",
+  "book": "写作-WARMUP-001",
+  "term": "deal with customers",
+  "meaning": "和客户打交道",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "In a part-time job, students may have to deal with customers and meet deadlines.",
+  "translation": "做兼职时，学生可能需要和客户打交道，并按时完成任务。",
+  "target": "deal with customers",
+  "extensions": [
+   {
+    "meaning": "换语境用：和客户打交道",
+    "example": "Staff learn to deal with customers during their first week at the hotel.",
+    "translation": "员工在酒店上班的第一周学习如何和客户打交道。"
+   }
+  ],
+  "note": "deal with 后面可以接人或问题。这里包括回答顾客问题和处理他们的需求。",
+  "page": ""
  }
 ]
