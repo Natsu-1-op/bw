@@ -97,6 +97,7 @@
     "dissertation": "ˌdɪsəˈteɪʃən",
     "metaphor": "ˈmetəfə",
     "fertility rites": "fəˈtɪləti raɪts",
+    "let off steam": "let ɒf ˈstiːm",
     // C17T1
     "as far back as": "əz fɑː bæk əz",
     "scepticism": "ˈskeptɪsɪzəm",
