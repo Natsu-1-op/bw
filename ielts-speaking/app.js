@@ -1,7 +1,7 @@
 'use strict';
 const el = id => document.getElementById(id);
 const audio = document.querySelector('audio');
-const frame = document.querySelector('iframe');
+const pdfSurface = el('pdf-surface');
 const message = value => { el('msg').textContent = value; };
 const db = new Promise((resolve, reject) => {
   const req = indexedDB.open('ielts-speaking-library', 1);
@@ -10,6 +10,8 @@ const db = new Promise((resolve, reject) => {
   req.onerror = () => reject(req.error);
 });
 let keys = [], trackURL, pdfURL, trackRequest = 0, docRequest = 0;
+let pdfDocument, pdfLoad, pdfRender, pdfPage, renderRequest = 0;
+const pdfStatus = value => { el('pdf-status').textContent = value; };
 let onlineCourses = new Map();
 let activeDay = 0;
 let opening = false;
@@ -127,19 +129,97 @@ async function track() {
   const blob = await read('get',[activeDay,el('tracks').value]);
   if (id === trackRequest) audio.src = trackURL = URL.createObjectURL(blob.slice(0,blob.size,'audio/mpeg'));
 }
+async function renderPDFPage() {
+  const width = pdfSurface.clientWidth;
+  const documentToRender = pdfDocument;
+  if (!width || !documentToRender) return;
+
+  const id = ++renderRequest;
+  const pageNumber = pdfPage;
+  pdfRender?.cancel();
+  try {
+    const page = await documentToRender.getPage(pageNumber);
+    if (id !== renderRequest) return;
+
+    // Size the canvas to the available width, with extra pixels for Retina displays.
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    const naturalWidth = page.getViewport({scale: 1}).width;
+    const viewport = page.getViewport({scale: width * pixelRatio / naturalWidth});
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', '讲义第 ' + pageNumber + ' 页');
+    pdfRender = page.render({canvas, viewport});
+    await pdfRender.promise;
+    if (id !== renderRequest) return;
+    pdfSurface.replaceChildren(canvas);
+    el('pdf-page').textContent = pageNumber + ' / ' + documentToRender.numPages;
+    el('pdf-prev').disabled = pageNumber === 1;
+    el('pdf-next').disabled = pageNumber === documentToRender.numPages;
+    pdfStatus('');
+  } catch {
+    if (id === renderRequest) pdfStatus('这一页暂时无法显示。可以点「打开 PDF」查看原件。');
+  }
+}
+
 async function doc() {
   const id = ++docRequest;
-  frame.removeAttribute('src');
-  frame.hidden = true;
+  ++renderRequest;
+  pdfRender?.cancel();
+  if (pdfLoad) pdfLoad.destroy().catch(() => {});
+  pdfLoad = pdfRender = pdfDocument = null;
+  pdfSurface.replaceChildren();
+  el('pdf-viewer').hidden = true;
   el('open').hidden = true;
   el('open').removeAttribute('href');
   URL.revokeObjectURL(pdfURL);
+  pdfStatus('');
   if (!el('notes').open || !el('docs').value) return;
-  const blob = await read('get',[activeDay,el('docs').value]);
-  if (id !== docRequest) return;
-  frame.src = el('open').href = pdfURL = URL.createObjectURL(blob.slice(0,blob.size,'application/pdf'));
-  frame.hidden = el('open').hidden = false;
+
+  pdfStatus('正在打开讲义…');
+  try {
+    const blob = await read('get', [activeDay, el('docs').value]);
+    if (id !== docRequest) return;
+    el('open').href = pdfURL = URL.createObjectURL(blob.slice(0, blob.size, 'application/pdf'));
+    el('open').hidden = false;
+
+    const pdfjs = await import('./pdfjs/pdf.min.mjs');
+    const data = new Uint8Array(await blob.arrayBuffer());
+    if (id !== docRequest) return;
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL('./pdfjs/pdf.worker.min.mjs', location.href).href;
+    pdfLoad = pdfjs.getDocument({data, isEvalSupported: false, useWasm: false});
+    const loaded = await pdfLoad.promise;
+    if (id !== docRequest) return;
+    pdfDocument = loaded;
+    pdfPage = 1;
+    el('pdf-page').textContent = '';
+    el('pdf-prev').disabled = el('pdf-next').disabled = true;
+    el('pdf-viewer').hidden = false;
+    await renderPDFPage();
+  } catch {
+    if (id === docRequest) pdfStatus('讲义暂时无法在页面内显示。可以点「打开 PDF」查看原件。');
+  }
 }
+
+function turnPDFPage(delta) {
+  const next = pdfPage + delta;
+  if (!pdfDocument || next < 1 || next > pdfDocument.numPages) return;
+  pdfPage = next;
+  el('pdf-prev').disabled = el('pdf-next').disabled = true;
+  renderPDFPage();
+}
+
+el('pdf-prev').onclick = () => turnPDFPage(-1);
+el('pdf-next').onclick = () => turnPDFPage(1);
+let pdfWidth = 0;
+new ResizeObserver(() => {
+  const width = pdfSurface.clientWidth;
+  if (width === pdfWidth) return;
+  pdfWidth = width;
+  renderPDFPage();
+}).observe(pdfSurface);
+
 el('pick').onclick = () => el('files').click();
 el('folder').onclick = () => el('folders').click();
 el('folder').hidden = !('webkitdirectory' in el('folders'));

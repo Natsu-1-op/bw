@@ -40,7 +40,15 @@
             <label for="docs" id="doc-field">讲义版本<select id="docs"></select></label>
             <a class="button" id="open" target="_blank" rel="noopener" hidden>打开 PDF</a>
           </div>
-          <iframe title="课程讲义" hidden></iframe>
+          <div id="pdf-viewer" hidden>
+            <div class="pdf-toolbar" aria-label="讲义翻页">
+              <button id="pdf-prev" type="button">上一页</button>
+              <output id="pdf-page" aria-live="polite"></output>
+              <button id="pdf-next" type="button">下一页</button>
+            </div>
+            <div id="pdf-surface"></div>
+          </div>
+          <p id="pdf-status" class="sub" role="status"></p>
         </details>
       </div>
     </section>

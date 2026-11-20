@@ -1,9 +1,10 @@
 const cachePrefix = 'ielts-speaking-shell-';
-const cacheName = cachePrefix + 'v4';
+const cacheName = cachePrefix + 'v5';
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(cacheName).then(cache =>
-    cache.addAll(['./', './index.html', './style.css', './app.js', './fflate.js'])
+    cache.addAll(['./', './index.html', './style.css', './app.js', './fflate.js',
+      './pdfjs/pdf.min.mjs', './pdfjs/pdf.worker.min.mjs'])
   ).then(() => self.skipWaiting()));
 });
 
