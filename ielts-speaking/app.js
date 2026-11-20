@@ -25,13 +25,23 @@ async function read(method, ...args) {
   });
 }
 async function save(entries) {
+  const files = await Promise.all(entries.map(async ({day, file}) => ({
+    key: [day, file.name],
+    bytes: await file.arrayBuffer()
+  })));
   const database = await db;
   return new Promise((resolve, reject) => {
     const tx = database.transaction('files', 'readwrite');
-    for (const {day, file} of entries) tx.objectStore('files').put(file, [day, file.name]);
+    const store = tx.objectStore('files');
+    for (const {key, bytes} of files) store.put(bytes, key);
     tx.oncomplete = resolve;
     tx.onabort = () => reject(tx.error);
   });
+}
+async function readFile(name, type) {
+  const stored = await read('get', [activeDay, name]);
+  // Courses saved before the viewer update may still contain File objects.
+  return new Blob([stored], {type});
 }
 function options(select, items) {
   select.replaceChildren(...items.map(([value, label]) => new Option(label, value)));
@@ -126,8 +136,8 @@ async function track() {
   audio.load();
   URL.revokeObjectURL(trackURL);
   if (!el('tracks').value) return;
-  const blob = await read('get',[activeDay,el('tracks').value]);
-  if (id === trackRequest) audio.src = trackURL = URL.createObjectURL(blob.slice(0,blob.size,'audio/mpeg'));
+  const blob = await readFile(el('tracks').value, 'audio/mpeg');
+  if (id === trackRequest) audio.src = trackURL = URL.createObjectURL(blob);
 }
 async function renderPDFPage() {
   const width = pdfSurface.clientWidth;
@@ -179,9 +189,9 @@ async function doc() {
 
   pdfStatus('正在打开讲义…');
   try {
-    const blob = await read('get', [activeDay, el('docs').value]);
+    const blob = await readFile(el('docs').value, 'application/pdf');
     if (id !== docRequest) return;
-    el('open').href = pdfURL = URL.createObjectURL(blob.slice(0, blob.size, 'application/pdf'));
+    el('open').href = pdfURL = URL.createObjectURL(blob);
     el('open').hidden = false;
 
     const pdfjs = await import('./pdfjs/pdf.min.mjs');
