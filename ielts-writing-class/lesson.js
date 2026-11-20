@@ -77,11 +77,15 @@ function element(tag, content, className) {
   return node;
 }
 
-function renderRound(round, index, latest) {
+function renderRound(round, index) {
   const item = element('details', '', 'card');
-  item.open = latest;
   item.append(element('summary', index === 0 ? '初稿的批注' : '第 ' + index + ' 次改稿的批注'));
+  item.append(renderOriginal(round), ...renderNotes(round));
+  item.append(element('p', '当时的下一步\n' + round.next, 'review-task'));
+  return item;
+}
 
+function renderOriginal(round) {
   const original = element('p', '', 'english record-text');
   original.lang = 'en';
   const quotes = round.notes
@@ -94,16 +98,17 @@ function renderRound(round, index, latest) {
     offset = start + quote.length;
   }
   original.append(round.draft.slice(offset));
-  item.append(original);
-  for (const note of round.notes) {
+  return original;
+}
+
+function renderNotes(round) {
+  return round.notes.map(note => {
     const annotation = element('div', '', 'annotation');
     const quote = element('blockquote', note.quote);
     quote.lang = 'en';
     annotation.append(quote, element('p', note.comment));
-    item.append(annotation);
-  }
-  item.append(element('p', '当时的下一步\n' + round.next, 'review-task'));
-  return item;
+    return annotation;
+  });
 }
 
 function draftKey() {
@@ -131,11 +136,15 @@ function render() {
   const last = lesson.rounds.at(-1);
   $('task').textContent = last ? last.next : lesson.task;
   $('draft-label').textContent = last ? '我的第 ' + lesson.rounds.length + ' 次改稿' : '我的初稿';
+  $('copy').textContent = last ? '复制改稿发给老师' : '复制初稿发给老师';
   $('draft').value = data.drafts[draftKey()] ?? last?.draft ?? '';
   updateCount();
+  $('review').hidden = !last;
+  $('review-original').open = false;
+  $('active-notes').replaceChildren(...(last ? renderNotes(last) : []));
+  $('active-original').replaceChildren(...(last ? [renderOriginal(last)] : []));
   $('history').hidden = !last;
-  $('rounds').replaceChildren(...lesson.rounds.map((round, i) =>
-    renderRound(round, i, i === lesson.rounds.length - 1)).reverse());
+  $('rounds').replaceChildren(...lesson.rounds.map(renderRound).reverse());
 }
 
 function openLink() {

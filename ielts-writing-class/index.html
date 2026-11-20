@@ -6,8 +6,8 @@
   <meta name="description" content="写初稿、按批注修改，回看每一轮的写作练习。">
   <title>雅思写作 · 练习与批注</title>
   <link rel="stylesheet" href="../ielts-writing/style.css">
-  <link rel="stylesheet" href="lesson.css">
-  <script defer src="lesson.js"></script>
+  <link rel="stylesheet" href="lesson.css?v=2">
+  <script defer src="lesson.js?v=2"></script>
 </head>
 <body>
   <header class="wrap brand">
@@ -40,8 +40,17 @@
       <article class="card assignment">
         <h2 id="title"></h2>
         <p id="prompt" class="english" lang="en"></p>
-        <p id="task"></p>
+        <p id="task" class="review-task"></p>
       </article>
+      <div id="workbench">
+      <aside class="card" id="review" aria-labelledby="review-title" hidden>
+        <h2 id="review-title">本轮批注</h2>
+        <div id="active-notes"></div>
+        <details id="review-original">
+          <summary>对照上一版原文</summary>
+          <div id="active-original"></div>
+        </details>
+      </aside>
       <form class="card" id="editor">
         <label for="draft" id="draft-label"></label>
         <textarea id="draft" rows="8" maxlength="16000" lang="en" spellcheck="false" aria-describedby="count"></textarea>
@@ -50,8 +59,9 @@
           <span id="count" class="sub"></span>
         </div>
       </form>
+      </div>
       <section id="history" hidden aria-labelledby="history-title">
-        <h2 id="history-title">批注与改稿</h2>
+        <h2 id="history-title">历次原稿与批注</h2>
         <div id="rounds"></div>
       </section>
     </section>

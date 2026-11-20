@@ -1,4 +1,4 @@
-.wrap { width: min(100%, 800px); }
+.wrap { width: min(100%, 1040px); }
 h1 { font-size: clamp(1.65rem, 5vw, 2.25rem); }
 h2 { margin-bottom: .5rem; }
 .sub { font-size: .875rem; }
@@ -14,3 +14,15 @@ h2 { margin-bottom: .5rem; }
 .annotation { margin-top: 1rem; padding-left: .85rem; border-left: 3px solid #93c5fd; }
 .annotation blockquote { margin: 0; color: var(--heading); overflow-wrap: anywhere; }
 .annotation p { white-space: pre-wrap; }
+#workbench { display: grid; gap: 12px; }
+#workbench > * { min-width: 0; margin-bottom: 0; }
+#review-original { margin-top: 1rem; }
+#history { margin-top: 1.5rem; }
+#active-notes .annotation { margin-top: .75rem; }
+#review-original summary { color: var(--primary); min-height: 44px; padding-block: 8px; }
+@media (min-width: 760px) {
+  #workbench:has(#review:not([hidden])) {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    align-items: start;
+  }
+}
