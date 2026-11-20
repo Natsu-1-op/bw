@@ -13,9 +13,9 @@
     paragraph: keyPrefix + 'paragraph-v1',
     paragraphMode: keyPrefix + 'paragraph-mode-v1'
   };
-  const tokenKey = keyPrefix + 'cloud-token-v1';
   const baseKey = keyPrefix + 'cloud-base-v1';
-  const endpoint = 'https://api.github.com/repos/Natsu-1-op/ielts-writing-sync';
+  const config = window.WRITING_FIREBASE_CONFIG;
+  const endpoint = config.databaseURL + '/ieltsWriting/snapshot.json';
   const sync = window.WritingSyncCore;
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const plain = value => value && typeof value === 'object' && !Array.isArray(value);
@@ -65,14 +65,14 @@
     return result;
   }
 
-  let token = get(tokenKey) || '';
+  let auth;
+  let user;
   let baseline = get(baseKey) || {};
   let running = false;
   let applying = false;
   let timer;
   const panel = document.getElementById('cloud-panel');
-  const form = panel.querySelector('form');
-  const input = form.querySelector('input');
+  const signIn = panel.querySelector('[data-sign-in]');
   const state = panel.querySelector('output');
   const button = panel.querySelector('[data-sync]');
   const disconnect = panel.querySelector('[data-disconnect]');
@@ -93,55 +93,47 @@
     } finally { applying = false; }
   }
 
-  async function api(path, options = {}) {
+  async function api(account, options = {}) {
+    const idToken = await account.getIdToken();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 18000);
     let response;
     try {
-      response = await fetch(endpoint + path, {
+      response = await fetch(endpoint + '?auth=' + encodeURIComponent(idToken), {
         cache: 'no-store',
         redirect: 'error',
         signal: controller.signal,
-        ...options,
-        headers: {Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', ...options.headers}
+        ...options
       });
     } finally { clearTimeout(timeout); }
-    if (response.status === 409 || (options.method === 'PUT' && response.status === 422)) {
-      return {conflict: true};
+    if ([401, 403].includes(response.status)) {
+      throw new Error('当前 Google 账号无权访问这份雅思写作档案。');
     }
-    if ([401, 403, 404].includes(response.status)) throw new Error('GitHub 无法读写。请检查令牌有效期和仓库 Contents 读写权限。');
-    if (!response.ok) throw new Error('GitHub 暂时无法同步，请稍后重试。');
+    if (!response.ok && response.status !== 412) {
+      throw new Error('Firebase 暂时无法同步，请稍后重试。');
+    }
     return response;
   }
 
-  const decode = value => new TextDecoder().decode(Uint8Array.from(atob(value), character => character.charCodeAt(0)));
-  function encode(value) {
-    const bytes = new TextEncoder().encode(value);
-    let binary = '';
-    for (let i = 0; i < bytes.length; i += 16384) {
-      binary += String.fromCharCode(...bytes.subarray(i, i + 16384));
-    }
-    return btoa(binary);
-  }
-
-  async function exchange() {
+  async function exchange(account) {
     for (let attempt = 0; attempt < 3; attempt++) {
-      const file = await (await api('/contents/writing.json')).json();
-      const json = file.content ? decode(file.content) : await (await api('/git/blobs/' + file.sha, {
-        headers: {Accept: 'application/vnd.github.raw+json'}
-      })).text();
-      const remote = JSON.parse(json);
+      const result = await api(account, {headers: {'X-Firebase-ETag': 'true'}});
+      const value = await result.json();
+      const remote = value === null ? {version: 1, data: {}} : JSON.parse(value);
       if (remote.version !== 1 || !plain(remote.data)) throw new Error('无法读取云端写作档案。');
       const snapshot = readLocal();
       const next = reconcile(baseline, snapshot, remote.data);
       if (!same(remote.data, next)) {
-        const result = await api('/contents/writing.json', {
+        const version = result.headers.get('ETag');
+        if (!version) throw new Error('无法核对云端版本，请稍后重试。');
+        const saved = await api(account, {
           method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({message:'Sync IELTS writing', sha:file.sha, content:encode(JSON.stringify({version:1, data:next}))})
+          headers: {'Content-Type': 'application/json', 'If-Match': version},
+          body: JSON.stringify(JSON.stringify({version: 1, data: next}))
         });
-        if (result.conflict) continue;
+        if (saved.status === 412) continue;
       }
+      if (account !== user) return;
       const incoming = reconcile(snapshot, readLocal(), next);
       apply(incoming);
       baseline = next;
@@ -154,23 +146,22 @@
   }
 
   function controls() {
-    form.hidden = Boolean(token);
-    button.hidden = disconnect.hidden = !token;
+    signIn.hidden = Boolean(user);
+    button.hidden = disconnect.hidden = !user;
     exportCopy.hidden = !Object.keys(baseline.copies || {}).length;
   }
 
   async function run() {
-    if (!token || running) return;
+    if (!user || running) return;
     if (!navigator.onLine) { show('离线 · 写作保存在本机'); return; }
     running = true;
     button.disabled = disconnect.disabled = true;
     show('正在同步写作…');
     try {
-      await exchange();
-      localStorage.setItem(tokenKey, JSON.stringify(token));
+      await exchange(user);
       show('写作已同步 · ' + new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'}));
     } catch (error) {
-      show(error instanceof TypeError ? '网络不可用 · 写作保存在本机' : error.message);
+      show(error instanceof TypeError || error.name === 'AbortError' ? '网络不可用 · 写作保存在本机' : error.message);
       panel.open = true;
     } finally {
       running = false;
@@ -179,29 +170,22 @@
   }
 
   function schedule() {
-    if (!token || applying) return;
+    if (!user || applying) return;
     clearTimeout(timer);
     timer = setTimeout(() => running ? schedule() : run(), 4000);
   }
 
-  form.onsubmit = event => {
-    event.preventDefault();
-    if (!input.value.trim().startsWith('github_pat_')) {
-      show('请输入 GitHub 细粒度访问令牌。');
-      return;
-    }
-    token = input.value.trim();
-    input.value = '';
-    controls();
-    run();
+  signIn.onclick = async () => {
+    if (!auth) { show('登录组件暂不可用，联网刷新后可重试。'); return; }
+    signIn.disabled = true;
+    try {
+      await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    } catch (error) {
+      show(error.code === 'auth/popup-blocked' ? '请允许此站点打开 Google 登录窗口。' : 'Google 登录未完成，可重试。');
+    } finally { signIn.disabled = false; }
   };
   button.onclick = run;
-  disconnect.onclick = () => {
-    token = '';
-    localStorage.removeItem(tokenKey);
-    controls();
-    show('本机模式 · 尚未连接');
-  };
+  disconnect.onclick = () => auth.signOut().catch(() => show('退出未完成，请重试。'));
   exportCopy.onclick = () => {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(new Blob([JSON.stringify(baseline.copies, null, 2)], {type:'application/json'}));
@@ -212,11 +196,6 @@
   window.addEventListener('storage', event => {
     if (Object.values(keys).includes(event.key)) schedule();
     if (event.key === baseKey) baseline = get(baseKey) || {};
-    if (event.key === tokenKey) {
-      token = get(tokenKey) || '';
-      controls();
-      schedule();
-    }
   });
   window.addEventListener('online', run);
   document.addEventListener('visibilitychange', () => {
@@ -224,6 +203,14 @@
   });
   setInterval(() => { if (document.visibilityState === 'visible') run(); }, 60000);
   controls();
-  if (token) run();
   window.WritingCloud = Object.freeze({schedule, run});
+  if (window.firebase?.auth) {
+    auth = firebase.initializeApp(config, 'ielts-writing').auth();
+    auth.onAuthStateChanged(account => {
+      user = account;
+      controls();
+      if (account) run();
+      else show('本机模式 · 可用 Google 登录');
+    });
+  }
 })();

@@ -1,8 +1,12 @@
-// Firebase Web configuration is public; user data is protected by Database Rules.
+// Public web configuration. Realtime Database rules control access.
 window.READING_FIREBASE_CONFIG = Object.freeze({
-  apiKey: 'AIzaSyB6EbZElw7ahDN5rOK-keWlgr9JInVbnN4',
-  authDomain: 'class-optic.firebaseapp.com',
-  projectId: 'class-optic',
-  databaseURL: 'https://class-optic-default-rtdb.asia-southeast1.firebasedatabase.app',
-  appId: '1:859111669333:web:ec5cea5bd22dc0c495dedc'
+  "projectId": "natsu-ielts-study",
+  "appId": "1:1064697277122:web:f67b9575957c0d8821695b",
+  "storageBucket": "natsu-ielts-study.firebasestorage.app",
+  "apiKey": "AIzaSyBqOe_o8W5KJQ5a0gXXAehq9nuN_fBjSgE",
+  "authDomain": "natsu-ielts-study.firebaseapp.com",
+  "messagingSenderId": "1064697277122",
+  "projectNumber": "1064697277122",
+  "version": "2",
+  "databaseURL": "https://natsu-ielts-study-default-rtdb.asia-southeast1.firebasedatabase.app"
 });

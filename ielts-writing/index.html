@@ -8,6 +8,9 @@
   <title>雅思写作 · 每日复习</title>
   <link rel="stylesheet" href="style.css">
   <script defer src="sync-core.js"></script>
+  <script defer src="firebase-config.js"></script>
+  <script defer src="firebase/firebase-app-compat.js"></script>
+  <script defer src="firebase/firebase-auth-compat.js"></script>
   <script defer src="cloud.js"></script>
   <script defer src="study-core.js"></script>
   <script defer src="data.js"></script>
@@ -27,19 +30,11 @@
     </section>
     <details class="reference" id="cloud-panel">
       <summary>云端同步 <output aria-live="polite">本机模式 · 尚未连接</output></summary>
-      <form>
-        <label for="writing-token">私有仓库令牌</label>
-        <div class="actions">
-          <input id="writing-token" type="password" autocomplete="off" spellcheck="false" required>
-          <button class="primary" type="submit">连接同步</button>
-        </div>
-        <p class="sub">仓库只选 <code>ielts-writing-sync</code>，权限用 <code>Contents: Read and write</code>。</p>
-        <p><a href="https://github.com/settings/personal-access-tokens/new?name=IELTS+Writing&amp;target_name=Natsu-1-op&amp;contents=write" target="_blank" rel="noopener">创建令牌</a></p>
-      </form>
       <div class="actions">
+        <button data-sign-in class="primary" type="button">使用 Google 登录</button>
         <button data-sync type="button" hidden>立即同步</button>
         <button data-conflicts type="button" hidden>下载冲突草稿副本</button>
-        <button data-disconnect type="button" hidden>断开此浏览器</button>
+        <button data-disconnect type="button" hidden>退出 Google 登录</button>
       </div>
     </details>
     <div id="update-panel" class="panel update-panel" hidden>

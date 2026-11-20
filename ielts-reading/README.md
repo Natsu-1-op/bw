@@ -2,7 +2,7 @@
 
 GitHub Pages 子页面：`/bw/ielts-reading/`。根目录播放器只增加入口链接，原播放逻辑不变。
 
-原句认义、原句填空、中文回忆英文和拓展语境继续使用三个独立熟练度维度。登录和同步码均不需要；页面自动使用 `class-optic` 项目的 Realtime Database `ieltsReading/v2`。这是用户指定的单人共享进度模式。
+原句认义、原句填空、中文回忆英文和拓展语境继续使用三个独立熟练度维度。登录和同步码均不需要；页面自动使用 `natsu-ielts-study` 项目的 Realtime Database `ieltsReading/v2`。这是用户指定的单人共享进度模式。
 
 词条与原文高亮不同时，原句认义和回顾会分别标明两者。原句填空按原文高亮判分；中文回忆英文按词条判分。
 
@@ -45,7 +45,7 @@ python3 tools/sync_from_memory.py "/path/to/reading memory/reading" --publish
 
 ## Firebase
 
-复用 tutoring-booking 的 `class-optic` 项目。Web配置可公开，未使用服务端凭据。
+复用 tutoring-booking 的 `natsu-ielts-study` 项目。Web配置可公开，未使用服务端凭据。
 
 `firebase/ielts-reading.rules.json` **只是新增节点片段，不是完整数据库规则**。在Firebase控制台将其 `ieltsReading` 字段加入现有 `rules`，保留全部原有节点（包括其他项目新增的节点）。不要用这个文件覆盖整套规则，也不要直接部署 tutoring-booking 尚未提交的本地规则。
 

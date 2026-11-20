@@ -2,7 +2,7 @@
 """Manage the shared IELTS catalog without rebuilding or redeploying the page."""
 import argparse,base64,json,sys,time,urllib.request,urllib.error
 from pathlib import Path
-BASE='https://class-optic-default-rtdb.asia-southeast1.firebasedatabase.app/ieltsReading/catalog/entries'
+BASE='https://natsu-ielts-study-default-rtdb.asia-southeast1.firebasedatabase.app/ieltsReading/catalog/entries'
 def key(id): return base64.urlsafe_b64encode(id.encode()).decode().rstrip('=')
 def request(url, method='GET', data=None):
  req=urllib.request.Request(url, data=None if data is None else json.dumps(data,ensure_ascii=False).encode(), method=method, headers={'Content-Type':'application/json'})
