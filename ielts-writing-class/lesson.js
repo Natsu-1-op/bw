@@ -162,17 +162,32 @@ $('lessons').onchange = event => {
   if (save()) status('');
 };
 $('load').onclick = () => $('file').click();
+function importText(text) {
+  try {
+    if (text.length > limit) throw new Error('这份练习内容太大。');
+    return accept(JSON.parse(text));
+  } catch (error) {
+    status(error instanceof SyntaxError ? '请提供有效的练习 JSON。' : error.message);
+    return false;
+  }
+}
 $('file').onchange = async () => {
   const file = $('file').files[0];
   if (!file) return;
   try {
     if (file.size > limit) throw new Error('这份练习文件太大。');
-    accept(JSON.parse(await file.text()));
+    importText(await file.text());
   } catch (error) {
-    status(error instanceof SyntaxError ? '请选择有效的练习 JSON 文件。' : error.message);
+    status(error.message);
   } finally {
     $('file').value = '';
   }
+};
+$('paste').onsubmit = event => {
+  event.preventDefault();
+  if (!importText($('payload').value)) return;
+  $('payload').value = '';
+  $('paste-panel').open = false;
 };
 $('draft').oninput = () => {
   data.drafts[draftKey()] = $('draft').value;

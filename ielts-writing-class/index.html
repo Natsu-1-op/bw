@@ -26,6 +26,14 @@
         <button id="export" type="button" hidden>导出本课记录</button>
         <input id="file" type="file" accept=".json,application/json" hidden>
       </div>
+      <details class="reference" id="paste-panel">
+        <summary>粘贴聊天里的批注</summary>
+        <form id="paste">
+          <label for="payload">老师发来的 JSON</label>
+          <textarea id="payload" rows="3" spellcheck="false" required></textarea>
+          <div class="actions"><button type="submit">载入批注</button></div>
+        </form>
+      </details>
       <p id="empty">打开老师发来的练习链接，或导入老师给你的文件。</p>
     </section>
     <section id="lesson" hidden aria-labelledby="title">
