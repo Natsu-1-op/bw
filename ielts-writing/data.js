@@ -6,7 +6,7 @@
   const catalogKey = 'ielts-writing-catalog-v1';
   const database = 'https://class-optic-default-rtdb.asia-southeast1.firebasedatabase.app/ieltsWriting';
   const progressPath = 'v2/progress';
-  let bundled = [], catalog = readLocal(catalogKey, []);
+  let bundled = [], catalog = mergeWords(readLocal(catalogKey, []));
   let progress = sync.merge({}, readLocal(progressKey, {}));
   let localSaved = true, observer, running = false, pending = false, timer;
   let status = '正在连接云端';
@@ -38,12 +38,13 @@
     return [...byId.values()];
   }
 
-  function activeCatalog() {
-    return mergeWords(bundled, catalog).filter(word => !word.deletedAt);
+  function mergedCatalog() {
+    // Published cards may have revised prompts. Keep explicit deletions and backup-only cards.
+    return mergeWords(catalog, bundled, catalog.filter(word => word.deletedAt));
   }
 
   function emit() {
-    observer?.({catalog: activeCatalog(), progress, status, localSaved});
+    observer?.({catalog: mergedCatalog().filter(word => !word.deletedAt), progress, status, localSaved});
   }
 
   function saveProgress() {
@@ -171,7 +172,7 @@
       return localSaved;
     },
     exportBackup() {
-      return {version: 1, catalog: mergeWords(bundled, catalog), progress};
+      return {version: 1, catalog: mergedCatalog(), progress};
     },
     importBackup(backup) {
       if (!backup || (backup.version !== undefined && backup.version !== 1)

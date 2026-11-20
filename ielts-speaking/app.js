@@ -99,6 +99,7 @@ function showCourses() {
     ...days.map(day => [day, 'Day ' + day + (localDays.has(day) ? ' · 已保存' : '')])
   ]);
   select.value = activeDay || '';
+  el('refresh-course').hidden = !onlineCourses.has(activeDay) || !hasLocalCourse(activeDay);
   select.disabled = opening || !days.length;
   if (!days.length) courseStatus('在下方课程管理连接 GitHub 或导入课程。');
   else if (!opening) courseStatus('');
@@ -300,14 +301,21 @@ el('days').onchange = async event => {
   }
   if (hasLocalCourse(day)) {
     activeDay = day;
+    showCourses();
     await lesson();
     courseStatus('');
     return;
   }
 
+  await downloadCourse(day);
+};
+
+el('refresh-course').onclick = () => downloadCourse(activeDay);
+
+async function downloadCourse(day) {
+  if (opening || !onlineCourses.has(day)) return;
   opening = true;
-  event.target.disabled = true;
-  el('disconnect').disabled = true;
+  el('days').disabled = el('refresh-course').disabled = el('disconnect').disabled = true;
   audio.pause();
   courseStatus('正在打开 Day ' + day + '…');
   try {
@@ -318,14 +326,13 @@ el('days').onchange = async event => {
     await library(day);
     courseStatus('');
   } catch (error) {
-    event.target.value = activeDay || '';
+    el('days').value = activeDay || '';
     courseStatus(error instanceof TypeError ? '读取课程失败，请检查网络或设备空间后重试。' : error.message);
   } finally {
     opening = false;
-    event.target.disabled = false;
-    el('disconnect').disabled = false;
+    el('days').disabled = el('refresh-course').disabled = el('disconnect').disabled = false;
   }
-};
+}
 
 el('disconnect').onclick = () => {
   accessToken = '';

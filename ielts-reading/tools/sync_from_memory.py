@@ -3,14 +3,21 @@ import argparse,json,re,subprocess,sys
 from pathlib import Path
 parser=argparse.ArgumentParser();parser.add_argument('memory_root',type=Path);parser.add_argument('--publish',action='store_true',help='只将新增词条写入云端，不重建页面或覆盖已有词条');args=parser.parse_args()
 root=Path(__file__).resolve().parents[1];words=[]
-for file in sorted((args.memory_root/'词汇').glob('*.md')):
-    context=json.loads((args.memory_root/'词汇'/'语境'/(file.stem+'.json')).read_text())
+vocabulary = args.memory_root / '词汇'
+if not vocabulary.is_dir():
+    vocabulary = args.memory_root / 'reading' / '词汇'
+if not vocabulary.is_dir():
+    parser.error('找不到词汇目录，请指定 IELTS 私人仓库或其中的 reading 分区。')
+for file in sorted(vocabulary.glob('*.md')):
+    context=json.loads((vocabulary/'语境'/(file.stem+'.json')).read_text())
     for line in file.read_text().splitlines():
         if not line.startswith('|'):continue
         parts=[v.strip() for v in line.strip('|').split('|')]
         if len(parts)<3 or parts[0] in ('表达','词或表达') or re.fullmatch(r'[- :]+',parts[0]):continue
         term=parts[0];entry=context['entries'][term.lower()];sentence=context['sentences'][entry['sentenceId']]
         words.append(dict(id=file.stem+':'+term.lower(),book=file.stem,term=term,meaning=parts[1],source=file.stem+' · '+parts[2],sentence=sentence['english'],translation=sentence['translation'],target=entry['target'],extensions=entry['extensions'],note=entry.get('note',''),page=entry.get('page','')))
+if not words:
+    parser.error('来源中没有可同步的阅读词条。')
 if args.publish:
     import tempfile
     with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',suffix='.json') as f:

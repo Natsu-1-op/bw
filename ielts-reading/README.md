@@ -29,7 +29,7 @@ GitHub Pages 子页面：`/bw/ielts-reading/`。根目录播放器只增加入�
 - Agent 批量更新：先按记忆流程补齐原句和语境，然后运行：
 
 ```sh
-python3 tools/sync_from_memory.py "/path/to/reading memory" --publish
+python3 tools/sync_from_memory.py "/path/to/reading memory/reading" --publish
 ```
 
 这个命令只向数据库添加云端不存在的词条，不重建页面，不覆盖管理页面已修改的词条。单个词条需要有意覆盖时用 `python3 tools/catalog.py upsert word.json`；`python3 tools/catalog.py list` 可导出云端词库。ID 一经使用，修改表达时保持 ID 不变。
