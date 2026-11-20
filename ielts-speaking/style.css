@@ -1,0 +1,131 @@
+:root {
+  color-scheme: light;
+  --paper: #f5f7fb;
+  --white: #fff;
+  --ink: #334155;
+  --heading: #0f172a;
+  --primary: #2563eb;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  color: var(--ink);
+  background: var(--paper);
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; min-height: 100vh; }
+button, input, select { font: inherit; }
+a { color: var(--primary); }
+:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+.wrap { width: min(100%, 760px); margin-inline: auto; padding-inline: 16px; }
+main { padding-bottom: max(30px, env(safe-area-inset-bottom)); }
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 16px 12px;
+  position: relative;
+}
+.brand::after {
+  position: absolute;
+  content: "";
+  inset: auto 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.brand-name {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--heading);
+  text-decoration: none;
+  font-size: 19px;
+  font-weight: 700;
+}
+.mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: var(--primary);
+  color: var(--white);
+}
+nav { display: flex; gap: 16px; }
+nav a { color: var(--muted); text-decoration: none; font-size: 14px; }
+h1 { margin: 18px 0 12px; color: var(--heading); font-size: 25px; line-height: 1.35; }
+.card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 3%);
+}
+.selectors { display: flex; gap: 12px; }
+.selectors label { flex: 1; min-width: 0; }
+label { display: block; color: var(--muted); font-size: 14px; }
+select, input[type=password] {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  color: var(--ink);
+  background: var(--white);
+  font-size: 16px;
+}
+label select { display: block; margin-top: 4px; }
+button, .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  color: var(--ink);
+  background: var(--white);
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+  touch-action: manipulation;
+}
+button:disabled { cursor: default; opacity: .5; }
+button:hover:not(:disabled), .button:hover { border-color: #93c5fd; background: #f8fafc; }
+.primary { border-color: var(--primary); background: var(--primary); color: var(--white); font-weight: 600; }
+.primary:hover:not(:disabled) { border-color: #1d4ed8; background: #1d4ed8; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sub { color: var(--muted); font-size: 14px; margin: 8px 0 0; overflow-wrap: anywhere; }
+.sub:empty { display: none; }
+
+audio { width: 100%; display: block; margin-block: 14px 8px; }
+.check { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; cursor: pointer; }
+.check input { width: 17px; height: 17px; accent-color: var(--primary); }
+.reference { border-top: 1px solid var(--line); margin-top: 12px; }
+.reference > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+.reference > summary::-webkit-details-marker { display: none; }
+.reference > summary::after { content: "+"; color: var(--muted); font-size: 18px; font-weight: 400; }
+.reference[open] > summary::after { content: "−"; }
+.notes-actions { align-items: end; }
+.notes-actions label { flex: 1 1 180px; min-width: 0; }
+iframe { display: block; width: 100%; height: 55vh; margin-top: 12px; border: 1px solid var(--line); border-radius: 7px; }
+.management { border-top: 0; }
+.management > summary { padding-inline: 2px; }
+.management-card label { margin-bottom: 4px; }
+#connect input { flex: 1 1 170px; width: auto; }
+.token-help > summary { color: var(--muted); font-weight: 400; }
+.token-help p { margin: 0 0 8px; overflow-wrap: anywhere; }

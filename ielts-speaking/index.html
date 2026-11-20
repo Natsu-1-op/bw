@@ -1,16 +1,82 @@
 <!doctype html>
-<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#173e41"><title>一天一点 · 口语跟读</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#eff5f4;color:#153b3c;font:16px/1.55 "Source Sans 3",-apple-system,BlinkMacSystemFont,sans-serif}main{max-width:780px;margin:auto;padding:32px 16px 64px}header{padding:24px;background:#173e41;color:white;border-radius:18px}h1{margin:0 0 7px;font-size:clamp(29px,5vw,42px)}p{margin:0 0 12px}section{margin-top:16px;padding:20px;background:white;border-radius:16px}h2{font-size:20px;margin:0 0 14px}.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}button,select,a.btn{font:inherit;border:1px solid #9fb7b5;background:white;padding:9px 14px;border-radius:8px;color:#153b3c;cursor:pointer}button.primary{background:#086764;color:white;border-color:#086764}select{max-width:100%}audio,iframe{width:100%;margin-top:12px}iframe{height:55vh;border:1px solid #c7d6d5}label{display:block;margin:12px 0 6px}#msg{display:block;margin-top:10px;color:#425e60}.btn{text-decoration:none;display:inline-block}input[type=checkbox]{width:18px;height:18px;vertical-align:middle}button:disabled{opacity:.5}[hidden]{display:none!important}input[type=password]{font:inherit;max-width:100%;padding:9px;border:1px solid #9fb7b5;border-radius:8px}#remote-status{display:block;margin-top:8px}#connect p{margin-top:10px}
-</style>
-<main><header><h1>一天一点 · 口语跟读</h1><p>选择一天，听原音，跟读，再合上讲义自己说。</p></header>
-<section><h2>GitHub 课程库</h2>
-<form id="connect"><label for="token">私有课程库的只读令牌</label><div class="row">
-<input id="token" type="password" autocomplete="off" spellcheck="false" required placeholder="github_pat_…">
-<button class="primary">连接课程库</button></div>
-<p><a href="https://github.com/settings/personal-access-tokens/new?name=IELTS+Speaking&amp;target_name=Natsu-1-op&amp;contents=read" target="_blank" rel="noopener">创建 GitHub 令牌</a>。在 Only select repositories 下选 ielts-speaking-materials，权限保留 Contents: Read-only。令牌只保留在当前标签页。</p></form>
-<form id="remote" class="row" hidden><label for="remote-days">在线课程</label><select id="remote-days"></select><button class="primary" id="remote-open">打开课程</button><button type="button" id="disconnect">断开连接</button></form>
-<output id="remote-status" role="status"></output></section>
-<section><h2>本机课程</h2><p>手机从“文件”选择 Day 课程包，也可多选 MP3 和 PDF。电脑可直接选择一天或整套文件夹。导入后保存在当前浏览器。</p><div class="row"><button class="primary" id="pick">导入课程包或文件</button><button id="folder">导入文件夹</button></div><input hidden id="files" type="file" multiple accept=".zip,.mp3,.pdf"><input hidden id="folders" type="file" multiple webkitdirectory><output id="msg" role="status"></output></section>
-<section id="lesson" hidden><h2>跟读</h2><label for="days">课程</label><select id="days"></select><label for="tracks">音轨</label><select id="tracks"></select><audio controls preload="metadata"></audio><div class="row"><button id="back">回退 5 秒</button><label><input id="loop" type="checkbox"> 整轨循环</label></div>
-<details id="notes"><summary>查看讲义</summary><label for="docs">讲义版本</label><select id="docs"></select> <a class="btn" id="open" target="_blank" rel="noopener">单独打开 PDF</a><iframe title="课程讲义"></iframe></details></section></main><script src="fflate.js"></script><script src="app.js"></script></html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>雅思口语 · 一天一点</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="fflate.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="wrap brand">
+    <a class="brand-name" href="./"><span class="mark" aria-hidden="true">说</span>雅思口语</a>
+    <nav aria-label="雅思练习"><a href="../ielts-reading/">阅读</a><a href="../ielts-writing/">写作</a></nav>
+  </header>
+  <main class="wrap">
+    <h1>一天一点</h1>
+    <section class="card" aria-label="口语跟读">
+      <div class="selectors">
+        <label for="days">课程
+          <select id="days" disabled><option>正在读取课程…</option></select>
+        </label>
+        <label for="tracks" id="track-field" hidden>音轨
+          <select id="tracks"></select>
+        </label>
+      </div>
+      <p id="course-status" class="sub" role="status"></p>
+      <div id="lesson" hidden>
+        <div id="playback">
+          <audio controls preload="metadata" aria-label="课程音频"></audio>
+          <div class="row playback-actions">
+            <button id="back" type="button">回退 5 秒</button>
+            <label class="check"><input id="loop" type="checkbox"> 循环播放</label>
+          </div>
+        </div>
+        <details id="notes" class="reference">
+          <summary>查看讲义</summary>
+          <div class="row notes-actions">
+            <label for="docs" id="doc-field">讲义版本<select id="docs"></select></label>
+            <a class="button" id="open" target="_blank" rel="noopener" hidden>打开 PDF</a>
+          </div>
+          <iframe title="课程讲义" hidden></iframe>
+        </details>
+      </div>
+    </section>
+    <details id="management" class="reference management">
+      <summary>课程管理</summary>
+      <div class="card management-card">
+        <form id="connect">
+          <label for="token">GitHub 只读令牌</label>
+          <div class="row">
+            <input id="token" type="password" autocomplete="off" spellcheck="false" required>
+            <button class="primary">连接课程库</button>
+          </div>
+          <p class="sub">令牌保留在当前标签页。打开过的课程可以离线练习。</p>
+          <details class="reference token-help">
+            <summary>如何创建令牌</summary>
+            <p class="sub">仅选 <code>ielts-speaking-materials</code> 仓库，权限设为 <code>Contents: Read-only</code>。</p>
+            <p><a href="https://github.com/settings/personal-access-tokens/new?name=IELTS+Speaking&amp;target_name=Natsu-1-op&amp;contents=read" target="_blank" rel="noopener">创建 GitHub 令牌</a></p>
+          </details>
+        </form>
+        <div class="row" id="connected" hidden>
+          <span>已连接 GitHub</span>
+          <button type="button" id="disconnect">断开连接</button>
+        </div>
+        <p id="remote-status" class="sub" role="status"></p>
+        <details class="reference">
+          <summary>从本机导入</summary>
+          <div class="row">
+            <button id="pick" type="button">选择 ZIP、MP3 或 PDF</button>
+            <button id="folder" type="button">选择文件夹</button>
+          </div>
+          <input hidden id="files" type="file" multiple accept=".zip,.mp3,.pdf">
+          <input hidden id="folders" type="file" multiple webkitdirectory>
+          <p id="msg" class="sub" role="status"></p>
+        </details>
+      </div>
+    </details>
+  </main>
+</body>
+</html>

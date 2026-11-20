@@ -10,6 +10,10 @@ const db = new Promise((resolve, reject) => {
   req.onerror = () => reject(req.error);
 });
 let keys = [], trackURL, pdfURL, trackRequest = 0, docRequest = 0;
+let onlineCourses = new Map();
+let activeDay = 0;
+let opening = false;
+const courseStatus = value => { el('course-status').textContent = value; };
 async function read(method, ...args) {
   const database = await db;
   return new Promise((resolve, reject) => {
@@ -70,26 +74,47 @@ async function importFiles(input) {
     await library(first);
   }
 }
+function hasLocalCourse(day) {
+  return keys.some(key => key[0] === day);
+}
+
+function showCourses() {
+  const localDays = new Set(keys.map(key => key[0]));
+  const days = [...new Set([...localDays, ...onlineCourses.keys()])].sort((a, b) => a - b);
+  const select = el('days');
+  options(select, [
+    ['', days.length ? '选择课程' : '暂无课程'],
+    ...days.map(day => [day, 'Day ' + day + (localDays.has(day) ? ' · 已保存' : '')])
+  ]);
+  select.value = activeDay || '';
+  select.disabled = opening || !days.length;
+  if (!days.length) courseStatus('在下方课程管理连接 GitHub 或导入课程。');
+  else if (!opening) courseStatus('');
+}
+
 async function library(day) {
   keys = await read('getAllKeys');
-  const days = [...new Set(keys.map(k => k[0]))];
-  options(el('days'), days.map(n => [n,'Day ' + n]));
-  if (!days.length) return;
   const recent = Number(day || localStorage.getItem('speaking-day'));
-  if (days.includes(recent)) el('days').value = recent;
-  el('lesson').hidden = false;
-  await lesson();
+  activeDay = hasLocalCourse(recent) ? recent : keys[0]?.[0] || 0;
+  showCourses();
+  if (activeDay) await lesson();
 }
+
 async function lesson() {
-  const day = Number(el('days').value);
-  localStorage.setItem('speaking-day', day);
-  const names = keys.filter(k => k[0] === day).map(k => k[1]);
-  const tracks = names.filter(n => /\.mp3$/i.test(n));
-  options(el('tracks'), tracks.map(n => [n,n.replace(/^day\s*\d+\s*/i,'').replace(/[（）()]/g,'').replace(/\.mp3$/i,'')]));
-  const normal = tracks.find(n => n.includes('常速跟读'));
+  localStorage.setItem('speaking-day', activeDay);
+  const names = keys.filter(key => key[0] === activeDay).map(key => key[1]);
+  const tracks = names.filter(name => /\.mp3$/i.test(name));
+  options(el('tracks'), tracks.map(name => [name, name.replace(/^day\s*\d+\s*/i, '').replace(/[（）()]/g, '').replace(/\.mp3$/i, '')]));
+  const normal = tracks.find(name => name.includes('常速跟读'));
   if (normal) el('tracks').value = normal;
-  options(el('docs'), names.filter(n => /\.pdf$/i.test(n)).map(n => [n,n.replace(/\.pdf$/i,'')]));
-  el('notes').hidden = !el('docs').length;
+  el('track-field').hidden = !tracks.length;
+  el('playback').hidden = !tracks.length;
+
+  const documents = names.filter(name => /\.pdf$/i.test(name));
+  options(el('docs'), documents.map(name => [name, name.includes('打印版') ? '打印版' : '讲义']));
+  el('notes').hidden = !documents.length;
+  el('doc-field').hidden = documents.length < 2;
+  el('lesson').hidden = false;
   await Promise.all([track(), doc()]);
 }
 async function track() {
@@ -99,30 +124,32 @@ async function track() {
   audio.load();
   URL.revokeObjectURL(trackURL);
   if (!el('tracks').value) return;
-  const blob = await read('get',[Number(el('days').value),el('tracks').value]);
+  const blob = await read('get',[activeDay,el('tracks').value]);
   if (id === trackRequest) audio.src = trackURL = URL.createObjectURL(blob.slice(0,blob.size,'audio/mpeg'));
 }
 async function doc() {
   const id = ++docRequest;
   frame.removeAttribute('src');
+  frame.hidden = true;
+  el('open').hidden = true;
   el('open').removeAttribute('href');
   URL.revokeObjectURL(pdfURL);
   if (!el('notes').open || !el('docs').value) return;
-  const blob = await read('get',[Number(el('days').value),el('docs').value]);
+  const blob = await read('get',[activeDay,el('docs').value]);
   if (id !== docRequest) return;
   frame.src = el('open').href = pdfURL = URL.createObjectURL(blob.slice(0,blob.size,'application/pdf'));
+  frame.hidden = el('open').hidden = false;
 }
 el('pick').onclick = () => el('files').click();
 el('folder').onclick = () => el('folders').click();
 el('folder').hidden = !('webkitdirectory' in el('folders'));
 for (const input of [el('files'),el('folders')]) input.onchange = () => importFiles(input);
-el('days').onchange = lesson;
 el('tracks').onchange = track;
 el('docs').onchange = doc;
 el('notes').ontoggle = doc;
 el('back').onclick = () => { if (audio.readyState) audio.currentTime = Math.max(0,audio.currentTime-5); };
 el('loop').onchange = () => audio.loop = el('loop').checked;
-library().catch(() => message('无法读取设备存储，请用普通浏览器窗口打开。'));
+library().catch(() => courseStatus('无法读取设备存储，请用普通浏览器窗口打开。'));
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 
 const repositoryAPI = 'https://api.github.com/repos/Natsu-1-op/ielts-speaking-materials';
@@ -154,54 +181,70 @@ el('connect').onsubmit = async event => {
     return;
   }
   remoteStatus('正在读取课程目录…');
+  if (!activeDay) courseStatus('正在读取 GitHub 课程…');
   try {
     const response = await github('/contents/packs', token);
     const files = await response.json();
     const courses = files.filter(file => /^Day\d+\.zip$/.test(file.name) && /^[a-f0-9]{40}$/.test(file.sha));
     if (!courses.length) throw new Error('仓库里没有找到课程。');
-    options(el('remote-days'), courses.map(file => [file.sha, file.name.replace(/^Day(\d+)\.zip$/, 'Day $1')]));
+    onlineCourses = new Map(courses.map(file => [Number(file.name.match(/\d+/)[0]), file.sha]));
     accessToken = token;
     sessionStorage.setItem(sessionKey, token);
     el('token').value = '';
     el('connect').hidden = true;
-    el('remote').hidden = false;
-    remoteStatus('已连接。选一课即可播放，打开过的课可离线复习。');
+    el('connected').hidden = false;
+    el('management').open = false;
+    remoteStatus('');
+    showCourses();
   } catch (error) {
     remoteStatus(error instanceof TypeError ? '连接失败，请检查网络后重试。' : error.message);
+    if (!activeDay) courseStatus('请在课程管理检查 GitHub 连接。');
   } finally { button.disabled = false; }
 };
 
-el('remote').onsubmit = async event => {
-  event.preventDefault();
-  const button = el('remote-open');
-  const selection = el('remote-days').selectedOptions[0];
-  const label = selection.textContent;
-  const day = Number(label.split(' ')[1]);
-  button.disabled = true;
+el('days').onchange = async event => {
+  const day = Number(event.target.value);
+  if (!day) {
+    event.target.value = activeDay || '';
+    return;
+  }
+  if (hasLocalCourse(day)) {
+    activeDay = day;
+    await lesson();
+    courseStatus('');
+    return;
+  }
+
+  opening = true;
+  event.target.disabled = true;
   el('disconnect').disabled = true;
-  remoteStatus('正在打开 ' + label + '…');
+  audio.pause();
+  courseStatus('正在打开 Day ' + day + '…');
   try {
-    const response = await github('/git/blobs/' + selection.value, accessToken, 'application/vnd.github.raw+json');
-    const entries = unpackCourse(new Uint8Array(await response.arrayBuffer()), label + '.zip');
+    const response = await github('/git/blobs/' + onlineCourses.get(day), accessToken, 'application/vnd.github.raw+json');
+    const entries = unpackCourse(new Uint8Array(await response.arrayBuffer()), 'Day ' + day + '.zip');
     if (!entries.length) throw new Error('课程包没有可用的音频或讲义。');
     await save(entries);
     await library(day);
-    remoteStatus(label + ' 已打开，并已保存在本机课程。');
-    el('lesson').scrollIntoView();
+    courseStatus('');
   } catch (error) {
-    remoteStatus(error instanceof TypeError ? '读取课程失败，请检查网络或设备空间后重试。' : error.message);
+    event.target.value = activeDay || '';
+    courseStatus(error instanceof TypeError ? '读取课程失败，请检查网络或设备空间后重试。' : error.message);
   } finally {
-    button.disabled = false;
+    opening = false;
+    event.target.disabled = false;
     el('disconnect').disabled = false;
   }
 };
 
 el('disconnect').onclick = () => {
   accessToken = '';
+  onlineCourses.clear();
   sessionStorage.removeItem(sessionKey);
-  el('remote').hidden = true;
+  el('connected').hidden = true;
   el('connect').hidden = false;
-  remoteStatus('已断开 GitHub 连接。');
+  remoteStatus('');
+  showCourses();
 };
 
 const savedToken = sessionStorage.getItem(sessionKey);
