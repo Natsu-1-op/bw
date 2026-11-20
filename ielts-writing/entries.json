@@ -23,7 +23,7 @@
   "id": "写作-WARMUP-001:the time they save",
   "book": "写作-WARMUP-001",
   "term": "the time they save",
-  "meaning": "他们省下来的时间",
+  "meaning": "他们省下来的那段时间（接前一句的省时措施）",
   "phonetic": "",
   "source": "写作-WARMUP-001 · 写作词块",
   "sentence": "Students can use the time they save to study the subjects they are interested in.",
@@ -31,7 +31,7 @@
   "target": "the time they save",
   "extensions": [
    {
-    "meaning": "换语境用：他们省下来的时间",
+    "meaning": "换语境用：他们省下来的那段时间（接前一句的省时措施）",
     "example": "Employees can use the time they save to learn new skills.",
     "translation": "员工能用省下的时间学新技能。"
    }
@@ -76,7 +76,7 @@
     "translation": "明确的目标能让员工更有动力工作。"
    }
   ],
-  "note": "make + 宾语 + 形容词。也可以说 help them become more motivated，语气更温和。",
+  "note": "用 make + 人 + more motivated to do。换到工作情景，可把 to study 换成 to work。想强调变化，也可用 help them become more motivated。",
   "page": ""
  },
  {
@@ -86,8 +86,8 @@
   "meaning": "强制出勤",
   "phonetic": "",
   "source": "写作-WARMUP-001 · 写作词块",
-  "sentence": "For this reason, compulsory attendance of all classes may not be the best approach.",
-  "translation": "因此，强制上所有的课未必是最好的做法。",
+  "sentence": "Compulsory attendance at every lecture may not be the best approach.",
+  "translation": "强制学生参加每一场讲座未必是最好的做法。",
   "target": "compulsory attendance",
   "extensions": [
    {
@@ -96,7 +96,7 @@
     "translation": "强制出勤在中学很常见。"
    }
   ],
-  "note": "可替换 required to attend；compulsory 是形容词“强制的”。",
+  "note": "讨论政策时用 compulsory attendance。要补具体活动时，可用 attendance at + 活动。写某人必须出席，可用 be required to attend。",
   "page": ""
  },
  {
@@ -106,8 +106,8 @@
   "meaning": "未必是最好的做法",
   "phonetic": "",
   "source": "写作-WARMUP-001 · 写作词块",
-  "sentence": "For this reason, compulsory attendance of all classes may not be the best approach.",
-  "translation": "因此，强制上所有的课未必是最好的做法。",
+  "sentence": "Compulsory attendance at every lecture may not be the best approach.",
+  "translation": "强制学生参加每一场讲座未必是最好的做法。",
   "target": "may not be the best approach",
   "extensions": [
    {
@@ -123,7 +123,7 @@
   "id": "写作-WARMUP-001:this, in turn, can",
   "book": "写作-WARMUP-001",
   "term": "this, in turn, can",
-  "meaning": "这进而能",
+  "meaning": "前一步产生结果，这个结果进而能带来下一步变化（以“这”开头）",
   "phonetic": "",
   "source": "写作-WARMUP-001 · 写作词块",
   "sentence": "This, in turn, can make them more motivated to study.",
@@ -131,19 +131,19 @@
   "target": "in turn",
   "extensions": [
    {
-    "meaning": "换语境用：这进而能",
+    "meaning": "换语境用：前一步产生结果，这个结果进而能带来下一步变化（以“这”开头）",
     "example": "Better sleep improves mood, which, in turn, can raise productivity.",
     "translation": "睡得好能改善情绪，进而提高效率。"
    }
   ],
-  "note": "一段用一次就够，比 as a result 更强调先后链条。",
+  "note": "This 要指向前一句已经说清的变化。先说措施带来什么，再用 in turn 接这项变化产生的后续结果。",
   "page": ""
  },
  {
   "id": "写作-WARMUP-001:spend more time on",
   "book": "写作-WARMUP-001",
   "term": "spend more time on",
-  "meaning": "花更多时间在",
+  "meaning": "花更多时间在某件事上（后接名词）",
   "phonetic": "",
   "source": "写作-WARMUP-001 · 写作词块",
   "sentence": "College students can spend more time on the subjects they like.",
@@ -151,12 +151,12 @@
   "target": "spend more time on",
   "extensions": [
    {
-    "meaning": "换语境用：花更多时间在",
-    "example": "Many people spend too much time on social media.",
-    "translation": "很多人花太多时间在社交媒体上。"
+    "meaning": "换语境用：花更多时间在某件事上（后接名词）",
+    "example": "Flexible schedules allow parents to spend more time on childcare.",
+    "translation": "灵活的时间安排让父母能花更多时间照顾孩子。"
    }
   ],
-  "note": "另有 spend time doing sth；主语是人，别用 cost。",
+  "note": "主语是人，用 spend。名词前用 on。要说具体动作，用 spend more time doing sth。",
   "page": ""
  },
  {
@@ -166,8 +166,8 @@
   "meaning": "被要求上所有的课",
   "phonetic": "",
   "source": "写作-WARMUP-001 · 写作词块",
-  "sentence": "Students are not required to attend all classes.",
-  "translation": "学生不被要求上所有的课。",
+  "sentence": "In some universities, students are required to attend all classes.",
+  "translation": "有些大学要求学生上所有的课。",
   "target": "required to attend all classes",
   "extensions": [
    {
@@ -176,7 +176,7 @@
     "translation": "所有员工都必须参加这次培训。"
    }
   ],
-  "note": "class 上课；course 整门课程；subject 科目，三者不混用。",
+  "note": "写完整句时补上 be。require 表示要求，request 表示请求。class 可指一节课，course 指整门课程，subject 指学科。",
   "page": ""
  },
  {
@@ -203,7 +203,7 @@
   "id": "写作-WARMUP-001:this may distract them",
   "book": "写作-WARMUP-001",
   "term": "this may distract them",
-  "meaning": "这可能让他们分心",
+  "meaning": "前一句提到的行为可能让那群人分心（以“这”开头）",
   "phonetic": "",
   "source": "写作-WARMUP-001 · 写作词块",
   "sentence": "Some students often look at their phones in class. This may distract them.",
@@ -211,7 +211,7 @@
   "target": "This may distract them",
   "extensions": [
    {
-    "meaning": "换语境用：这可能让他们分心",
+    "meaning": "换语境用：前一句提到的行为可能让那群人分心（以“这”开头）",
     "example": "Some employees work in a noisy room. This may distract them.",
     "translation": "有些员工在吵闹的房间工作。这可能让他们分心。"
    }
@@ -223,7 +223,7 @@
   "id": "写作-WARMUP-001:meet deadlines",
   "book": "写作-WARMUP-001",
   "term": "meet deadlines",
-  "meaning": "按时完成任务",
+  "meaning": "赶上规定的截止时间（泛指按时交稿或交付）",
   "phonetic": "",
   "source": "写作-WARMUP-001 · 写作词块",
   "sentence": "In a part-time job, students may have to deal with customers and meet deadlines.",
@@ -231,19 +231,19 @@
   "target": "meet deadlines",
   "extensions": [
    {
-    "meaning": "换语境用：按时完成任务",
+    "meaning": "换语境用：赶上规定的截止时间（泛指按时交稿或交付）",
     "example": "Working on group projects teaches students how to meet deadlines.",
     "translation": "做小组项目能教会学生如何按时完成任务。"
    }
   ],
-  "note": "meet a deadline 指赶上一次截止时间，meet deadlines 泛指按时完成任务。",
+  "note": "meet a deadline 指赶上某次截止时间。finish their tasks on time 强调任务按时完成。on schedule 强调按原定进度。",
   "page": ""
  },
  {
   "id": "写作-WARMUP-001:deal with customers",
   "book": "写作-WARMUP-001",
   "term": "deal with customers",
-  "meaning": "和客户打交道",
+  "meaning": "在工作中和顾客打交道（包括回答问题、处理需求）",
   "phonetic": "",
   "source": "写作-WARMUP-001 · 写作词块",
   "sentence": "In a part-time job, students may have to deal with customers and meet deadlines.",
@@ -251,12 +251,12 @@
   "target": "deal with customers",
   "extensions": [
    {
-    "meaning": "换语境用：和客户打交道",
+    "meaning": "换语境用：在工作中和顾客打交道（包括回答问题、处理需求）",
     "example": "Staff learn to deal with customers during their first week at the hotel.",
     "translation": "员工在酒店上班的第一周学习如何和客户打交道。"
    }
   ],
-  "note": "deal with 后面可以接人或问题。这里包括回答顾客问题和处理他们的需求。",
+  "note": "陈述工作职责可用 deal with customers。引出具体场景可用 encounter an upset customer，接着写 stay calm and respond politely。",
   "page": ""
  },
  {
@@ -300,6 +300,26 @@
   "page": ""
  },
  {
+  "id": "写作-WARMUP-001:does not necessarily mean",
+  "book": "写作-WARMUP-001",
+  "term": "does not necessarily mean",
+  "meaning": "不一定意味着……（后接一个完整的判断，主语为单数）",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "Attendance does not necessarily mean that students learn more.",
+  "translation": "出勤不一定意味着学生能学到更多。",
+  "target": "does not necessarily mean",
+  "extensions": [
+   {
+    "meaning": "换语境用：不一定意味着……（后接一个完整的判断，主语为单数）",
+    "example": "A higher salary does not necessarily mean that a job is more satisfying.",
+    "translation": "薪水更高不一定意味着工作更令人满意。"
+   }
+  ],
+  "note": "用来说明前一件事发生了，也不能据此确定后一件事。后面接 that + 主语 + 谓语。复数主语用 do not necessarily mean。",
+  "page": ""
+ },
+ {
   "id": "写作-internship-01:meet employers’ requirements",
   "book": "写作-internship-01",
   "term": "meet employers’ requirements",
@@ -316,14 +336,14 @@
     "translation": "培训可以帮助求职者满足雇主的要求。"
    }
   ],
-  "note": "requirement for 后接要求的内容，如 requirements for relevant work experience。",
+  "note": "meet employers’ requirements for relevant work experience 表示达到雇主对相关工作经验的要求。把申请人写成主语更清楚，如 Internships can help applicants meet these requirements。",
   "page": ""
  },
  {
   "id": "写作-internship-01:adapt to the workplace",
   "book": "写作-internship-01",
   "term": "adapt to the workplace",
-  "meaning": "适应工作环境",
+  "meaning": "进入新工作后适应职场环境",
   "phonetic": "",
   "source": "写作-internship-01 · 写作词块",
   "sentence": "By developing these practical skills, interns can adapt more quickly to the workplace.",
@@ -331,12 +351,12 @@
   "target": "adapt more quickly to the workplace",
   "extensions": [
    {
-    "meaning": "换语境用：适应工作环境",
+    "meaning": "换语境用：进入新工作后适应职场环境",
     "example": "New employees may need time to adapt to the workplace.",
     "translation": "新员工可能需要时间适应工作环境。"
    }
   ],
-  "note": "adapt to 表示适应；more quickly 可以放在 adapt 和 to 之间。",
+  "note": "adapt more quickly to the workplace 表示更快适应职场。写清怎样做到时，可在前面用 By + 动词-ing，动作由主句主语完成。也可以补结果 spend less time learning tasks from scratch（少花时间从头学）。",
   "page": ""
  }
 ]
