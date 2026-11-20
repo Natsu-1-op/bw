@@ -275,11 +275,12 @@
     label('paragraph-instruction', bodyMode
       ? '写一段正文。提出一个观点，解释为什么，再补一个具体情景或结果。'
       : '用英文写三句：给出一个观点，解释原因，说出一个具体结果。');
-    label('reason-check', bodyMode ? '解释有没有给出一个具体的原因？' : '第二句有没有补充一个具体原因？');
-    label('result-check', bodyMode ? '例子或结果有没有支持段落的观点？' : '第三句的结果能不能从前面推出来？');
+    label('reason-check', bodyMode ? '哪一个具体动作或变化能证明开头的理由？' : '第二句解释了第一句里的哪个想法？');
+    label('result-check', bodyMode ? '从这个细节到结论，中间还需要解释哪一步？' : '最后的结果是怎么从原因推出来的？');
     label('paragraph-reference', bodyMode ? item.body : item.example);
     label('paragraph-check', item.check);
     $('paragraph-cues').open = false;
+    $('paragraph-self-check').open = false;
     $('paragraph-cue-list').replaceChildren(...item.cues.map(text => {
       const li = document.createElement('li');
       li.textContent = text;
@@ -312,8 +313,7 @@
     visible(exercise + '-answer', show);
     if (show) markSupport(exercise === 'scene' ? 'scene:' + sceneId : paragraphDraftId(), 2);
     $(exercise + '-reveal').setAttribute('aria-expanded', String(show));
-    const closedLabel = exercise === 'scene' ? '查看参考' : '查看自查与示范';
-    label(exercise + '-reveal', show ? '收起参考' : closedLabel);
+    label(exercise + '-reveal', show ? '收起参考' : '查看参考');
   }
 
   function saveDraft(input, draftId) {

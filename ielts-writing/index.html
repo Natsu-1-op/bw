@@ -131,20 +131,24 @@
         <label class="sr-only" for="paragraph-input">我的英文短段</label>
         <textarea id="paragraph-input" aria-describedby="paragraph-prompt paragraph-instruction" rows="5" maxlength="3000"></textarea>
         <p id="paragraph-word-count" class="sub"></p>
+        <details class="reference cues" id="paragraph-self-check">
+          <summary>先自己检查这一段</summary>
+          <ul class="checklist">
+            <li id="reason-check">第二句解释了第一句里的哪个想法？</li>
+            <li id="result-check">最后的结果是怎么从原因推出来的？</li>
+            <li>读一遍改过的句子：意思和原来一样吗？代词指的是谁或哪件事？</li>
+          </ul>
+          <label for="practice-focus" class="sub">下次留意什么（可选）</label>
+          <input id="practice-focus" type="text" maxlength="160" placeholder="例如：用一个具体动作说明原因">
+        </details>
         <div class="actions">
-          <button id="paragraph-reveal" type="button" aria-controls="paragraph-answer" aria-expanded="false">查看自查与示范</button>
+          <button id="paragraph-reveal" type="button" aria-controls="paragraph-answer" aria-expanded="false">查看参考</button>
           <button id="paragraph-next" type="button" class="quiet">换一题</button>
           <button id="paragraph-save" type="button" class="quiet" disabled>保存这一版</button>
         </div>
         <div class="panel" id="paragraph-answer" hidden>
-          <ul class="checklist">
-            <li id="reason-check">第二句有没有补充一个具体原因？</li>
-            <li id="result-check">第三句的结果能不能从前面推出来？</li>
-          </ul>
           <p id="paragraph-reference" class="english" lang="en"></p>
           <p id="paragraph-check" class="sub"></p>
-          <label for="practice-focus" class="sub">下次留意什么（可选）</label>
-          <input id="practice-focus" type="text" maxlength="160" placeholder="例如：用一个例子说明原因">
         </div>
       </details>
       <p id="draft-status" class="sub" role="status">自练草稿保存在本机。</p>

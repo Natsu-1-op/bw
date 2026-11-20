@@ -258,5 +258,45 @@
   ],
   "note": "deal with 后面可以接人或问题。这里包括回答顾客问题和处理他们的需求。",
   "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:gain work experience",
+  "book": "写作-WARMUP-001",
+  "term": "gain work experience",
+  "meaning": "获得工作经验",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "By taking part-time jobs, students can gain work experience.",
+  "translation": "通过做兼职，学生可以获得工作经验。",
+  "target": "gain work experience",
+  "extensions": [
+   {
+    "meaning": "换语境用：获得工作经验",
+    "example": "By volunteering, young people can gain work experience.",
+    "translation": "通过做志愿者，年轻人可以获得工作经验。"
+   }
+  ],
+  "note": "这里的 experience 表示累积的经验，通常不可数。讲一段具体经历时，可以说 a valuable experience。",
+  "page": ""
+ },
+ {
+  "id": "写作-WARMUP-001:manage their time effectively",
+  "book": "写作-WARMUP-001",
+  "term": "manage their time effectively",
+  "meaning": "合理安排时间",
+  "phonetic": "",
+  "source": "写作-WARMUP-001 · 写作词块",
+  "sentence": "University students often need to manage their time effectively to meet deadlines for their dissertations.",
+  "translation": "大学生经常需要合理安排时间，以赶在截止日期前完成论文。",
+  "target": "manage their time effectively",
+  "extensions": [
+   {
+    "meaning": "换语境用：合理安排时间",
+    "example": "Remote workers need to manage their time effectively to stay productive.",
+    "translation": "远程工作者需要合理安排时间以保持高效。"
+   }
+  ],
+  "note": "不用 arrange time reasonably（中式搭配）。也可用 manage time well。",
+  "page": ""
  }
 ]
