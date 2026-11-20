@@ -298,5 +298,45 @@
   ],
   "note": "不用 arrange time reasonably（中式搭配）。也可用 manage time well。",
   "page": ""
+ },
+ {
+  "id": "写作-internship-01:meet employers’ requirements",
+  "book": "写作-internship-01",
+  "term": "meet employers’ requirements",
+  "meaning": "满足雇主的要求",
+  "phonetic": "",
+  "source": "写作-internship-01 · 写作词块",
+  "sentence": "Learning new skills can help employees meet employers’ requirements.",
+  "translation": "学习新技能可以帮助员工满足雇主的要求。",
+  "target": "meet employers’ requirements",
+  "extensions": [
+   {
+    "meaning": "换语境用：满足雇主的要求",
+    "example": "Training can help job seekers meet employers’ requirements.",
+    "translation": "培训可以帮助求职者满足雇主的要求。"
+   }
+  ],
+  "note": "requirement for 后接要求的内容，如 requirements for relevant work experience。",
+  "page": ""
+ },
+ {
+  "id": "写作-internship-01:adapt to the workplace",
+  "book": "写作-internship-01",
+  "term": "adapt to the workplace",
+  "meaning": "适应工作环境",
+  "phonetic": "",
+  "source": "写作-internship-01 · 写作词块",
+  "sentence": "By developing these practical skills, interns can adapt more quickly to the workplace.",
+  "translation": "通过培养这些实践技能，实习生可以更快适应工作环境。",
+  "target": "adapt more quickly to the workplace",
+  "extensions": [
+   {
+    "meaning": "换语境用：适应工作环境",
+    "example": "New employees may need time to adapt to the workplace.",
+    "translation": "新员工可能需要时间适应工作环境。"
+   }
+  ],
+  "note": "adapt to 表示适应；more quickly 可以放在 adapt 和 to 之间。",
+  "page": ""
  }
 ]
