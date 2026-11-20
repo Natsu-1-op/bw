@@ -7,6 +7,7 @@
   const records = window.WritingRecords;
   const ratings = {good: '独立想起', hard: '模糊', again: '忘记了', skip: '跳过'};
   const settingsKey = 'ielts-writing-settings-v1';
+  const lastRoundKey = 'ielts-writing-last-round-v1';
   const draftKey = 'ielts-writing-drafts-v1';
   const paragraphKey = 'ielts-writing-paragraph-v1';
   const paragraphModeKey = 'ielts-writing-paragraph-mode-v1';
@@ -45,7 +46,6 @@
   const settings = readLocal(settingsKey, {});
   let requestedGroup = typeof settings.group === 'string' ? settings.group : '';
 
-  if (['recall', 'blank', 'mixed'].includes(settings.mode)) $('mode').value = settings.mode;
   if ([1, 2, 3, 5, 10].includes(Number(settings.limit))) $('limit').value = String(settings.limit);
 
   const group = () => $('group').value;
@@ -93,7 +93,7 @@
 
   function saveSettings() {
     requestedGroup = group();
-    writeLocal(settingsKey, {group: requestedGroup, mode: $('mode').value, limit: Number($('limit').value)});
+    writeLocal(settingsKey, {group: requestedGroup, limit: Number($('limit').value)});
   }
 
   function markTarget(target, word) {
@@ -114,15 +114,11 @@
       finishSession();
       return;
     }
-    const mode = session.mode === 'mixed' ? (session.index % 2 === 0 ? 'recall' : 'blank') : session.mode;
-    const gap = mode === 'blank' ? study.gap(word) : '';
-    session.activeMode = gap && gap !== word.sentence ? 'blank' : 'recall';
     session.hinted = false;
     session.revealed = false;
-    const type = session.activeMode === 'blank' ? '原句填空' : '中文回忆英文';
-    label('tag', (session.index + 1) + ' / ' + session.words.length + ' · ' + type);
-    label('prompt', session.activeMode === 'blank' ? gap : word.meaning);
-    $('prompt').lang = session.activeMode === 'blank' ? 'en' : 'zh-Hans';
+    label('tag', (session.index + 1) + ' / ' + session.words.length);
+    label('prompt', word.meaning);
+    $('prompt').lang = 'zh-Hans';
     $('input').value = '';
     $('input').readOnly = false;
     $('good').disabled = false;
@@ -136,14 +132,18 @@
 
   function startSession() {
     if (session) return;
-    const words = available(group(), Number($('limit').value));
+    const selectedGroup = group();
+    const previous = readLocal(lastRoundKey, {});
+    const words = study.round(available(selectedGroup), progress, Number($('limit').value),
+      previous.group === selectedGroup ? previous.ids : []);
     if (!words.length) {
       updateOverview();
       return;
     }
-    session = {words, mode: $('mode').value, index: 0, results: []};
+    writeLocal(lastRoundKey, {group: selectedGroup, ids: words.map(word => word.id)});
+    session = {words, index: 0, results: []};
     $('settings').open = false;
-    for (const id of ['group', 'mode', 'limit']) $(id).disabled = true;
+    for (const id of ['group', 'limit']) $(id).disabled = true;
     visible('finish', false);
     updateOverview();
     showCard();
@@ -155,7 +155,7 @@
     session.revealed = true;
     $('input').readOnly = true;
     visible('question-actions', false);
-    label('term', session.activeMode === 'blank' ? word.target : word.term);
+    label('term', word.term);
     markTarget($('sentence'), word);
     label('translation', word.translation || '');
     label('note', word.note || '');
@@ -167,7 +167,7 @@
   function showHint() {
     if (!session || session.revealed || session.hinted) return;
     const word = session.words[session.index];
-    const answer = session.activeMode === 'blank' ? word.target : word.term;
+    const answer = word.term;
     session.hinted = true;
     $('good').disabled = true;
     $('hint').disabled = true;
@@ -181,7 +181,7 @@
     const word = session.words[session.index];
     let next = null;
     if (rate !== 'skip') {
-      next = study.rate(progress[word.id], rate, Date.now(), session.activeMode);
+      next = study.rate(progress[word.id], rate);
       data.saveReview(word.id, next);
     }
     session.results.push({word, rate, due: next?.due});
@@ -215,7 +215,7 @@
   function finishSession() {
     const results = session.results;
     session = null;
-    for (const id of ['group', 'mode', 'limit']) $(id).disabled = false;
+    for (const id of ['group', 'limit']) $(id).disabled = false;
     visible('card', false);
     updateOverview();
 
@@ -361,7 +361,6 @@
     updateOverview();
     showScene();
   };
-  $('mode').onchange = saveSettings;
   $('limit').onchange = saveSettings;
   $('start').onclick = startSession;
   $('end').onclick = finishSession;

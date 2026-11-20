@@ -1,5 +1,5 @@
 const cachePrefix = 'ielts-speaking-shell-';
-const cacheName = cachePrefix + 'v3';
+const cacheName = cachePrefix + 'v4';
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(cacheName).then(cache =>

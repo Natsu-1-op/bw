@@ -42,11 +42,28 @@
     };
   }
 
-  function gap({sentence, target}) {
-    if (!target) return sentence;
-    const start = sentence.toLowerCase().indexOf(target.toLowerCase());
-    return start < 0 ? sentence : sentence.slice(0, start) + '______' + sentence.slice(start + target.length);
+  function shuffle(words) {
+    const shuffled = [...words];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }
 
-  root.WritingStudy = Object.freeze({select, rate, gap});
+  function round(eligible, progress, limit, previous = []) {
+    const priority = word => progress[word.id]?.history.at(-1)?.rate === 'again' ? 0 : progress[word.id] ? 2 : 1;
+    const pool = shuffle(eligible).sort((a, b) => priority(a) - priority(b));
+    const words = shuffle(pool.slice(0, limit));
+    if (!Array.isArray(previous) || words.length !== previous.length
+      || !words.every((word, index) => word.id === previous[index])) return words;
+    if (words.length > 1) words.push(words.shift());
+    else if (words.length === 1) {
+      const alternative = pool.find(word => word.id !== words[0].id && priority(word) === priority(words[0]));
+      if (alternative) return [alternative];
+    }
+    return words;
+  }
+
+  root.WritingStudy = Object.freeze({select, rate, round});
 })(typeof window === 'undefined' ? globalThis : window);
