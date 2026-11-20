@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="写初稿、按批注修改，回看每一轮的写作练习。">
+  <title>雅思写作 · 练习与批注</title>
+  <link rel="stylesheet" href="../ielts-writing/style.css">
+  <link rel="stylesheet" href="lesson.css">
+  <script defer src="lesson.js"></script>
+</head>
+<body>
+  <header class="wrap brand">
+    <a class="brand-name" href="./"><span class="mark" aria-hidden="true">写</span>雅思写作</a>
+    <a href="../ielts-writing/">词卡与自练</a>
+  </header>
+  <main class="wrap">
+    <div class="intro"><h1>练习与批注</h1></div>
+    <p id="status" role="status" class="sub"></p>
+    <section class="card" aria-label="选课与导入">
+      <label for="lessons" id="lesson-select" hidden>打开练习
+        <select id="lessons"></select>
+      </label>
+      <div class="actions">
+        <button id="load" type="button">导入题目或批注</button>
+        <button id="export" type="button" hidden>导出本课记录</button>
+        <input id="file" type="file" accept=".json,application/json" hidden>
+      </div>
+      <p id="empty">打开老师发来的练习链接，或导入老师给你的文件。</p>
+    </section>
+    <section id="lesson" hidden aria-labelledby="title">
+      <article class="card assignment">
+        <h2 id="title"></h2>
+        <p id="prompt" class="english" lang="en"></p>
+        <p id="task"></p>
+      </article>
+      <form class="card" id="editor">
+        <label for="draft" id="draft-label"></label>
+        <textarea id="draft" rows="8" maxlength="16000" lang="en" spellcheck="false" aria-describedby="count"></textarea>
+        <div class="actions">
+          <button class="primary" id="copy" type="submit" disabled>复制草稿发给老师</button>
+          <span id="count" class="sub"></span>
+        </div>
+      </form>
+      <section id="history" hidden aria-labelledby="history-title">
+        <h2 id="history-title">批注与改稿</h2>
+        <div id="rounds"></div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
