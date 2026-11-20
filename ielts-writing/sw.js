@@ -1,7 +1,7 @@
 const CACHE_PREFIX = 'ielts-writing-';
-const CACHE = CACHE_PREFIX + 'offline-v8';
+const CACHE = CACHE_PREFIX + 'offline-v9';
 const ASSETS = [
-  './', './index.html', './style.css', './app.js', './sync-core.js', './study-core.js',
+  './', './index.html', './style.css', './app.js', './sync-core.js', './cloud.js', './study-core.js',
   './data.js', './entries.json', './practice-prompts.js', './practice-records.js'
 ];
 

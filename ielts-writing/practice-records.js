@@ -57,6 +57,7 @@
   function store(next) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      window.WritingCloud.schedule();
     } catch {
       return false;
     }

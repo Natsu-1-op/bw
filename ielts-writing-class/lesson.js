@@ -10,6 +10,7 @@ const status = message => { $('status').textContent = message; };
 function save() {
   try {
     localStorage.setItem(key, JSON.stringify(data));
+    window.WritingCloud.schedule();
     return true;
   } catch {
     status('浏览器暂时无法保存。请保留这一页，或导出本课记录。');
@@ -123,7 +124,8 @@ function updateCount() {
 }
 
 function render() {
-  lesson = data.lessons[data.active];
+  lesson = data.lessons[data.active] || Object.values(data.lessons)[0];
+  if (lesson) data.active = lesson.id;
   $('lessons').replaceChildren(...Object.values(data.lessons).map(entry => new Option(entry.title, entry.id)));
   $('lesson-select').hidden = !lesson;
   $('lesson').hidden = !lesson;
@@ -224,6 +226,14 @@ $('export').onclick = () => {
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
+window.addEventListener('storage', event => {
+  if (event.key !== key || !event.newValue) return;
+  const stored = JSON.parse(event.newValue);
+  if (stored?.lessons && stored.drafts) {
+    data = stored;
+    render();
+  }
+});
 window.addEventListener('hashchange', openLink);
 render();
 openLink();

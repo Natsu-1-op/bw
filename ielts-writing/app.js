@@ -25,6 +25,7 @@
   function writeLocal(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      window.WritingCloud.schedule();
       return true;
     } catch {
       return false;
@@ -321,7 +322,7 @@
     if (text) drafts[draftId] = text;
     else delete drafts[draftId];
     label('draft-status', writeLocal(draftKey, drafts)
-      ? '自练草稿保存在本机。'
+      ? '草稿已保存。'
       : '浏览器暂时无法保存草稿，请先复制你写的内容。');
   }
 
@@ -443,20 +444,6 @@
     }
   };
 
-  $('cloudRetry').onclick = async () => {
-    const button = $('cloudRetry');
-    button.disabled = true;
-    label('notice', '正在尝试同步…');
-    try {
-      await data.retry();
-      label('notice', $('cloudStatus').textContent);
-    } catch {
-      label('notice', '同步暂不可用，请稍后再试。');
-    } finally {
-      button.disabled = false;
-    }
-  };
-
   async function enableOffline() {
     const workers = navigator.serviceWorker;
     if (!workers) return;
@@ -466,6 +453,7 @@
     } catch {
       return;
     }
+    if (!workerRegistration) return;
     updateOverview();
     workerRegistration.addEventListener('updatefound', () => {
       workerRegistration.installing?.addEventListener('statechange', updateOverview);
@@ -484,6 +472,17 @@
     };
   }
 
+  window.addEventListener('storage', event => {
+    if (event.key === draftKey) {
+      for (const key of Object.keys(drafts)) delete drafts[key];
+      Object.assign(drafts, readLocal(draftKey, {}));
+      showScene(sceneId);
+      showParagraph();
+    } else if (event.key === supportKey) {
+      for (const key of Object.keys(supports)) delete supports[key];
+      Object.assign(supports, readLocal(supportKey, {}));
+    }
+  });
   showParagraph();
   enableOffline();
   data.init(state => {
@@ -491,7 +490,7 @@
     catalog = state.catalog;
     progress = state.progress;
     catalogReady = catalogReady || catalog.length > 0;
-    label('cloudStatus', state.status + (state.localSaved === false ? ' · 本机保存不可用' : ''));
+    if (!state.localSaved) label('notice', '本机保存不可用，请检查浏览器存储。');
     updateOverview();
     if (previousCatalog !== catalog && (sceneId == null || !scenePool().some(word => word.id === sceneId))) {
       showScene();
