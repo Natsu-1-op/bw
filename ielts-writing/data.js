@@ -58,7 +58,7 @@
 
   async function loadBundled() {
     try {
-      const result = await fetch('entries.json');
+      const result = await fetch('entries.json', {cache: 'no-cache'});
       if (result.ok) {
         bundled = mergeWords(await result.json());
         emit();
@@ -147,7 +147,10 @@
       emit();
       loadBundled();
       connect();
-      window.addEventListener('online', connect);
+      window.addEventListener('online', () => {
+        loadBundled();
+        connect();
+      });
       window.addEventListener('offline', () => setStatus('离线 · 本机练习'));
       window.addEventListener('storage', event => {
         if (event.key !== progressKey) return;
@@ -155,7 +158,9 @@
         emit();
       });
       document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') schedule();
+        if (document.visibilityState !== 'visible') return;
+        loadBundled();
+        schedule();
       });
     },
     saveReview(id, record) {
