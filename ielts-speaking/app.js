@@ -35,6 +35,16 @@ function entry(file, path) {
   const match = file.name.match(/^day\s*(\d+)/i) || path.match(/(?:^|\/)day\s*(\d+)(?:\/|\.)/i);
   if (match) return {day:Number(match[1]), file};
 }
+function unpackCourse(bytes, filename) {
+  const contents = fflate.unzipSync(bytes, {
+    filter: item => /\.(pdf|mp3)$/i.test(item.name) && !item.name.includes('__MACOSX/')
+  });
+  return Object.entries(contents).map(([path, contents]) => {
+    const name = path.split('/').pop();
+    const type = /\.pdf$/i.test(name) ? 'application/pdf' : 'audio/mpeg';
+    return entry(new File([contents], name, {type}), path + '/' + filename);
+  }).filter(Boolean);
+}
 async function importFiles(input) {
   let count = 0, first;
   const buttons = [el('pick'), el('folder')];
@@ -44,13 +54,7 @@ async function importFiles(input) {
       message('正在导入 ' + file.name);
       let entries;
       if (/\.zip$/i.test(file.name)) {
-        const contents = fflate.unzipSync(new Uint8Array(await file.arrayBuffer()), {
-          filter: f => /\.(pdf|mp3)$/i.test(f.name) && !f.name.includes('__MACOSX/')
-        });
-        entries = Object.entries(contents).map(([path, bytes]) => {
-          const name = path.split('/').pop();
-          return entry(new File([bytes], name, {type:/\.pdf$/i.test(name)?'application/pdf':'audio/mpeg'}), path + '/' + file.name);
-        }).filter(Boolean);
+        entries = unpackCourse(new Uint8Array(await file.arrayBuffer()), file.name);
       } else entries = [entry(file, file.webkitRelativePath || file.name)].filter(Boolean);
       if (entries.length) {
         await save(entries);
@@ -120,3 +124,88 @@ el('back').onclick = () => { if (audio.readyState) audio.currentTime = Math.max(
 el('loop').onchange = () => audio.loop = el('loop').checked;
 library().catch(() => message('无法读取设备存储，请用普通浏览器窗口打开。'));
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+
+const repositoryAPI = 'https://api.github.com/repos/Natsu-1-op/ielts-speaking-materials';
+const sessionKey = 'ielts-speaking-read-token';
+let accessToken = '';
+const remoteStatus = text => { el('remote-status').textContent = text; };
+
+async function github(path, token, accept = 'application/vnd.github+json') {
+  const response = await fetch(repositoryAPI + path, {
+    headers: {Authorization: 'Bearer ' + token, Accept: accept},
+    cache: 'no-store',
+    redirect: 'error'
+  });
+  if ([401, 403, 404].includes(response.status)) {
+    throw new Error('GitHub 无法读取课程。请检查令牌有效期，以及仓库的 Contents 只读权限。');
+  }
+  if (!response.ok) throw new Error('GitHub 读取失败，请稍后再试。');
+  return response;
+}
+
+el('connect').onsubmit = async event => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('button');
+  button.disabled = true;
+  const token = el('token').value.trim();
+  if (!token.startsWith('github_pat_')) {
+    remoteStatus('请输入 GitHub 的细粒度访问令牌。');
+    button.disabled = false;
+    return;
+  }
+  remoteStatus('正在读取课程目录…');
+  try {
+    const response = await github('/contents/packs', token);
+    const files = await response.json();
+    const courses = files.filter(file => /^Day\d+\.zip$/.test(file.name) && /^[a-f0-9]{40}$/.test(file.sha));
+    if (!courses.length) throw new Error('仓库里没有找到课程。');
+    options(el('remote-days'), courses.map(file => [file.sha, file.name.replace(/^Day(\d+)\.zip$/, 'Day $1')]));
+    accessToken = token;
+    sessionStorage.setItem(sessionKey, token);
+    el('token').value = '';
+    el('connect').hidden = true;
+    el('remote').hidden = false;
+    remoteStatus('已连接。选一课即可播放，打开过的课可离线复习。');
+  } catch (error) {
+    remoteStatus(error instanceof TypeError ? '连接失败，请检查网络后重试。' : error.message);
+  } finally { button.disabled = false; }
+};
+
+el('remote').onsubmit = async event => {
+  event.preventDefault();
+  const button = el('remote-open');
+  const selection = el('remote-days').selectedOptions[0];
+  const label = selection.textContent;
+  const day = Number(label.split(' ')[1]);
+  button.disabled = true;
+  el('disconnect').disabled = true;
+  remoteStatus('正在打开 ' + label + '…');
+  try {
+    const response = await github('/git/blobs/' + selection.value, accessToken, 'application/vnd.github.raw+json');
+    const entries = unpackCourse(new Uint8Array(await response.arrayBuffer()), label + '.zip');
+    if (!entries.length) throw new Error('课程包没有可用的音频或讲义。');
+    await save(entries);
+    await library(day);
+    remoteStatus(label + ' 已打开，并已保存在本机课程。');
+    el('lesson').scrollIntoView();
+  } catch (error) {
+    remoteStatus(error instanceof TypeError ? '读取课程失败，请检查网络或设备空间后重试。' : error.message);
+  } finally {
+    button.disabled = false;
+    el('disconnect').disabled = false;
+  }
+};
+
+el('disconnect').onclick = () => {
+  accessToken = '';
+  sessionStorage.removeItem(sessionKey);
+  el('remote').hidden = true;
+  el('connect').hidden = false;
+  remoteStatus('已断开 GitHub 连接。');
+};
+
+const savedToken = sessionStorage.getItem(sessionKey);
+if (savedToken && navigator.onLine) {
+  el('token').value = savedToken;
+  el('connect').requestSubmit();
+}
