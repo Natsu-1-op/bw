@@ -65,17 +65,13 @@
     return result;
   }
 
-  let auth;
-  let user;
   let baseline = get(baseKey) || {};
   let running = false;
   let applying = false;
   let timer;
   const panel = document.getElementById('cloud-panel');
-  const signIn = panel.querySelector('[data-sign-in]');
   const state = panel.querySelector('output');
   const button = panel.querySelector('[data-sync]');
-  const disconnect = panel.querySelector('[data-disconnect]');
   const exportCopy = panel.querySelector('[data-conflicts]');
   const show = message => { state.textContent = message; };
 
@@ -93,13 +89,12 @@
     } finally { applying = false; }
   }
 
-  async function api(account, options = {}) {
-    const idToken = await account.getIdToken();
+  async function api(options = {}) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 18000);
     let response;
     try {
-      response = await fetch(endpoint + '?auth=' + encodeURIComponent(idToken), {
+      response = await fetch(endpoint, {
         cache: 'no-store',
         redirect: 'error',
         signal: controller.signal,
@@ -107,7 +102,7 @@
       });
     } finally { clearTimeout(timeout); }
     if ([401, 403].includes(response.status)) {
-      throw new Error('当前 Google 账号无权访问这份雅思写作档案。');
+      throw new Error('Firebase 拒绝了同步。请稍后重试。');
     }
     if (!response.ok && response.status !== 412) {
       throw new Error('Firebase 暂时无法同步，请稍后重试。');
@@ -115,9 +110,9 @@
     return response;
   }
 
-  async function exchange(account) {
+  async function exchange() {
     for (let attempt = 0; attempt < 3; attempt++) {
-      const result = await api(account, {headers: {'X-Firebase-ETag': 'true'}});
+      const result = await api({headers: {'X-Firebase-ETag': 'true'}});
       const value = await result.json();
       const remote = value === null ? {version: 1, data: {}} : JSON.parse(value);
       if (remote.version !== 1 || !plain(remote.data)) throw new Error('无法读取云端写作档案。');
@@ -126,14 +121,13 @@
       if (!same(remote.data, next)) {
         const version = result.headers.get('ETag');
         if (!version) throw new Error('无法核对云端版本，请稍后重试。');
-        const saved = await api(account, {
+        const saved = await api({
           method: 'PUT',
           headers: {'Content-Type': 'application/json', 'If-Match': version},
           body: JSON.stringify(JSON.stringify({version: 1, data: next}))
         });
         if (saved.status === 412) continue;
       }
-      if (account !== user) return;
       const incoming = reconcile(snapshot, readLocal(), next);
       apply(incoming);
       baseline = next;
@@ -145,47 +139,31 @@
     throw new Error('另一台设备正在同步。请稍后重试。');
   }
 
-  function controls() {
-    signIn.hidden = Boolean(user);
-    button.hidden = disconnect.hidden = !user;
-    exportCopy.hidden = !Object.keys(baseline.copies || {}).length;
-  }
-
   async function run() {
-    if (!user || running) return;
+    if (running) return;
     if (!navigator.onLine) { show('离线 · 写作保存在本机'); return; }
     running = true;
-    button.disabled = disconnect.disabled = true;
+    button.disabled = true;
     show('正在同步写作…');
     try {
-      await exchange(user);
+      await exchange();
       show('写作已同步 · ' + new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'}));
     } catch (error) {
       show(error instanceof TypeError || error.name === 'AbortError' ? '网络不可用 · 写作保存在本机' : error.message);
       panel.open = true;
     } finally {
       running = false;
-      button.disabled = disconnect.disabled = false;
+      button.disabled = false;
     }
   }
 
   function schedule() {
-    if (!user || applying) return;
+    if (applying) return;
     clearTimeout(timer);
     timer = setTimeout(() => running ? schedule() : run(), 4000);
   }
 
-  signIn.onclick = async () => {
-    if (!auth) { show('登录组件暂不可用，联网刷新后可重试。'); return; }
-    signIn.disabled = true;
-    try {
-      await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-    } catch (error) {
-      show(error.code === 'auth/popup-blocked' ? '请允许此站点打开 Google 登录窗口。' : 'Google 登录未完成，可重试。');
-    } finally { signIn.disabled = false; }
-  };
   button.onclick = run;
-  disconnect.onclick = () => auth.signOut().catch(() => show('退出未完成，请重试。'));
   exportCopy.onclick = () => {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(new Blob([JSON.stringify(baseline.copies, null, 2)], {type:'application/json'}));
@@ -202,15 +180,7 @@
     if (document.visibilityState === 'visible') run();
   });
   setInterval(() => { if (document.visibilityState === 'visible') run(); }, 60000);
-  controls();
+  exportCopy.hidden = !Object.keys(baseline.copies || {}).length;
   window.WritingCloud = Object.freeze({schedule, run});
-  if (window.firebase?.auth) {
-    auth = firebase.initializeApp(config, 'ielts-writing').auth();
-    auth.onAuthStateChanged(account => {
-      user = account;
-      controls();
-      if (account) run();
-      else show('本机模式 · 可用 Google 登录');
-    });
-  }
+  run();
 })();

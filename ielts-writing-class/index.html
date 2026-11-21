@@ -9,9 +9,7 @@
   <link rel="stylesheet" href="lesson.css?v=2">
   <script defer src="../ielts-writing/sync-core.js"></script>
   <script defer src="../ielts-writing/firebase-config.js"></script>
-  <script defer src="../ielts-writing/firebase/firebase-app-compat.js"></script>
-  <script defer src="../ielts-writing/firebase/firebase-auth-compat.js"></script>
-  <script defer src="../ielts-writing/cloud.js"></script>
+  <script defer src="../ielts-writing/cloud.js?v=2"></script>
   <script defer src="lesson.js?v=3"></script>
 </head>
 <body>
@@ -22,12 +20,10 @@
   <main class="wrap">
     <div class="intro"><h1>练习与批注</h1></div>
     <details class="reference" id="cloud-panel">
-      <summary>云端同步 <output aria-live="polite">本机模式 · 尚未连接</output></summary>
+      <summary>云端同步 <output aria-live="polite">正在连接…</output></summary>
       <div class="actions">
-        <button data-sign-in class="primary" type="button">使用 Google 登录</button>
-        <button data-sync type="button" hidden>立即同步</button>
+        <button data-sync type="button">立即同步</button>
         <button data-conflicts type="button" hidden>下载冲突草稿副本</button>
-        <button data-disconnect type="button" hidden>退出 Google 登录</button>
       </div>
     </details>
     <p id="status" role="status" class="sub"></p>
