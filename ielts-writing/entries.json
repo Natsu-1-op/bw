@@ -358,5 +358,45 @@
   ],
   "note": "adapt more quickly to the workplace 表示更快适应职场。写清怎样做到时，可在前面用 By + 动词-ing，动作由主句主语完成。也可以补结果 spend less time learning tasks from scratch（少花时间从头学）。",
   "page": ""
+ },
+ {
+  "id": "写作-finance-02:prioritise essential expenses",
+  "book": "写作-finance-02",
+  "term": "prioritise essential expenses",
+  "meaning": "优先安排必要开支",
+  "phonetic": "",
+  "source": "写作-finance-02 · 写作词块",
+  "sentence": "When prices rise, households may need to prioritise essential expenses.",
+  "translation": "物价上涨时，家庭可能需要优先安排必要开支。",
+  "target": "prioritise essential expenses",
+  "extensions": [
+   {
+    "meaning": "换语境用：优先安排必要开支",
+    "example": "Young adults on a tight budget often prioritise essential expenses such as rent and food.",
+    "translation": "预算紧张的年轻人常常优先安排房租和食品等必要开支。"
+   }
+  ],
+  "note": "prioritise 直接接名词。essential expenses 指必须支付的开支。",
+  "page": ""
+ },
+ {
+  "id": "写作-finance-02:stay within their budget",
+  "book": "写作-finance-02",
+  "term": "stay within their budget",
+  "meaning": "把开支控制在预算内",
+  "phonetic": "",
+  "source": "写作-finance-02 · 写作词块",
+  "sentence": "Students can track their spending to stay within their budget.",
+  "translation": "学生可以记录开支，把花费控制在预算内。",
+  "target": "stay within their budget",
+  "extensions": [
+   {
+    "meaning": "换语境用：把开支控制在预算内",
+    "example": "By comparing ticket prices, travellers can stay within their budget.",
+    "translation": "旅行者可以买票前比价，把开支控制在预算内。"
+   }
+  ],
+  "note": "within 表示在预算限额以内。主语变化时 their 也相应变化。",
+  "page": ""
  }
 ]
