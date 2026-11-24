@@ -153,6 +153,11 @@ function draftKey() {
   return lesson.id + ':' + lesson.rounds.length;
 }
 
+function updateRestore() {
+  const last = lesson && lesson.rounds.at(-1);
+  $('restore').hidden = !last || !last.draft || $('draft').value === last.draft;
+}
+
 function updateCount() {
   const text = $('draft').value;
   $('copy').disabled = !text.trim();
@@ -178,6 +183,7 @@ function render() {
   $('copy').textContent = last ? '复制改稿发给老师' : '复制初稿发给老师';
   $('draft').value = data.drafts[draftKey()] ?? last?.draft ?? '';
   updateCount();
+  updateRestore();
   $('review').hidden = !last;
   $('review-original').open = false;
   $('active-notes').replaceChildren(...(last ? renderNotes(last) : []));
@@ -241,6 +247,16 @@ $('draft').oninput = () => {
   data.drafts[draftKey()] = $('draft').value;
   if (save()) status('');
   updateCount();
+  updateRestore();
+};
+$('restore').onclick = () => {
+  const last = lesson && lesson.rounds.at(-1);
+  if (!last) return;
+  $('draft').value = last.draft;
+  data.drafts[draftKey()] = last.draft;
+  if (save()) updateCount();
+  updateRestore();
+  status('已恢复为本轮原文，按批注继续改。');
 };
 $('active-notes').addEventListener('click', event => {
   const note = event.target.closest('.annotation');
