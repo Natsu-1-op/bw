@@ -398,5 +398,45 @@
   ],
   "note": "within 表示在预算限额以内。主语变化时 their 也相应变化。",
   "page": ""
+ },
+ {
+  "id": "写作-technology-03:strengthen the bond",
+  "book": "写作-technology-03",
+  "term": "strengthen the bond",
+  "meaning": "增进……之间的情感纽带",
+  "phonetic": "",
+  "source": "写作-technology-03 · 写作词块",
+  "sentence": "Far from harming family relationships, smartphones can actually strengthen the bond between relatives.",
+  "translation": "智能手机非但没有损害家庭关系，反而能增进亲人之间的感情纽带。",
+  "target": "strengthen the bond",
+  "extensions": [
+   {
+    "meaning": "换语境用：增进……之间的情感纽带",
+    "example": "Shared hobbies can strengthen the bond between parents and teenagers.",
+    "translation": "共同的爱好能增进父母与青少年之间的感情。"
+   }
+  ],
+  "note": "后常接 between A and B。反驳题干时可在句首用 Far from + 动词-ing（非但没有……反而……），替代“Some people say... I disagree...”。",
+  "page": ""
+ },
+ {
+  "id": "写作-technology-03:make it harder for",
+  "book": "写作-technology-03",
+  "term": "make it harder for",
+  "meaning": "让某人更难做某事",
+  "phonetic": "",
+  "source": "写作-technology-03 · 写作词块",
+  "sentence": "Physical distance makes it harder for family members to stay in touch.",
+  "translation": "物理距离让家人之间更难保持联系。",
+  "target": "makes it harder for",
+  "extensions": [
+   {
+    "meaning": "换语境用：让某人更难做某事",
+    "example": "Long working hours make it harder for employees to spend time with their families.",
+    "translation": "长时间工作让员工更难花时间陪伴家人。"
+   }
+  ],
+  "note": "句型为 make it + 形容词 + for sb. to do sth.，it 作形式宾语。主语为不可数单数（如 physical distance）时用 makes。表达“保持联系”用 stay in touch。",
+  "page": ""
  }
 ]
