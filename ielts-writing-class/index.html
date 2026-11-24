@@ -10,7 +10,7 @@
   <script defer src="../ielts-writing/sync-core.js"></script>
   <script defer src="../ielts-writing/firebase-config.js"></script>
   <script defer src="../ielts-writing/cloud.js?v=2"></script>
-  <script defer src="lesson.js?v=5"></script>
+  <script defer src="lesson.js?v=6"></script>
 </head>
 <body>
   <header class="wrap brand">
@@ -67,6 +67,7 @@
         <textarea id="draft" rows="8" maxlength="16000" lang="en" spellcheck="false" aria-describedby="count"></textarea>
         <div class="actions">
           <button class="primary" id="copy" type="submit" disabled>复制草稿发给老师</button>
+          <button type="button" id="restore" hidden>恢复本轮原文</button>
           <span id="count" class="sub"></span>
         </div>
       </form>
