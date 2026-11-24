@@ -43,18 +43,16 @@ h2 { margin-bottom: .5rem; }
   }
 }
 
-/* 宽屏：两栏各自粘住，批注再长也不会把改稿框顶出屏幕 */
+/* 宽屏：改稿框跟随滚动，读长批注时草稿一直在右边 */
 @media (min-width: 760px) {
   #workbench:has(#review:not([hidden])) {
     grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
     align-items: start;
   }
-  #workbench:has(#review:not([hidden])) #review,
   #workbench:has(#review:not([hidden])) #editor {
     position: sticky;
     top: 12px;
     max-height: calc(100vh - 24px);
     overflow: auto;
-    overscroll-behavior: contain;
   }
 }
