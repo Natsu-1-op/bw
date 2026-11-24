@@ -11,18 +11,50 @@ h2 { margin-bottom: .5rem; }
 #rounds > details { margin-top: .75rem; }
 #rounds summary { font-weight: 650; }
 .review-task { padding: .65rem .85rem; background: var(--accent); border-radius: 6px; }
-.annotation { margin-top: 1rem; padding-left: .85rem; border-left: 3px solid #93c5fd; }
+#notes-hint { margin: 0 0 .25rem; font-size: .8rem; color: #6b7280; }
+.annotation {
+  margin-top: 1rem;
+  padding: .55rem .7rem .55rem .85rem;
+  border-left: 3px solid #93c5fd;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+}
+.annotation:hover { background: rgba(147, 197, 253, .12); }
+.annotation.is-active { background: rgba(147, 197, 253, .2); }
+.annotation.is-missing { cursor: default; opacity: .7; border-left-color: #d1d5db; }
+.annotation.is-missing:hover { background: none; }
 .annotation blockquote { margin: 0; color: var(--heading); overflow-wrap: anywhere; }
 .annotation p { white-space: pre-wrap; }
+.annotation .note-index { display: inline-block; margin-bottom: .3rem; font-size: .75rem; font-weight: 650; color: var(--primary); }
+.annotation .missing-hint { font-size: .8rem; color: #6b7280; }
 #workbench { display: grid; gap: 12px; }
 #workbench > * { min-width: 0; margin-bottom: 0; }
 #review-original { margin-top: 1rem; }
 #history { margin-top: 1.5rem; }
 #active-notes .annotation { margin-top: .75rem; }
 #review-original summary { color: var(--primary); min-height: 44px; padding-block: 8px; }
+
+/* 手机：批注栏自己滚动，改稿框留在下方 */
+@media (max-width: 759px) {
+  #review {
+    max-height: 55vh;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* 宽屏：两栏各自粘住，批注再长也不会把改稿框顶出屏幕 */
 @media (min-width: 760px) {
   #workbench:has(#review:not([hidden])) {
     grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
     align-items: start;
+  }
+  #workbench:has(#review:not([hidden])) #review,
+  #workbench:has(#review:not([hidden])) #editor {
+    position: sticky;
+    top: 12px;
+    max-height: calc(100vh - 24px);
+    overflow: auto;
+    overscroll-behavior: contain;
   }
 }
