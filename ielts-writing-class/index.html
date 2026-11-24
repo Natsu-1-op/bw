@@ -6,45 +6,53 @@
   <meta name="description" content="写初稿、按批注修改，回看每一轮的写作练习。">
   <title>雅思写作 · 练习与批注</title>
   <link rel="stylesheet" href="../ielts-writing/style.css">
-  <link rel="stylesheet" href="lesson.css?v=4">
+  <link rel="stylesheet" href="lesson.css?v=5">
   <script defer src="../ielts-writing/sync-core.js"></script>
   <script defer src="../ielts-writing/firebase-config.js"></script>
   <script defer src="../ielts-writing/cloud.js?v=2"></script>
-  <script defer src="lesson.js?v=6"></script>
+  <script defer src="lesson.js?v=7"></script>
 </head>
 <body>
   <header class="wrap brand">
-    <a class="brand-name" href="./"><span class="mark" aria-hidden="true">写</span>雅思写作</a>
-    <a href="../ielts-writing/">词卡与自练</a>
+    <a class="brand-name" href="./"><span class="mark" aria-hidden="true">写</span>写作课堂</a>
+    <nav class="nav-links" aria-label="切换页面">
+      <a href="../ielts-writing/">词卡与自练</a>
+      <a href="../ielts/">雅思总览</a>
+    </nav>
   </header>
   <main class="wrap">
-    <div class="intro"><h1>练习与批注</h1></div>
-    <details class="reference" id="cloud-panel">
-      <summary>云端同步 <output aria-live="polite">正在连接…</output></summary>
-      <div class="actions">
-        <button data-sync type="button">立即同步</button>
-        <button data-conflicts type="button" hidden>下载冲突草稿副本</button>
-      </div>
-    </details>
-    <p id="status" role="status" class="sub"></p>
-    <section class="card" aria-label="选课与导入">
-      <label for="lessons" id="lesson-select" hidden>打开练习
-        <select id="lessons"></select>
-      </label>
-      <div class="actions">
-        <button id="load" type="button">导入题目或批注</button>
-        <button id="export" type="button" hidden>导出本课记录</button>
-        <input id="file" type="file" accept=".json,application/json" hidden>
+    <div class="top-bar">
+      <details class="reference cloud-inline" id="cloud-panel">
+        <summary>云端同步 <output aria-live="polite">正在连接…</output></summary>
+        <div class="actions">
+          <button data-sync type="button">立即同步</button>
+          <button data-conflicts type="button" hidden>下载冲突草稿副本</button>
+        </div>
+      </details>
+    </div>
+    <p id="status" role="status" class="sub status-banner"></p>
+    <section class="card toolbar-card" aria-label="选课与导入">
+      <div class="toolbar-row">
+        <label for="lessons" id="lesson-select" class="lesson-picker" hidden>
+          <span class="sr-only">打开练习</span>
+          <select id="lessons"></select>
+        </label>
+        <div class="actions toolbar-actions">
+          <button class="primary" id="paste-clipboard" type="button">一键粘贴批注</button>
+          <button id="load" type="button">导入文件</button>
+          <button id="export" type="button" hidden>导出记录</button>
+          <input id="file" type="file" accept=".json,application/json" hidden>
+        </div>
       </div>
       <details class="reference" id="paste-panel">
-        <summary>粘贴聊天里的批注</summary>
+        <summary>手动粘贴聊天里的 JSON</summary>
         <form id="paste">
-          <label for="payload">老师发来的 JSON</label>
-          <textarea id="payload" rows="3" spellcheck="false" required></textarea>
-          <div class="actions"><button type="submit">载入批注</button></div>
+          <label for="payload" class="sub">可直接粘贴整段 JSON（含 ```json 代码块也会自动识别）</label>
+          <textarea id="payload" rows="4" spellcheck="false" required></textarea>
+          <div class="actions"><button class="primary" type="submit">载入批注</button></div>
         </form>
       </details>
-      <p id="empty">打开老师发来的练习链接，或导入老师给你的文件。</p>
+      <p id="empty" class="sub">打开老师发来的练习链接，或直接点「一键粘贴批注」/「导入文件」。</p>
     </section>
     <section id="lesson" hidden aria-labelledby="title">
       <article class="card assignment">
@@ -53,24 +61,29 @@
         <p id="task" class="review-task"></p>
       </article>
       <div id="workbench">
-      <aside class="card" id="review" aria-labelledby="review-title" hidden>
-        <h2 id="review-title">本轮批注</h2>
-        <p id="notes-hint" class="sub">点一条批注，草稿里对应的句子会被选中。</p>
-        <div id="active-notes"></div>
-        <details id="review-original">
-          <summary>对照上一版原文</summary>
-          <div id="active-original"></div>
-        </details>
-      </aside>
-      <form class="card" id="editor">
-        <label for="draft" id="draft-label"></label>
-        <textarea id="draft" rows="8" maxlength="16000" lang="en" spellcheck="false" aria-describedby="count"></textarea>
-        <div class="actions">
-          <button class="primary" id="copy" type="submit" disabled>复制草稿发给老师</button>
-          <button type="button" id="restore" hidden>恢复本轮原文</button>
-          <span id="count" class="sub"></span>
-        </div>
-      </form>
+        <aside class="card" id="review" aria-labelledby="review-title" hidden>
+          <div class="review-head">
+            <h2 id="review-title">本轮批注</h2>
+            <span id="notes-progress" class="sub"></span>
+          </div>
+          <p id="notes-hint" class="sub">点一条批注定位对应句子；改完后会自动标记「已修改」。</p>
+          <div id="active-notes"></div>
+          <details id="review-original">
+            <summary>对照上一版原文</summary>
+            <div id="active-original"></div>
+          </details>
+        </aside>
+        <form class="card" id="editor">
+          <div class="editor-head">
+            <label for="draft" id="draft-label"></label>
+            <span id="count" class="sub"></span>
+          </div>
+          <textarea id="draft" rows="9" maxlength="16000" lang="en" spellcheck="false" aria-describedby="count"></textarea>
+          <div class="actions">
+            <button class="primary" id="copy" type="submit" disabled>复制草稿发给老师</button>
+            <button type="button" id="restore" hidden>恢复本轮原文</button>
+          </div>
+        </form>
       </div>
       <section id="history" hidden aria-labelledby="history-title">
         <h2 id="history-title">历次原稿与批注</h2>

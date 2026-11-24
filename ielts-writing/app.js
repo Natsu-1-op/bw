@@ -84,6 +84,60 @@
     }
     $('start').disabled = Boolean(session) || due === 0;
     visible('update-panel', Boolean(workerRegistration?.waiting) && !session);
+    label('catalog-count', catalog.length ? '共 ' + catalog.length + ' 张' : '');
+    if ($('catalog-panel')?.open) renderCatalogList();
+  }
+
+  function renderCatalogList() {
+    const container = $('catalog-list');
+    if (!container) return;
+    const query = ($('catalog-search')?.value || '').trim().toLowerCase();
+    const now = Date.now();
+    const items = catalog.filter(word => !query ||
+      word.term.toLowerCase().includes(query) ||
+      word.meaning.toLowerCase().includes(query) ||
+      word.book.toLowerCase().includes(query));
+    if (!items.length) {
+      const empty = document.createElement('p');
+      empty.className = 'sub';
+      empty.textContent = catalog.length ? '没有匹配的词块。' : '正在读取词库…';
+      container.replaceChildren(empty);
+      return;
+    }
+    container.replaceChildren(...items.map(word => {
+      const state = progress[word.id];
+      const item = document.createElement('details');
+      item.className = 'review-item';
+      const summary = document.createElement('summary');
+      const term = document.createElement('strong');
+      term.lang = 'en';
+      term.textContent = word.term;
+      const pill = document.createElement('span');
+      pill.className = 'level-pill';
+      if (!state) {
+        pill.textContent = '新卡';
+        pill.classList.add('is-due');
+      } else if ((state.due || 0) <= now) {
+        pill.textContent = 'Lv.' + (state.level || 0) + ' · 待练';
+        pill.classList.add('is-due');
+      } else {
+        pill.textContent = 'Lv.' + (state.level || 0) + ' · ' + formatTime(state.due);
+        if ((state.level || 0) >= 3) pill.classList.add('is-strong');
+      }
+      summary.append(term, pill);
+      const meta = document.createElement('p');
+      meta.className = 'sub';
+      meta.textContent = word.book + ' · ' + word.meaning;
+      const sentence = document.createElement('p');
+      sentence.lang = 'en';
+      markTarget(sentence, word);
+      const note = document.createElement('p');
+      note.className = 'sub';
+      note.textContent = word.note || '';
+      item.append(summary, meta, sentence);
+      if (word.note) item.append(note);
+      return item;
+    }));
   }
 
   function formatTime(timestamp) {
@@ -301,7 +355,10 @@
   function updateParagraphCount() {
     const text = $('paragraph-input').value;
     const words = text.match(/[A-Za-z0-9]+(?:[’'-][A-Za-z0-9]+)*/g) || [];
-    label('paragraph-word-count', words.length + ' 词');
+    const sentences = text.trim()
+      ? text.trim().split(/[.!?。！？]+/).filter(part => /[A-Za-z0-9\u4e00-\u9fff]/.test(part)).length
+      : 0;
+    label('paragraph-word-count', sentences + ' 句 · ' + words.length + ' 词');
     $('paragraph-save').disabled = !text.trim();
   }
 
@@ -371,6 +428,25 @@
   document.querySelectorAll('[data-rate]').forEach(button => {
     button.onclick = () => recordAnswer(button.dataset.rate);
   });
+  $('input').addEventListener('keydown', event => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter' && session && !session.revealed) {
+      event.preventDefault();
+      reveal();
+    }
+  });
+  document.addEventListener('keydown', event => {
+    if (!session || !session.revealed || event.metaKey || event.ctrlKey || event.altKey) return;
+    const tag = document.activeElement?.tagName;
+    if (tag === 'TEXTAREA' && !document.activeElement.readOnly) return;
+    if (tag === 'INPUT' || tag === 'SELECT') return;
+    if (event.key === '1') { event.preventDefault(); recordAnswer('again'); }
+    else if (event.key === '2') { event.preventDefault(); recordAnswer('hard'); }
+    else if (event.key === '3' && !session.hinted) { event.preventDefault(); recordAnswer('good'); }
+  });
+  $('catalog-panel')?.addEventListener('toggle', () => {
+    if ($('catalog-panel').open) renderCatalogList();
+  });
+  $('catalog-search')?.addEventListener('input', renderCatalogList);
 
   $('scene-reveal').onclick = () => setReference('scene', $('scene-answer').hidden);
   $('paragraph-reveal').onclick = () => setReference('paragraph', $('paragraph-answer').hidden);

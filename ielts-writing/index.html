@@ -19,10 +19,12 @@
 <body>
   <header class="wrap brand">
     <a class="brand-name" href="./"><span class="mark" aria-hidden="true">写</span>雅思写作</a>
-    <a class="home-link" href="../ielts/">雅思总览</a>
+    <nav class="nav-links" aria-label="切换页面">
+      <a href="../ielts-writing-class/">写作课堂</a>
+      <a class="home-link" href="../ielts/">雅思总览</a>
+    </nav>
   </header>
   <main class="wrap">
-    <p><a href="../ielts-writing-class/">跟老师练习与查看批注</a></p>
     <section class="intro">
       <h1>写作复习</h1>
     </section>
@@ -159,6 +161,15 @@
         <div id="practice-list"></div>
       </details>
     </section>
+
+    <details class="reference" id="catalog-panel">
+      <summary>词块总表与进度 <span id="catalog-count" class="sub"></span></summary>
+      <div class="catalog-tools">
+        <label class="sr-only" for="catalog-search">搜索词块</label>
+        <input id="catalog-search" type="search" placeholder="搜索英文、中文或练习分组…">
+      </div>
+      <div id="catalog-list"></div>
+    </details>
 
     <details class="reference backup">
       <summary>备份与恢复</summary>

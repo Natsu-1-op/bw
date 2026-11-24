@@ -5,6 +5,7 @@ const key = 'ielts-writing-class-v1';
 const limit = 3_000_000;
 let data = {active: '', lessons: {}, drafts: {}};
 let lesson;
+let copyFeedbackTimer;
 const status = message => { $('status').textContent = message; };
 
 function save() {
@@ -20,6 +21,26 @@ function save() {
 
 function string(value, max) {
   return typeof value === 'string' && value.trim() && value.length <= max;
+}
+
+function countWords(text) {
+  return (text.match(/[A-Za-z0-9]+(?:[’'-][A-Za-z0-9]+)*/g) || []).length;
+}
+
+function countSentences(text) {
+  const cleaned = text.trim();
+  if (!cleaned) return 0;
+  return cleaned.split(/[.!?。！？]+/).filter(part => /[A-Za-z0-9\u4e00-\u9fff]/.test(part)).length;
+}
+
+function extractJsonText(raw) {
+  const text = String(raw || '').trim();
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenced) return fenced[1].trim();
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start >= 0 && end > start) return text.slice(start, end + 1);
+  return text;
 }
 
 function readLesson(raw) {
@@ -70,7 +91,7 @@ function accept(raw) {
   render();
   if (!save()) return false;
   status(existing && incoming.rounds.length < existing.rounds.length
-    ? '已打开本课较新的记录。' : incoming.rounds.length ? '已载入批注和下一步任务。' : '已载入练习。');
+    ? '已打开本课较新的记录。' : incoming.rounds.length ? '已载入最新批注和下一步任务。' : '已载入练习。');
   return true;
 }
 
@@ -83,8 +104,10 @@ function element(tag, content, className) {
 
 function renderRound(round, index) {
   const item = element('details', '', 'card');
-  item.append(element('summary', index === 0 ? '初稿的批注' : '第 ' + index + ' 次改稿的批注'));
-  item.append(renderOriginal(round), ...renderNotes(round));
+  const words = countWords(round.draft);
+  const heading = (index === 0 ? '初稿的批注' : '第 ' + index + ' 次改稿的批注') + '（' + words + ' 词）';
+  item.append(element('summary', heading));
+  item.append(renderOriginal(round), ...renderNotes(round, false));
   item.append(element('p', '当时的下一步\n' + round.next, 'review-task'));
   return item;
 }
@@ -105,18 +128,46 @@ function renderOriginal(round) {
   return original;
 }
 
-function renderNotes(round) {
+function renderNotes(round, interactive = true) {
   return round.notes.map((note, index) => {
-    const found = round.draft.includes(note.quote);
-    const annotation = element('div', '', found ? 'annotation' : 'annotation is-missing');
-    annotation.append(element('span', '批注 ' + (index + 1) + '/' + round.notes.length, 'note-index'));
+    const annotation = element('div', '', 'annotation');
+    const head = element('div', '', 'annotation-head');
+    head.append(element('span', '批注 ' + (index + 1) + '/' + round.notes.length, 'note-index'));
+    if (interactive) {
+      const badge = element('span', '✓ 已修改', 'note-badge');
+      badge.hidden = true;
+      head.append(badge);
+      annotation.dataset.quote = note.quote;
+    }
     const quote = element('blockquote', note.quote);
     quote.lang = 'en';
-    annotation.append(quote, element('p', note.comment));
-    if (found) annotation.dataset.quote = note.quote;
-    else annotation.append(element('p', '草稿里已经找不到这一句，按意思处理即可。', 'missing-hint'));
+    annotation.append(head, quote, element('p', note.comment));
     return annotation;
   });
+}
+
+function syncAnnotationStates() {
+  const notes = [...$('active-notes').querySelectorAll('.annotation[data-quote]')];
+  if (!notes.length) {
+    $('notes-progress').textContent = '';
+    $('notes-progress').classList.remove('is-all-done');
+    return;
+  }
+  const text = $('draft').value;
+  let done = 0;
+  for (const note of notes) {
+    const isModified = !text.includes(note.dataset.quote);
+    note.classList.toggle('is-done', isModified);
+    const badge = note.querySelector('.note-badge');
+    if (badge) badge.hidden = !isModified;
+    if (isModified) done++;
+  }
+  const progress = $('notes-progress');
+  const allDone = done === notes.length;
+  progress.classList.toggle('is-all-done', allDone);
+  progress.textContent = allDone
+    ? '✓ 本轮 ' + notes.length + ' 条已全部修改'
+    : '已改 ' + done + ' / ' + notes.length + ' 条';
 }
 
 function scrollToOffset(textarea, offset) {
@@ -153,6 +204,10 @@ function draftKey() {
   return lesson.id + ':' + lesson.rounds.length;
 }
 
+function copyButtonDefaultText() {
+  return lesson && lesson.rounds.length ? '复制改稿发给老师' : '复制初稿发给老师';
+}
+
 function updateRestore() {
   const last = lesson && lesson.rounds.at(-1);
   $('restore').hidden = !last || !last.draft || $('draft').value === last.draft;
@@ -161,8 +216,9 @@ function updateRestore() {
 function updateCount() {
   const text = $('draft').value;
   $('copy').disabled = !text.trim();
-  const words = text.match(/[A-Za-z0-9]+(?:[’'-][A-Za-z0-9]+)*/g) || [];
-  $('count').textContent = words.length + ' 词';
+  const words = countWords(text);
+  const sentences = countSentences(text);
+  $('count').textContent = sentences + ' 句 · ' + words + ' 词';
 }
 
 function render() {
@@ -180,14 +236,16 @@ function render() {
   const last = lesson.rounds.at(-1);
   $('task').textContent = last ? last.next : lesson.task;
   $('draft-label').textContent = last ? '我的第 ' + lesson.rounds.length + ' 次改稿' : '我的初稿';
-  $('copy').textContent = last ? '复制改稿发给老师' : '复制初稿发给老师';
+  clearTimeout(copyFeedbackTimer);
+  $('copy').textContent = copyButtonDefaultText();
   $('draft').value = data.drafts[draftKey()] ?? last?.draft ?? '';
   updateCount();
   updateRestore();
   $('review').hidden = !last;
   $('review-original').open = false;
-  $('active-notes').replaceChildren(...(last ? renderNotes(last) : []));
+  $('active-notes').replaceChildren(...(last ? renderNotes(last, true) : []));
   $('active-original').replaceChildren(...(last ? [renderOriginal(last)] : []));
+  syncAnnotationStates();
   $('history').hidden = !last;
   $('rounds').replaceChildren(...lesson.rounds.map(renderRound).reverse());
 }
@@ -216,15 +274,47 @@ $('lessons').onchange = event => {
   if (save()) status('');
 };
 $('load').onclick = () => $('file').click();
+
 function importText(text) {
   try {
     if (text.length > limit) throw new Error('这份练习内容太大。');
-    return accept(JSON.parse(text));
+    const cleaned = extractJsonText(text);
+    return accept(JSON.parse(cleaned));
   } catch (error) {
-    status(error instanceof SyntaxError ? '请提供有效的练习 JSON。' : error.message);
+    status(error instanceof SyntaxError ? '请提供有效的练习 JSON（支持直接复制聊天里的代码块）。' : error.message);
     return false;
   }
 }
+
+$('paste-clipboard').onclick = async () => {
+  if (!navigator.clipboard?.readText) {
+    $('paste-panel').open = true;
+    $('payload').focus();
+    status('请把老师发来的 JSON 粘贴到下方输入框。');
+    return;
+  }
+  try {
+    const text = await navigator.clipboard.readText();
+    if (!text.trim()) {
+      $('paste-panel').open = true;
+      $('payload').focus();
+      status('剪贴板是空的，请先复制老师发来的 JSON。');
+      return;
+    }
+    if (!importText(text)) {
+      $('paste-panel').open = true;
+      $('payload').value = text;
+      $('payload').focus();
+    } else {
+      $('paste-panel').open = false;
+    }
+  } catch {
+    $('paste-panel').open = true;
+    $('payload').focus();
+    status('浏览器未授予剪贴板读取权限，请在下方粘贴。');
+  }
+};
+
 $('file').onchange = async () => {
   const file = $('file').files[0];
   if (!file) return;
@@ -248,6 +338,7 @@ $('draft').oninput = () => {
   if (save()) status('');
   updateCount();
   updateRestore();
+  syncAnnotationStates();
 };
 $('restore').onclick = () => {
   const last = lesson && lesson.rounds.at(-1);
@@ -256,6 +347,7 @@ $('restore').onclick = () => {
   data.drafts[draftKey()] = last.draft;
   if (save()) updateCount();
   updateRestore();
+  syncAnnotationStates();
   status('已恢复为本轮原文，按批注继续改。');
 };
 $('active-notes').addEventListener('click', event => {
@@ -266,7 +358,8 @@ $('active-notes').addEventListener('click', event => {
   }
   note.classList.add('is-active');
   if (!selectQuote(note.dataset.quote)) {
-    status('草稿里找不到这一句，可能已经改过了。');
+    $('review-original').open = true;
+    status('这句已经修改过了，可在下方「对照上一版原文」查看原句。');
     return;
   }
   if (window.innerWidth < 760) {
@@ -279,6 +372,9 @@ $('editor').onsubmit = async event => {
   try {
     await navigator.clipboard.writeText(context + $('draft').value);
     status('已复制。把草稿粘贴到聊天中，老师就能基于原文批注。');
+    $('copy').textContent = '✓ 已复制，去聊天粘贴';
+    clearTimeout(copyFeedbackTimer);
+    copyFeedbackTimer = setTimeout(() => { $('copy').textContent = copyButtonDefaultText(); }, 2200);
   } catch {
     $('draft').focus();
     $('draft').select();
