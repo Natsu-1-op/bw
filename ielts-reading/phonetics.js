@@ -139,7 +139,21 @@
     "even-handed": "ˌiːvn ˈhændɪd",
     "sympathy": "ˈsɪmpəθi",
     "tantalising": "ˈtæntəlaɪzɪŋ",
-    "subterfuge": "ˈsʌbtəfjuːdʒ"
+    "subterfuge": "ˈsʌbtəfjuːdʒ",
+    // The History of the Pencil
+    "ferocious": "fəˈrəʊʃəs",
+    "smear": "smɪə",
+    "intriguing": "ɪnˈtriːɡɪŋ",
+    "untreated": "ˌʌnˈtriːtɪd",
+    "hide": "haɪd",
+    "foundry": "ˈfaʊndri",
+    "deterrent": "dɪˈterənt",
+    "casing": "ˈkeɪsɪŋ",
+    "apparatus": "ˌæpəˈreɪtəs",
+    "kiln": "kɪln",
+    "make something out of": "meɪk ˈsʌmθɪŋ aʊt əv",
+    "seam": "siːm",
+    "resilient": "rɪˈzɪliənt"
   };
 
   function fallback(term) {
