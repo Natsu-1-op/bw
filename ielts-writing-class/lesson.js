@@ -103,13 +103,47 @@ function renderOriginal(round) {
 }
 
 function renderNotes(round) {
-  return round.notes.map(note => {
-    const annotation = element('div', '', 'annotation');
+  return round.notes.map((note, index) => {
+    const found = round.draft.includes(note.quote);
+    const annotation = element('div', '', found ? 'annotation' : 'annotation is-missing');
+    annotation.append(element('span', '批注 ' + (index + 1) + '/' + round.notes.length, 'note-index'));
     const quote = element('blockquote', note.quote);
     quote.lang = 'en';
     annotation.append(quote, element('p', note.comment));
+    if (found) annotation.dataset.quote = note.quote;
+    else annotation.append(element('p', '草稿里已经找不到这一句，按意思处理即可。', 'missing-hint'));
     return annotation;
   });
+}
+
+function scrollToOffset(textarea, offset) {
+  const style = getComputedStyle(textarea);
+  const mirror = document.createElement('div');
+  mirror.style.cssText = [
+    'position:absolute', 'left:-9999px', 'top:0', 'visibility:hidden',
+    'white-space:pre-wrap', 'overflow-wrap:break-word',
+    'width:' + textarea.clientWidth + 'px',
+    'font:' + style.font,
+    'line-height:' + style.lineHeight,
+    'padding:' + style.padding,
+    'border:' + style.borderWidth + ' solid transparent',
+    'box-sizing:border-box'
+  ].join(';');
+  mirror.textContent = textarea.value.slice(0, offset);
+  document.body.append(mirror);
+  const height = mirror.getBoundingClientRect().height;
+  mirror.remove();
+  textarea.scrollTop = Math.max(0, height - textarea.clientHeight / 3);
+}
+
+function selectQuote(quote) {
+  const textarea = $('draft');
+  const start = textarea.value.indexOf(quote);
+  if (start < 0) return false;
+  textarea.focus();
+  textarea.setSelectionRange(start, start + quote.length);
+  scrollToOffset(textarea, start);
+  return true;
 }
 
 function draftKey() {
@@ -205,6 +239,21 @@ $('draft').oninput = () => {
   if (save()) status('');
   updateCount();
 };
+$('active-notes').addEventListener('click', event => {
+  const note = event.target.closest('.annotation');
+  if (!note || !note.dataset.quote) return;
+  for (const other of $('active-notes').querySelectorAll('.annotation.is-active')) {
+    other.classList.remove('is-active');
+  }
+  note.classList.add('is-active');
+  if (!selectQuote(note.dataset.quote)) {
+    status('草稿里找不到这一句，可能已经改过了。');
+    return;
+  }
+  if (window.innerWidth < 760) {
+    $('editor').scrollIntoView({block: 'center', behavior: 'smooth'});
+  }
+});
 $('editor').onsubmit = async event => {
   event.preventDefault();
   const context = '练习：' + lesson.id + '\n' + $('draft-label').textContent + '\n\n';
