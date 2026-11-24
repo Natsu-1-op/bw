@@ -46,10 +46,13 @@ function readLesson(raw) {
 function accept(raw) {
   const incoming = readLesson(raw);
   const existing = Object.hasOwn(data.lessons, incoming.id) ? data.lessons[incoming.id] : null;
+  const sameRounds = existing && existing.rounds.slice(0, incoming.rounds.length).every(
+    (round, i) => JSON.stringify(round) === JSON.stringify(incoming.rounds[i]));
+  const sameDrafts = existing && incoming.rounds.length === existing.rounds.length &&
+    existing.rounds.every((round, i) => round.draft === incoming.rounds[i].draft);
   if (existing && (
       existing.prompt !== incoming.prompt || existing.task !== incoming.task ||
-      !existing.rounds.slice(0, incoming.rounds.length).every(
-        (round, i) => JSON.stringify(round) === JSON.stringify(incoming.rounds[i]))
+      (!sameRounds && !sameDrafts)
   )) throw new Error('这份文件与本机已保存的练习内容有冲突，请核对后重新导入。');
 
   if (!existing || incoming.rounds.length >= existing.rounds.length) data.lessons[incoming.id] = incoming;
