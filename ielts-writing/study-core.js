@@ -2,44 +2,107 @@
   'use strict';
 
   const DAY = 86400000;
-  const SHANGHAI_OFFSET = 8 * 3600000;
+  const STEP = 3 * 60000;
   const INTERVALS = [1, 3, 7, 14, 30];
-  const dayKey = time => new Date(time + SHANGHAI_OFFSET).toISOString().slice(0, 10);
-  const nextDay = time => Date.parse(dayKey(time) + 'T00:00:00+08:00') + DAY;
+  const dayKey = at => new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(new Date(at));
+  const midnightAfter = at => Date.parse(dayKey(at) + 'T00:00:00+08:00') + DAY;
+  const base = () => ({
+    level: 0, due: 0, reviews: 0, history: [], lastGoodDay: '',
+    studyV: 1, phase: 'review', streak: 0, lastFail: 0, lastStep: 0, lapses: 0
+  });
 
-  function select(catalog, progress, {group = '', limit = 3, now = Date.now()} = {}) {
-    const priority = record => record?.history.at(-1)?.rate === 'again' ? 0 : record ? 1 : 2;
-    return catalog
-      .filter(word => (!group || word.book === group) && (progress[word.id]?.due || 0) <= now)
-      .sort((a, b) => priority(progress[a.id]) - priority(progress[b.id])
-        || (progress[a.id]?.due || 0) - (progress[b.id]?.due || 0))
-      .slice(0, limit);
+  function migrate(record, now = Date.now()) {
+    const r = {...base(), ...(record || {})};
+    r.history = Array.isArray(r.history) ? r.history : [];
+    if (record?.studyV !== 1) {
+      r.studyV = 1;
+      r.phase = 'review';
+      r.streak = 0;
+      r.lastFail = 0;
+      r.lastStep = 0;
+      r.lapses = 0;
+      const last = r.history.at(-1);
+      if (last && (last.rate === 'again' || last.rate === 'hard')) {
+        r.phase = 'learning';
+        r.lastFail = last.at;
+        r.lastStep = last.at;
+        r.lapses = 1;
+        r.due = Math.max(r.due || 0, last.at + STEP);
+      }
+    }
+    const lastPractice = r.lastStep || r.lastFail;
+    if (r.phase === 'learning' && lastPractice && now >= midnightAfter(lastPractice)) {
+      r.level = 0;
+      r.streak = 0;
+      r.due = midnightAfter(lastPractice);
+    }
+    if (r.phase === 'review' && r.level > 0 && r.due) {
+      r.due = Date.parse(dayKey(r.due) + 'T00:00:00+08:00');
+    }
+    return r;
   }
 
-  function rate(previous, rating, now = Date.now(), mode = 'recall') {
-    if (!['good', 'hard', 'again'].includes(rating)) throw new Error('Invalid rating');
-    const old = previous || {level: 0, reviews: 0, history: []};
+  function select(catalog, progress, {group = '', limit = 3, now = Date.now()} = {}) {
+    const priority = r => r.phase === 'learning' ? 0 : r.reviews === 0 ? 1 : 2;
+    return catalog
+      .filter(word => !group || word.book === group)
+      .map(word => ({word, rec: migrate(progress[word.id], now)}))
+      .filter(({rec}) => (rec.due || 0) <= now)
+      .sort((a, b) => priority(a.rec) - priority(b.rec) || (a.rec.due || 0) - (b.rec.due || 0))
+      .slice(0, limit)
+      .map(({word}) => word);
+  }
+
+  function rate(previous, rating, now = Date.now(), mode = 'cloze') {
+    if (!['good', 'again'].includes(rating) || !Number.isFinite(now)) throw new Error('Invalid rating');
+    const r = migrate(previous, now);
     const today = dayKey(now);
-    let level = old.level;
-    let due = old.due;
-    let lastGoodDay = old.lastGoodDay || '';
+    const oldDue = r.due || 0;
+    let message = '';
     if (rating === 'again') {
-      level = 0;
-      due = now + 5 * 60000;
-    } else if (rating === 'hard') {
-      level = Math.max(0, level - 1);
-      due = nextDay(now);
-    } else if ((due || 0) <= now) {
-      if (lastGoodDay !== today) {
-        level = Math.min(5, level + 1);
-        lastGoodDay = today;
+      r.level = 0;
+      r.phase = 'learning';
+      r.streak = 0;
+      r.lastFail = now;
+      r.lastStep = now;
+      r.lapses = (r.lapses || 0) + 1;
+      r.due = now + STEP;
+      message = '3分钟后开始巩固，连续认识3次。';
+    } else if (r.phase === 'learning') {
+      if (now < oldDue) {
+        message = '还没到本次巩固时间；这次不计入次数。';
+      } else {
+        r.streak++;
+        r.lastStep = now;
+        if (r.streak >= 3) {
+          r.phase = 'review';
+          r.streak = 0;
+          r.level = 1;
+          r.lastGoodDay = today;
+          r.due = midnightAfter(now);
+          message = '今天已完成3次巩固，明天复习。';
+        } else {
+          r.due = now + STEP;
+          message = '已完成 ' + r.streak + '/3 次巩固，3分钟后继续。';
+        }
       }
-      due = nextDay(now) + (INTERVALS[Math.max(0, level - 1)] - 1) * DAY;
+    } else if (r.reviews === 0 || oldDue === 0 || now >= oldDue) {
+      if (r.lastGoodDay === today && r.reviews > 0) {
+        message = '今天已完成这一阶段；下次按计划复习。';
+      } else {
+        r.level = Math.min(5, r.level + 1);
+        r.lastGoodDay = today;
+        r.due = midnightAfter(now) + (INTERVALS[r.level - 1] - 1) * DAY;
+        message = '已认识，' + INTERVALS[r.level - 1] + '天后复习。';
+      }
+    } else {
+      message = '尚未到复习时间，本次不提前升级。';
     }
-    return {
-      level, due, lastGoodDay, reviews: old.reviews + 1,
-      history: [...old.history, {at: now, rate: rating, level, mode}].slice(-30)
-    };
+    r.reviews++;
+    r.history = [...r.history, {at: now, rate: rating, level: r.level, mode}].slice(-30);
+    return {record: r, message};
   }
 
   function shuffle(words) {
@@ -51,8 +114,11 @@
     return shuffled;
   }
 
-  function round(eligible, progress, limit, previous = []) {
-    const priority = word => progress[word.id]?.history.at(-1)?.rate === 'again' ? 0 : progress[word.id] ? 2 : 1;
+  function round(eligible, progress, limit, previous = [], now = Date.now()) {
+    const priority = word => {
+      const r = migrate(progress[word.id], now);
+      return r.phase === 'learning' ? 0 : r.reviews === 0 ? 1 : 2;
+    };
     const pool = shuffle(eligible).sort((a, b) => priority(a) - priority(b));
     const words = shuffle(pool.slice(0, limit));
     if (!Array.isArray(previous) || words.length !== previous.length
@@ -112,65 +178,5 @@
     return {...picked, meaning: word?.meaning || ''};
   }
 
-  function normalizeText(text) {
-    return String(text || '')
-      .replace(/[’‘`]/g, "'")
-      .replace(/\s+/g, ' ')
-      .trim()
-      .replace(/^[.,!?;:]+|[.,!?;:]+$/g, '')
-      .toLowerCase();
-  }
-
-  function tokenizeWords(normalized) {
-    if (!normalized) return [];
-    return normalized.split(' ').map(w => w.replace(/^[.,!?;:]+|[.,!?;:]+$/g, '')).filter(Boolean);
-  }
-
-  function compareAnswer(input, expected) {
-    const inputNorm = normalizeText(input);
-    const expectedNorm = normalizeText(expected);
-    if (!inputNorm) {
-      return {empty: true, exact: false, expected: String(expected || ''), inputNorm: '', diffs: []};
-    }
-    if (inputNorm === expectedNorm) {
-      return {empty: false, exact: true, expected: String(expected || ''), inputNorm, diffs: []};
-    }
-    const actualWords = tokenizeWords(inputNorm);
-    const expectedWords = tokenizeWords(expectedNorm);
-    const m = actualWords.length;
-    const n = expectedWords.length;
-    const dp = Array.from({length: m + 1}, () => Array(n + 1).fill(0));
-    for (let i = m - 1; i >= 0; i--) {
-      for (let j = n - 1; j >= 0; j--) {
-        dp[i][j] = actualWords[i] === expectedWords[j]
-          ? dp[i + 1][j + 1] + 1
-          : Math.max(dp[i + 1][j], dp[i][j + 1]);
-      }
-    }
-    const diffs = [];
-    let i = 0;
-    let j = 0;
-    while (i < m && j < n) {
-      if (actualWords[i] === expectedWords[j]) {
-        diffs.push({kind: 'ok', text: expectedWords[j]});
-        i++;
-        j++;
-      } else if (dp[i + 1][j] === dp[i][j + 1] && i + 1 <= m && j + 1 <= n) {
-        diffs.push({kind: 'wrong', actual: actualWords[i], expected: expectedWords[j]});
-        i++;
-        j++;
-      } else if (dp[i + 1][j] > dp[i][j + 1]) {
-        diffs.push({kind: 'extra', text: actualWords[i]});
-        i++;
-      } else {
-        diffs.push({kind: 'missing', text: expectedWords[j]});
-        j++;
-      }
-    }
-    while (i < m) diffs.push({kind: 'extra', text: actualWords[i++]});
-    while (j < n) diffs.push({kind: 'missing', text: expectedWords[j++]});
-    return {empty: false, exact: false, expected: String(expected || ''), inputNorm, diffs};
-  }
-
-  root.WritingStudy = Object.freeze({select, rate, round, dayKey, buildCloze, compareAnswer});
+  root.WritingStudy = Object.freeze({DAY, STEP, dayKey, midnightAfter, migrate, select, rate, round, buildCloze});
 })(typeof window === 'undefined' ? globalThis : window);

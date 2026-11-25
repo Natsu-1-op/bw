@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#f5f7fb">
-  <meta name="description" content="用手机做整句挖空填空、自动拼写核对与跨话题句子写作。">
+  <meta name="description" content="用手机做整句挖空回忆写作词块，忘记后 3 分钟巩固，认识后按间隔复习。">
   <title>雅思写作 · 每日复习</title>
   <link rel="stylesheet" href="style.css">
   <script defer src="sync-core.js"></script>
@@ -43,7 +43,7 @@
     <section class="card" aria-labelledby="review-title">
       <div class="section-head">
         <div>
-          <h2 id="review-title">整句填空，拼对词块</h2>
+          <h2 id="review-title">整句填空，心里回忆词块</h2>
           <p id="availability" class="sub" role="status">正在读取词库…</p>
         </div>
         <button id="start" type="button" class="primary" disabled>开始复习</button>
@@ -53,6 +53,7 @@
         <button id="start-new" type="button" class="stat-pill is-new" hidden></button>
         <span id="overdue-pill" class="stat-pill is-warn" hidden></span>
       </div>
+      <p id="rate-status" class="sub rate-status" role="status" hidden></p>
       <details id="settings" class="reference">
         <summary>复习设置</summary>
         <div class="selectors">
@@ -76,26 +77,19 @@
         <p id="card-meaning" class="sub card-meaning"></p>
         <h3 id="prompt" class="prompt" tabindex="-1"></h3>
         <p id="cloze-sentence" class="cloze" lang="en" hidden></p>
-        <label class="sr-only" for="input">你的词块答案</label>
-        <textarea id="input" rows="2" placeholder="把空缺的英文词块打出来（未打字且拼写一致前不能选「独立想起」）"></textarea>
         <div id="question-actions" class="actions">
           <button id="reveal" type="button" class="primary">查看答案</button>
-          <button id="hint" type="button">提示首字母</button>
           <button id="skip" type="button" class="quiet">跳过</button>
         </div>
-        <p id="hint-text" class="sub hint" role="status" hidden></p>
         <div id="answer" class="answer" hidden>
-          <div id="compare-box" class="compare-box" hidden></div>
           <h3 id="term" class="english" lang="en" tabindex="-1"></h3>
           <p id="sentence" class="sentence" lang="en"></p>
           <p id="translation"></p>
           <p id="note" class="sub"></p>
           <div class="actions ratings" aria-label="自评">
-            <button type="button" data-rate="again">忘记了</button>
-            <button type="button" data-rate="hard">模糊</button>
-            <button id="good" type="button" data-rate="good" class="primary">独立想起</button>
+            <button type="button" data-rate="again">忘记<small>3分钟后巩固</small></button>
+            <button id="good" type="button" data-rate="good" class="primary">认识<small>独立想起</small></button>
           </div>
-          <p id="hint-warning" class="sub" hidden></p>
         </div>
       </div>
       <div id="finish" class="exercise" hidden>

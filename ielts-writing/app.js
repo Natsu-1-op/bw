@@ -5,7 +5,7 @@
   const study = window.WritingStudy;
   const data = window.WritingData;
   const records = window.WritingRecords;
-  const ratings = {good: '独立想起', hard: '模糊', again: '忘记了', skip: '跳过'};
+  const ratings = {good: '认识', again: '忘记', skip: '跳过'};
   const DAILY_GOAL = 5;
   const DAY = 86400000;
   const settingsKey = 'ielts-writing-settings-v1';
@@ -97,7 +97,7 @@
     if (!total) {
       label('availability', catalogReady ? '词库暂无可用词块' : '正在读取词库…');
     } else {
-      const soonest = Math.min(...matching.map(word => progress[word.id]?.due ?? 0).filter(time => time > now));
+      const soonest = Math.min(...matching.map(word => study.migrate(progress[word.id], now).due || 0).filter(time => time > now));
       const nextTime = Number.isFinite(soonest) ? ' · 下次 ' + formatTime(soonest) : '';
       label('availability', due ? '现在可练 ' + due + ' 张 · 共 ' + total + ' 张' : '暂时没有到期词块' + nextTime);
     }
@@ -107,12 +107,13 @@
       let doneToday = 0;
       let maxOverdueDays = 0;
       for (const word of catalog) {
-        const state = progress[word.id];
-        if (!state) continue;
+        const raw = progress[word.id];
+        if (!raw) continue;
+        const state = study.migrate(raw, now);
         if ((state.history || []).some(item => item.rate !== 'skip' && study.dayKey(item.at) === todayKey)) {
           doneToday++;
         }
-        if ((state.due || 0) <= now && (state.due || 0) > 0) {
+        if (state.phase === 'review' && (state.due || 0) <= now && (state.due || 0) > 0) {
           const days = Math.floor((now - state.due) / DAY);
           if (days > maxOverdueDays) maxOverdueDays = days;
         }
@@ -161,7 +162,8 @@
       return;
     }
     container.replaceChildren(...items.map(word => {
-      const state = progress[word.id];
+      const raw = progress[word.id];
+      const state = raw ? study.migrate(raw, now) : null;
       const item = document.createElement('details');
       item.className = 'review-item';
       const summary = document.createElement('summary');
@@ -172,6 +174,9 @@
       pill.className = 'level-pill';
       if (!state) {
         pill.textContent = '新卡';
+        pill.classList.add('is-due');
+      } else if (state.phase === 'learning') {
+        pill.textContent = '待巩固 ' + state.streak + '/3' + ((state.due || 0) <= now ? ' · 可练' : ' · ' + formatTime(state.due));
         pill.classList.add('is-due');
       } else if ((state.due || 0) <= now) {
         pill.textContent = 'Lv.' + (state.level || 0) + ' · 待练';
@@ -239,82 +244,36 @@
     container.hidden = false;
   }
 
-  function renderCompareBox(box, result) {
-    box.className = 'compare-box';
-    if (result.empty) {
-      box.classList.add('is-empty');
-      box.textContent = '未输入英文作答，建议选「模糊」或「忘记了」。';
-      box.hidden = false;
-      return;
-    }
-    if (result.exact) {
-      box.classList.add('is-exact');
-      box.textContent = '✓ 拼写与搭配完全一致：' + result.expected;
-      box.hidden = false;
-      return;
-    }
-    box.classList.add('is-diff');
-    const title = document.createElement('strong');
-    title.textContent = '对照参考有差异（请检查漏词或拼写）：';
-    const row = document.createElement('div');
-    row.className = 'compare-words';
-    row.lang = 'en';
-    for (const part of result.diffs) {
-      const span = document.createElement('span');
-      if (part.kind === 'ok') {
-        span.className = 'diff-ok';
-        span.textContent = part.text;
-      } else if (part.kind === 'wrong') {
-        span.className = 'diff-wrong';
-        const del = document.createElement('s');
-        del.textContent = part.actual;
-        span.append(del, document.createTextNode(part.expected));
-      } else if (part.kind === 'missing') {
-        span.className = 'diff-missing';
-        span.textContent = '[缺: ' + part.text + ']';
-      } else {
-        span.className = 'diff-extra';
-        span.textContent = part.text;
-      }
-      row.append(span);
-    }
-    box.replaceChildren(title, row);
-    box.hidden = false;
-  }
-
   function showCard() {
     const word = session.words[session.index];
     if (!word) {
       finishSession();
       return;
     }
-    const reviews = progress[word.id]?.reviews || 0;
-    const cloze = study.buildCloze(word, reviews);
+    const now = Date.now();
+    const rec = study.migrate(progress[word.id], now);
+    const cloze = study.buildCloze(word, rec.reviews || 0);
+    const stage = rec.phase === 'learning'
+      ? '待巩固 ' + rec.streak + '/3'
+      : rec.reviews === 0 ? '新卡' : 'Lv.' + rec.level;
     session.cloze = cloze;
-    session.hinted = false;
     session.revealed = false;
-    session.canGood = false;
-    label('tag', (session.index + 1) + ' / ' + session.words.length);
+    label('tag', (session.index + 1) + ' / ' + session.words.length + ' · ' + stage);
     label('card-meaning', '目标表达提示：' + word.meaning);
     label('prompt', cloze.zh || word.meaning);
     $('prompt').lang = 'zh-Hans';
     renderClozeSentence($('cloze-sentence'), cloze.clozeEn);
-    $('input').value = '';
-    $('input').readOnly = false;
-    $('good').disabled = false;
-    $('hint').disabled = false;
-    visible('hint-text', false);
     visible('answer', false);
-    visible('compare-box', false);
     visible('question-actions', true);
     visible('card', true);
-    $('input').focus();
+    $('prompt').focus();
   }
 
   function startSession(onlyNew = false) {
     if (session) return;
     const selectedGroup = group();
     const limit = Number($('limit').value);
+    const now = Date.now();
     let words;
     if (onlyNew) {
       const pool = catalog.filter(word => (!selectedGroup || word.book === selectedGroup) && !progress[word.id]);
@@ -322,7 +281,7 @@
     } else {
       const previous = readLocal(lastRoundKey, {});
       words = study.round(available(selectedGroup), progress, limit,
-        previous.group === selectedGroup ? previous.ids : []);
+        previous.group === selectedGroup ? previous.ids : [], now);
     }
     if (!words.length) {
       updateOverview();
@@ -331,6 +290,7 @@
     writeLocal(lastRoundKey, {group: selectedGroup, ids: words.map(word => word.id)});
     session = {words, index: 0, results: []};
     $('settings').open = false;
+    visible('rate-status', false);
     for (const id of ['group', 'limit']) $(id).disabled = true;
     visible('finish', false);
     updateOverview();
@@ -342,22 +302,7 @@
     const word = session.words[session.index];
     const cloze = session.cloze || study.buildCloze(word, progress[word.id]?.reviews || 0);
     session.revealed = true;
-    $('input').readOnly = true;
     visible('question-actions', false);
-
-    const compareResult = study.compareAnswer($('input').value, cloze.expected);
-    renderCompareBox($('compare-box'), compareResult);
-    const canGood = compareResult.exact && !session.hinted;
-    session.canGood = canGood;
-    $('good').disabled = !canGood;
-
-    let warning = '';
-    if (session.hinted) warning = '使用了提示，请选择「模糊」或「忘记了」。';
-    else if (compareResult.empty) warning = '未打字作答，不能选「独立想起」。';
-    else if (!compareResult.exact) warning = '拼写或用词与参考有差异，请选择「模糊」或「忘记了」。';
-    label('hint-warning', warning);
-    visible('hint-warning', Boolean(warning));
-
     label('term', cloze.expected || word.term);
     markTarget($('sentence'), word, cloze.en || word.sentence, cloze.expected);
     label('translation', cloze.zh || word.translation || '');
@@ -366,28 +311,18 @@
     $('term').focus();
   }
 
-  function showHint() {
-    if (!session || session.revealed || session.hinted) return;
-    const word = session.words[session.index];
-    const answer = session.cloze?.expected || word.term;
-    const initials = answer.trim().split(/\s+/).map(part => part.charAt(0) + '…').join(' ');
-    session.hinted = true;
-    $('good').disabled = true;
-    $('hint').disabled = true;
-    label('hint-text', '首字母：' + initials);
-    visible('hint-text', true);
-    $('input').focus();
-  }
-
   function recordAnswer(rate) {
-    if (!session || (rate !== 'skip' && (!session.revealed || (rate === 'good' && !session.canGood)))) return;
+    if (!session || (rate !== 'skip' && !session.revealed)) return;
     const word = session.words[session.index];
-    let next = null;
+    let due = null;
     if (rate !== 'skip') {
-      next = study.rate(progress[word.id], rate, Date.now(), session.cloze?.clozeEn ? 'cloze' : 'recall');
-      data.saveReview(word.id, next);
+      const res = study.rate(progress[word.id], rate, Date.now(), session.cloze?.clozeEn ? 'cloze' : 'recall');
+      data.saveReview(word.id, res.record);
+      due = res.record.due;
+      label('rate-status', res.message);
+      visible('rate-status', Boolean(res.message));
     }
-    session.results.push({word, rate, due: next?.due});
+    session.results.push({word, rate, due});
     session.index += 1;
     showCard();
   }
@@ -401,7 +336,7 @@
     term.textContent = result.word.term;
     const status = document.createElement('span');
     status.className = 'sub';
-    status.textContent = ratings[result.rate];
+    status.textContent = ratings[result.rate] || result.rate;
     summary.append(term, status);
     const meaning = document.createElement('p');
     meaning.textContent = result.word.meaning;
@@ -423,11 +358,11 @@
     updateOverview();
 
     $('summary').replaceChildren(...results.map(reviewItem));
-    const needsReview = results.filter(result => result.rate === 'hard' || result.rate === 'again');
+    const needsReview = results.filter(result => result.rate === 'again');
     const next = needsReview.length ? Math.min(...needsReview.map(result => result.due)) : null;
     label('finish-note', results.length
       ? '已复习 ' + results.filter(result => result.rate !== 'skip').length + ' 张'
-        + (needsReview.length && Number.isFinite(next) ? ' · 不熟词块最早 ' + formatTime(next) + ' 可重练' : '')
+        + (needsReview.length && Number.isFinite(next) ? ' · 忘记词块将在 ' + formatTime(next) + ' 进入巩固' : '')
       : '本轮尚未作答，随时可以重新开始。');
     const example = results.find(result => result.rate !== 'skip' && usableExtension(result.word))?.word;
     visible('practice-recent', Boolean(example));
@@ -572,25 +507,24 @@
   $('start-new').onclick = () => startSession(true);
   $('end').onclick = finishSession;
   $('reveal').onclick = reveal;
-  $('hint').onclick = showHint;
   $('skip').onclick = () => recordAnswer('skip');
   document.querySelectorAll('[data-rate]').forEach(button => {
     button.onclick = () => recordAnswer(button.dataset.rate);
   });
-  $('input').addEventListener('keydown', event => {
-    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter' && session && !session.revealed) {
-      event.preventDefault();
-      reveal();
-    }
-  });
   document.addEventListener('keydown', event => {
-    if (!session || !session.revealed || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (!session || event.metaKey || event.ctrlKey || event.altKey) return;
     const tag = document.activeElement?.tagName;
-    if (tag === 'TEXTAREA' && !document.activeElement.readOnly) return;
-    if (tag === 'INPUT' || tag === 'SELECT') return;
+    if (tag === 'TEXTAREA' || tag === 'INPUT' || tag === 'SELECT') return;
+    if (!session.revealed) {
+      if (event.key === ' ' || event.key === 'Enter') {
+        if (tag === 'BUTTON') return;
+        event.preventDefault();
+        reveal();
+      }
+      return;
+    }
     if (event.key === '1') { event.preventDefault(); recordAnswer('again'); }
-    else if (event.key === '2') { event.preventDefault(); recordAnswer('hard'); }
-    else if (event.key === '3' && session.canGood) { event.preventDefault(); recordAnswer('good'); }
+    else if (event.key === '2') { event.preventDefault(); recordAnswer('good'); }
   });
   $('catalog-panel')?.addEventListener('toggle', () => {
     if ($('catalog-panel').open) renderCatalogList();
