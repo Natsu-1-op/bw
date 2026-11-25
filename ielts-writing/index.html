@@ -12,6 +12,7 @@
   <script defer src="cloud.js"></script>
   <script defer src="study-core.js"></script>
   <script defer src="data.js"></script>
+  <script defer src="error-cards.js"></script>
   <script defer src="practice-prompts.js"></script>
   <script defer src="practice-records.js"></script>
   <script defer src="app.js"></script>
@@ -99,6 +100,42 @@
         <div class="actions">
           <button id="practice-recent" type="button" hidden>用本轮词块写一句</button>
         </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="error-title">
+      <div class="section-head">
+        <div>
+          <h2 id="error-title">我的错句卡</h2>
+          <p id="error-availability" class="sub" role="status">正在读取错句…</p>
+        </div>
+        <button id="error-start" type="button" class="primary" disabled>开始改错</button>
+      </div>
+      <p id="error-rate-status" class="sub rate-status" role="status" hidden></p>
+      <div id="error-card" class="exercise" hidden>
+        <div class="exercise-head">
+          <p id="error-tag" class="tag"></p>
+          <button id="error-end" type="button" class="quiet">结束本轮</button>
+        </div>
+        <p class="sub card-meaning">先在心里找出错处并默改，再点「查看改法」：</p>
+        <p id="error-wrong" class="error-wrong" lang="en"></p>
+        <div id="error-question-actions" class="actions">
+          <button id="error-reveal" type="button" class="primary">查看改法</button>
+          <button id="error-skip" type="button" class="quiet">跳过</button>
+        </div>
+        <div id="error-answer" class="answer" hidden>
+          <p id="error-right" class="error-right" lang="en" tabindex="-1"></p>
+          <p id="error-note" class="sub"></p>
+          <div class="actions ratings" aria-label="改错自评">
+            <button type="button" data-error-rate="again">忘记<small>3分钟后巩固</small></button>
+            <button id="error-good" type="button" data-error-rate="good" class="primary">认识<small>一眼看出</small></button>
+          </div>
+        </div>
+      </div>
+      <div id="error-finish" class="exercise" hidden>
+        <h3 id="error-finish-title" tabindex="-1">本轮改错回顾</h3>
+        <p id="error-finish-note" class="sub"></p>
+        <div id="error-summary"></div>
       </div>
     </section>
 

@@ -15,6 +15,7 @@
   const paragraphModeKey = 'ielts-writing-paragraph-mode-v1';
   const supportKey = 'ielts-writing-support-v1';
   const paragraphs = window.WritingPrompts;
+  const errorCards = window.WritingErrorCards || [];
 
   function readLocal(key, fallback) {
     try {
@@ -39,6 +40,8 @@
   let catalogReady = false;
   let groupSignature = '';
   let session = null;
+  let errorSession = null;
+  let lastErrorRoundIds = [];
   let workerRegistration;
   let sceneId;
   let paragraphIndex = paragraphs.findIndex(item => item.id === readLocal(paragraphKey, 'library'));
@@ -123,7 +126,7 @@
       $('daily-goal').classList.toggle('is-done', doneToday >= DAILY_GOAL);
       if (newCount > 0) {
         label('start-new', '新卡待学 ' + newCount + ' 张 · 立刻练');
-        $('start-new').disabled = Boolean(session);
+        $('start-new').disabled = Boolean(session) || Boolean(errorSession);
         visible('start-new', true);
       } else {
         visible('start-new', false);
@@ -139,8 +142,17 @@
       visible('review-stats', false);
     }
 
-    $('start').disabled = Boolean(session) || due === 0;
-    visible('update-panel', Boolean(workerRegistration?.waiting) && !session);
+    $('start').disabled = Boolean(session) || Boolean(errorSession) || due === 0;
+    if (errorCards.length) {
+      const errorDue = study.select(errorCards, progress, {limit: errorCards.length, now});
+      const soonestError = Math.min(...errorCards.map(card => study.migrate(progress[card.id], now).due || 0).filter(t => t > now));
+      const nextErrTime = Number.isFinite(soonestError) ? ' · 下次 ' + formatTime(soonestError) : '';
+      label('error-availability', errorDue.length
+        ? '现在可练 ' + errorDue.length + ' 张 · 共 ' + errorCards.length + ' 张'
+        : '暂时没有到期错句' + nextErrTime);
+      $('error-start').disabled = Boolean(session) || Boolean(errorSession) || errorDue.length === 0;
+    }
+    visible('update-panel', Boolean(workerRegistration?.waiting) && !session && !errorSession);
     label('catalog-count', catalog.length ? '共 ' + catalog.length + ' 张' : '');
     if ($('catalog-panel')?.open) renderCatalogList();
   }
@@ -270,7 +282,7 @@
   }
 
   function startSession(onlyNew = false) {
-    if (session) return;
+    if (session || errorSession) return;
     const selectedGroup = group();
     const limit = Number($('limit').value);
     const now = Date.now();
@@ -374,6 +386,110 @@
     };
     visible('finish', true);
     $('finish-title').focus();
+  }
+
+  function showErrorCard() {
+    const card = errorSession.words[errorSession.index];
+    if (!card) {
+      finishErrorSession();
+      return;
+    }
+    const now = Date.now();
+    const rec = study.migrate(progress[card.id], now);
+    const stage = rec.phase === 'learning'
+      ? '待巩固 ' + rec.streak + '/3'
+      : rec.reviews === 0 ? '新错句' : 'Lv.' + rec.level;
+    errorSession.revealed = false;
+    label('error-tag', (errorSession.index + 1) + ' / ' + errorSession.words.length + ' · ' + card.tag + ' · ' + stage);
+    label('error-wrong', card.wrong);
+    visible('error-answer', false);
+    visible('error-question-actions', true);
+    visible('error-card', true);
+    $('error-wrong').focus();
+  }
+
+  function startErrorSession() {
+    if (session || errorSession || !errorCards.length) return;
+    const now = Date.now();
+    const eligible = study.select(errorCards, progress, {limit: errorCards.length, now});
+    const words = study.round(eligible, progress, 5, lastErrorRoundIds, now);
+    if (!words.length) {
+      updateOverview();
+      return;
+    }
+    lastErrorRoundIds = words.map(card => card.id);
+    errorSession = {words, index: 0, results: [], revealed: false};
+    visible('error-rate-status', false);
+    visible('error-finish', false);
+    updateOverview();
+    showErrorCard();
+  }
+
+  function revealErrorCard() {
+    if (!errorSession || errorSession.revealed) return;
+    const card = errorSession.words[errorSession.index];
+    errorSession.revealed = true;
+    visible('error-question-actions', false);
+    label('error-right', card.right);
+    label('error-note', card.note);
+    visible('error-answer', true);
+    $('error-right').focus();
+  }
+
+  function recordErrorAnswer(rate) {
+    if (!errorSession || (rate !== 'skip' && !errorSession.revealed)) return;
+    const card = errorSession.words[errorSession.index];
+    let due = null;
+    if (rate !== 'skip') {
+      const res = study.rate(progress[card.id], rate, Date.now(), 'error');
+      data.saveReview(card.id, res.record);
+      due = res.record.due;
+      label('error-rate-status', res.message);
+      visible('error-rate-status', Boolean(res.message));
+    }
+    errorSession.results.push({card, rate, due});
+    errorSession.index += 1;
+    showErrorCard();
+  }
+
+  function errorReviewItem(result) {
+    const item = document.createElement('details');
+    item.className = 'review-item';
+    const summary = document.createElement('summary');
+    const title = document.createElement('strong');
+    title.textContent = result.card.tag;
+    const status = document.createElement('span');
+    status.className = 'sub';
+    status.textContent = ratings[result.rate] || result.rate;
+    summary.append(title, status);
+    const wrong = document.createElement('p');
+    wrong.className = 'sub';
+    wrong.lang = 'en';
+    wrong.textContent = '原：' + result.card.wrong;
+    const right = document.createElement('p');
+    right.lang = 'en';
+    right.textContent = '改：' + result.card.right;
+    const note = document.createElement('p');
+    note.className = 'sub';
+    note.textContent = result.card.note;
+    item.append(summary, wrong, right, note);
+    return item;
+  }
+
+  function finishErrorSession() {
+    const results = errorSession.results;
+    errorSession = null;
+    visible('error-card', false);
+    updateOverview();
+    $('error-summary').replaceChildren(...results.map(errorReviewItem));
+    const needsReview = results.filter(result => result.rate === 'again');
+    const next = needsReview.length ? Math.min(...needsReview.map(result => result.due)) : null;
+    label('error-finish-note', results.length
+      ? '已过 ' + results.filter(result => result.rate !== 'skip').length + ' 张错句'
+        + (needsReview.length && Number.isFinite(next) ? ' · 忘记错句将在 ' + formatTime(next) + ' 进入巩固' : '')
+      : '本轮尚未作答，随时可以重新开始。');
+    visible('error-finish', true);
+    $('error-finish-title').focus();
   }
 
   function usableExtension(word) {
@@ -511,10 +627,30 @@
   document.querySelectorAll('[data-rate]').forEach(button => {
     button.onclick = () => recordAnswer(button.dataset.rate);
   });
+  $('error-start').onclick = startErrorSession;
+  $('error-end').onclick = finishErrorSession;
+  $('error-reveal').onclick = revealErrorCard;
+  $('error-skip').onclick = () => recordErrorAnswer('skip');
+  document.querySelectorAll('[data-error-rate]').forEach(button => {
+    button.onclick = () => recordErrorAnswer(button.dataset.errorRate);
+  });
   document.addEventListener('keydown', event => {
-    if (!session || event.metaKey || event.ctrlKey || event.altKey) return;
+    if ((!session && !errorSession) || event.metaKey || event.ctrlKey || event.altKey) return;
     const tag = document.activeElement?.tagName;
     if (tag === 'TEXTAREA' || tag === 'INPUT' || tag === 'SELECT') return;
+    if (errorSession) {
+      if (!errorSession.revealed) {
+        if (event.key === ' ' || event.key === 'Enter') {
+          if (tag === 'BUTTON') return;
+          event.preventDefault();
+          revealErrorCard();
+        }
+        return;
+      }
+      if (event.key === '1') { event.preventDefault(); recordErrorAnswer('again'); }
+      else if (event.key === '2') { event.preventDefault(); recordErrorAnswer('good'); }
+      return;
+    }
     if (!session.revealed) {
       if (event.key === ' ' || event.key === 'Enter') {
         if (tag === 'BUTTON') return;

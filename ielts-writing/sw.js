@@ -1,9 +1,9 @@
 const CACHE_PREFIX = 'ielts-writing-';
-const CACHE = CACHE_PREFIX + 'offline-v14';
+const CACHE = CACHE_PREFIX + 'offline-v15';
 const ASSETS = [
   './', './index.html', './style.css', './app.js', './sync-core.js', './cloud.js', './study-core.js',
   './firebase-config.js',
-  './data.js', './entries.json', './practice-prompts.js', './practice-records.js'
+  './data.js', './error-cards.js', './entries.json', './practice-prompts.js', './practice-records.js'
 ];
 
 self.addEventListener('install', event => {
