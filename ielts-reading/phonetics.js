@@ -153,7 +153,31 @@
     "kiln": "kɪln",
     "make something out of": "meɪk ˈsʌmθɪŋ aʊt əv",
     "seam": "siːm",
-    "resilient": "rɪˈzɪliənt"
+    "resilient": "rɪˈzɪliənt",
+    // Sea Change for Salinity
+    "impassive": "ɪmˈpæsɪv",
+    "stealthily": "ˈstelθɪli",
+    "call forth": "kɔːl fɔːθ",
+    "underway": "ˌʌndəˈweɪ",
+    "render": "ˈrendə",
+    "turn the tide": "tɜːn ðə taɪd",
+    "in favour of": "ɪn ˈfeɪvər əv",
+    "foe": "fəʊ",
+    "ensuing": "ɪnˈsjuːɪŋ",
+    "in a bid to": "ɪn ə bɪd tuː",
+    "encroach": "ɪnˈkrəʊtʃ",
+    "be eclipsed by": "bi ɪˈklɪpst baɪ",
+    "mount an ambush": "maʊnt ən ˈæmbʊʃ",
+    "intercept": "ˌɪntəˈsept",
+    "pressing": "ˈpresɪŋ",
+    "afflict": "əˈflɪkt",
+    "sterilise": "ˈsterəlaɪz",
+    "probe": "prəʊb",
+    "basin": "ˈbeɪsən",
+    "delineate": "dɪˈlɪnieɪt",
+    "at right angles to": "æt raɪt ˈæŋɡəlz tuː",
+    "mobilise": "ˈməʊbəlaɪz",
+    "menace": "ˈmenəs"
   };
 
   function fallback(term) {
