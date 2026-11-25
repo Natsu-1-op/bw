@@ -6,6 +6,8 @@
   const data = window.WritingData;
   const records = window.WritingRecords;
   const ratings = {good: '独立想起', hard: '模糊', again: '忘记了', skip: '跳过'};
+  const DAILY_GOAL = 5;
+  const DAY = 86400000;
   const settingsKey = 'ielts-writing-settings-v1';
   const lastRoundKey = 'ielts-writing-last-round-v1';
   const draftKey = 'ielts-writing-drafts-v1';
@@ -45,7 +47,9 @@
   const supports = Object.assign(Object.create(null), readLocal(supportKey, {}));
   $('paragraph-mode').value = readLocal(paragraphModeKey, 'short') === 'body' ? 'body' : 'short';
   const settings = readLocal(settingsKey, {});
+  const urlGroupParam = new URLSearchParams(window.location.search).get('group') || '';
   let requestedGroup = typeof settings.group === 'string' ? settings.group : '';
+  let urlGroupApplied = false;
 
   if ([1, 2, 3, 5, 10].includes(Number(settings.limit))) $('limit').value = String(settings.limit);
 
@@ -58,8 +62,23 @@
   };
   const visible = (id, show) => { $(id).hidden = !show; };
 
+  function resolveGroupParam(names, raw) {
+    const trimmed = raw.trim();
+    if (!trimmed) return '';
+    if (names.includes(trimmed)) return trimmed;
+    const prefixed = trimmed.startsWith('写作-') ? trimmed : '写作-' + trimmed;
+    if (names.includes(prefixed)) return prefixed;
+    return names.find(name => name.toLowerCase() === prefixed.toLowerCase()) || '';
+  }
+
   function updateOverview() {
     const names = [...new Set(catalog.map(word => word.book))].sort();
+    const now = Date.now();
+    if (urlGroupParam && !urlGroupApplied && names.length) {
+      const resolved = resolveGroupParam(names, urlGroupParam);
+      if (resolved) requestedGroup = resolved;
+      urlGroupApplied = true;
+    }
     const all = available('');
     const counts = new Map();
     for (const word of all) counts.set(word.book, (counts.get(word.book) || 0) + 1);
@@ -78,10 +97,47 @@
     if (!total) {
       label('availability', catalogReady ? '词库暂无可用词块' : '正在读取词库…');
     } else {
-      const soonest = Math.min(...matching.map(word => progress[word.id]?.due ?? 0).filter(time => time > Date.now()));
+      const soonest = Math.min(...matching.map(word => progress[word.id]?.due ?? 0).filter(time => time > now));
       const nextTime = Number.isFinite(soonest) ? ' · 下次 ' + formatTime(soonest) : '';
       label('availability', due ? '现在可练 ' + due + ' 张 · 共 ' + total + ' 张' : '暂时没有到期词块' + nextTime);
     }
+
+    if (catalog.length) {
+      const todayKey = study.dayKey(now);
+      let doneToday = 0;
+      let maxOverdueDays = 0;
+      for (const word of catalog) {
+        const state = progress[word.id];
+        if (!state) continue;
+        if ((state.history || []).some(item => item.rate !== 'skip' && study.dayKey(item.at) === todayKey)) {
+          doneToday++;
+        }
+        if ((state.due || 0) <= now && (state.due || 0) > 0) {
+          const days = Math.floor((now - state.due) / DAY);
+          if (days > maxOverdueDays) maxOverdueDays = days;
+        }
+      }
+      const newCount = matching.filter(word => !progress[word.id]).length;
+      label('daily-goal', '今日目标 ' + DAILY_GOAL + ' 张 · 已完成 ' + doneToday + ' 张');
+      $('daily-goal').classList.toggle('is-done', doneToday >= DAILY_GOAL);
+      if (newCount > 0) {
+        label('start-new', '新卡待学 ' + newCount + ' 张 · 立刻练');
+        $('start-new').disabled = Boolean(session);
+        visible('start-new', true);
+      } else {
+        visible('start-new', false);
+      }
+      if (maxOverdueDays >= 1) {
+        label('overdue-pill', '最长已过期 ' + maxOverdueDays + ' 天');
+        visible('overdue-pill', true);
+      } else {
+        visible('overdue-pill', false);
+      }
+      visible('review-stats', true);
+    } else {
+      visible('review-stats', false);
+    }
+
     $('start').disabled = Boolean(session) || due === 0;
     visible('update-panel', Boolean(workerRegistration?.waiting) && !session);
     label('catalog-count', catalog.length ? '共 ' + catalog.length + ' 张' : '');
@@ -151,16 +207,79 @@
     writeLocal(settingsKey, {group: requestedGroup, limit: Number($('limit').value)});
   }
 
-  function markTarget(target, word) {
-    const text = word.sentence;
-    const matchAt = word.target ? text.toLowerCase().indexOf(word.target.toLowerCase()) : -1;
+  function markTarget(target, word, customText, customMatch) {
+    const text = customText ?? word.sentence;
+    const needle = customMatch ?? word.target ?? word.term;
+    const matchAt = needle ? text.toLowerCase().indexOf(needle.toLowerCase()) : -1;
     if (matchAt < 0) {
       target.textContent = text;
       return;
     }
     const marker = document.createElement('mark');
-    marker.textContent = text.slice(matchAt, matchAt + word.target.length);
-    target.replaceChildren(text.slice(0, matchAt), marker, text.slice(matchAt + word.target.length));
+    marker.textContent = text.slice(matchAt, matchAt + needle.length);
+    target.replaceChildren(text.slice(0, matchAt), marker, text.slice(matchAt + needle.length));
+  }
+
+  function renderClozeSentence(container, clozeEn) {
+    if (!clozeEn) {
+      container.replaceChildren();
+      container.hidden = true;
+      return;
+    }
+    const blank = '________';
+    const idx = clozeEn.indexOf(blank);
+    if (idx < 0) {
+      container.textContent = clozeEn;
+    } else {
+      const span = document.createElement('span');
+      span.className = 'blank';
+      span.textContent = '________';
+      container.replaceChildren(clozeEn.slice(0, idx), span, clozeEn.slice(idx + blank.length));
+    }
+    container.hidden = false;
+  }
+
+  function renderCompareBox(box, result) {
+    box.className = 'compare-box';
+    if (result.empty) {
+      box.classList.add('is-empty');
+      box.textContent = '未输入英文作答，建议选「模糊」或「忘记了」。';
+      box.hidden = false;
+      return;
+    }
+    if (result.exact) {
+      box.classList.add('is-exact');
+      box.textContent = '✓ 拼写与搭配完全一致：' + result.expected;
+      box.hidden = false;
+      return;
+    }
+    box.classList.add('is-diff');
+    const title = document.createElement('strong');
+    title.textContent = '对照参考有差异（请检查漏词或拼写）：';
+    const row = document.createElement('div');
+    row.className = 'compare-words';
+    row.lang = 'en';
+    for (const part of result.diffs) {
+      const span = document.createElement('span');
+      if (part.kind === 'ok') {
+        span.className = 'diff-ok';
+        span.textContent = part.text;
+      } else if (part.kind === 'wrong') {
+        span.className = 'diff-wrong';
+        const del = document.createElement('s');
+        del.textContent = part.actual;
+        span.append(del, document.createTextNode(part.expected));
+      } else if (part.kind === 'missing') {
+        span.className = 'diff-missing';
+        span.textContent = '[缺: ' + part.text + ']';
+      } else {
+        span.className = 'diff-extra';
+        span.textContent = part.text;
+      }
+      row.append(span);
+    }
+    box.replaceChildren(title, row);
+    box.hidden = false;
   }
 
   function showCard() {
@@ -169,28 +288,42 @@
       finishSession();
       return;
     }
+    const reviews = progress[word.id]?.reviews || 0;
+    const cloze = study.buildCloze(word, reviews);
+    session.cloze = cloze;
     session.hinted = false;
     session.revealed = false;
+    session.canGood = false;
     label('tag', (session.index + 1) + ' / ' + session.words.length);
-    label('prompt', word.meaning);
+    label('card-meaning', '目标表达提示：' + word.meaning);
+    label('prompt', cloze.zh || word.meaning);
     $('prompt').lang = 'zh-Hans';
+    renderClozeSentence($('cloze-sentence'), cloze.clozeEn);
     $('input').value = '';
     $('input').readOnly = false;
     $('good').disabled = false;
     $('hint').disabled = false;
     visible('hint-text', false);
     visible('answer', false);
+    visible('compare-box', false);
     visible('question-actions', true);
     visible('card', true);
-    $('prompt').focus();
+    $('input').focus();
   }
 
-  function startSession() {
+  function startSession(onlyNew = false) {
     if (session) return;
     const selectedGroup = group();
-    const previous = readLocal(lastRoundKey, {});
-    const words = study.round(available(selectedGroup), progress, Number($('limit').value),
-      previous.group === selectedGroup ? previous.ids : []);
+    const limit = Number($('limit').value);
+    let words;
+    if (onlyNew) {
+      const pool = catalog.filter(word => (!selectedGroup || word.book === selectedGroup) && !progress[word.id]);
+      words = pool.slice(0, limit);
+    } else {
+      const previous = readLocal(lastRoundKey, {});
+      words = study.round(available(selectedGroup), progress, limit,
+        previous.group === selectedGroup ? previous.ids : []);
+    }
     if (!words.length) {
       updateOverview();
       return;
@@ -207,14 +340,28 @@
   function reveal() {
     if (!session || session.revealed) return;
     const word = session.words[session.index];
+    const cloze = session.cloze || study.buildCloze(word, progress[word.id]?.reviews || 0);
     session.revealed = true;
     $('input').readOnly = true;
     visible('question-actions', false);
-    label('term', word.term);
-    markTarget($('sentence'), word);
-    label('translation', word.translation || '');
+
+    const compareResult = study.compareAnswer($('input').value, cloze.expected);
+    renderCompareBox($('compare-box'), compareResult);
+    const canGood = compareResult.exact && !session.hinted;
+    session.canGood = canGood;
+    $('good').disabled = !canGood;
+
+    let warning = '';
+    if (session.hinted) warning = '使用了提示，请选择「模糊」或「忘记了」。';
+    else if (compareResult.empty) warning = '未打字作答，不能选「独立想起」。';
+    else if (!compareResult.exact) warning = '拼写或用词与参考有差异，请选择「模糊」或「忘记了」。';
+    label('hint-warning', warning);
+    visible('hint-warning', Boolean(warning));
+
+    label('term', cloze.expected || word.term);
+    markTarget($('sentence'), word, cloze.en || word.sentence, cloze.expected);
+    label('translation', cloze.zh || word.translation || '');
     label('note', word.note || '');
-    visible('hint-warning', session.hinted);
     visible('answer', true);
     $('term').focus();
   }
@@ -222,21 +369,22 @@
   function showHint() {
     if (!session || session.revealed || session.hinted) return;
     const word = session.words[session.index];
-    const answer = word.term;
+    const answer = session.cloze?.expected || word.term;
+    const initials = answer.trim().split(/\s+/).map(part => part.charAt(0) + '…').join(' ');
     session.hinted = true;
     $('good').disabled = true;
     $('hint').disabled = true;
-    label('hint-text', '首字母：' + answer.trim().charAt(0));
+    label('hint-text', '首字母：' + initials);
     visible('hint-text', true);
     $('input').focus();
   }
 
   function recordAnswer(rate) {
-    if (!session || (rate !== 'skip' && (!session.revealed || (rate === 'good' && session.hinted)))) return;
+    if (!session || (rate !== 'skip' && (!session.revealed || (rate === 'good' && !session.canGood)))) return;
     const word = session.words[session.index];
     let next = null;
     if (rate !== 'skip') {
-      next = study.rate(progress[word.id], rate);
+      next = study.rate(progress[word.id], rate, Date.now(), session.cloze?.clozeEn ? 'cloze' : 'recall');
       data.saveReview(word.id, next);
     }
     session.results.push({word, rate, due: next?.due});
@@ -420,7 +568,8 @@
     showScene();
   };
   $('limit').onchange = saveSettings;
-  $('start').onclick = startSession;
+  $('start').onclick = () => startSession(false);
+  $('start-new').onclick = () => startSession(true);
   $('end').onclick = finishSession;
   $('reveal').onclick = reveal;
   $('hint').onclick = showHint;
@@ -441,7 +590,7 @@
     if (tag === 'INPUT' || tag === 'SELECT') return;
     if (event.key === '1') { event.preventDefault(); recordAnswer('again'); }
     else if (event.key === '2') { event.preventDefault(); recordAnswer('hard'); }
-    else if (event.key === '3' && !session.hinted) { event.preventDefault(); recordAnswer('good'); }
+    else if (event.key === '3' && session.canGood) { event.preventDefault(); recordAnswer('good'); }
   });
   $('catalog-panel')?.addEventListener('toggle', () => {
     if ($('catalog-panel').open) renderCatalogList();

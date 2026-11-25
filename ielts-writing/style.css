@@ -153,6 +153,63 @@ mark { color: #1d4ed8; background: var(--accent); border-radius: 3px; font-weigh
 }
 .level-pill.is-due { background: #fef3c7; color: #92400e; }
 .level-pill.is-strong { background: #dcfce7; color: #166534; }
+.review-stats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.stat-pill.is-done { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+.stat-pill.is-warn { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+button.stat-pill.is-new {
+  background: var(--accent);
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+  font-weight: 600;
+  min-height: 30px;
+  padding: 3px 10px;
+}
+button.stat-pill.is-new:hover:not(:disabled) { background: #dbeafe; }
+.card-meaning { margin: 4px 0 2px; }
+.cloze {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 7px;
+  background: var(--paper);
+  color: var(--heading);
+  font-size: 17px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.cloze .blank {
+  display: inline-block;
+  padding: 0 6px;
+  border-bottom: 2px solid var(--primary);
+  color: var(--primary);
+  font-weight: 700;
+}
+.compare-box {
+  border-radius: 7px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.compare-box.is-exact { background: #dcfce7; color: #166534; }
+.compare-box.is-diff { background: #fefce8; color: #854d0e; border: 1px solid #fde68a; }
+.compare-box.is-empty { background: var(--paper); color: var(--muted); }
+.compare-words { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 6px; font-size: 14px; }
+.diff-ok { color: #166534; }
+.diff-wrong { background: #fee2e2; color: #991b1b; padding: 0 4px; border-radius: 4px; }
+.diff-wrong s { opacity: .75; margin-right: 3px; }
+.diff-missing { background: #fef3c7; color: #92400e; padding: 0 4px; border-radius: 4px; font-weight: 600; }
+.diff-extra { color: #991b1b; text-decoration: line-through; opacity: .75; }
 .sr-only {
   position: absolute;
   width: 1px;
