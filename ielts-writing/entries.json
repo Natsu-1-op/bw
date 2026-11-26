@@ -438,5 +438,125 @@
   ],
   "note": "句型为 make it + 形容词 + for sb. to do sth.，it 作形式宾语。主语为不可数单数（如 physical distance）时用 makes。表达“保持联系”用 stay in touch。",
   "page": ""
+ },
+ {
+  "id": "写作-health-05:address the root cause of",
+  "book": "写作-health-05",
+  "term": "address the root cause of",
+  "meaning": "解决……的根本原因",
+  "phonetic": "",
+  "source": "写作-health-05 · 写作词块",
+  "sentence": "Higher prices alone cannot address the root causes of health problems.",
+  "translation": "单靠提价无法解决健康问题的根本原因。",
+  "target": "address the root causes of",
+  "extensions": [
+   {
+    "meaning": "换语境用：解决……的根本原因",
+    "example": "Simply building more roads cannot address the root cause of traffic congestion.",
+    "translation": "仅仅修建更多道路并不能解决交通拥堵的根本原因。"
+   }
+  ],
+  "note": "正式写作常用 address 替代 deal with；root cause(s) of + 问题，表达「治标不治本」时极好用。",
+  "page": ""
+ },
+ {
+  "id": "写作-health-05:increase the financial burden on",
+  "book": "写作-health-05",
+  "term": "increase the financial burden on",
+  "meaning": "加重……的经济负担",
+  "phonetic": "",
+  "source": "写作-health-05 · 写作词块",
+  "sentence": "Higher prices can only increase the financial burden on low-income families.",
+  "translation": "更高的价格只会加重低收入家庭的经济负担。",
+  "target": "increase the financial burden on",
+  "extensions": [
+   {
+    "meaning": "换语境用：加重……的经济负担",
+    "example": "Raising university tuition fees may increase the financial burden on ordinary families.",
+    "translation": "提高大学学费可能会加重普通家庭的经济负担。"
+   }
+  ],
+  "note": "家庭经济压力用 financial（不用 economic）；后面用介词 on 接承受负担的人群，跨教育、社会、健康话题通用。",
+  "page": ""
+ },
+ {
+  "id": "写作-health-05:strongly oppose",
+  "book": "写作-health-05",
+  "term": "strongly oppose",
+  "meaning": "强烈反对（后接名词或动词-ing）",
+  "phonetic": "",
+  "source": "写作-health-05 · 写作词块",
+  "sentence": "I strongly oppose raising the prices of sugary foods and drinks, as it is unfair to low-income families.",
+  "translation": "我强烈反对提高含糖食品和饮料的价格，因为这对低收入家庭不公平。",
+  "target": "strongly oppose",
+  "extensions": [
+   {
+    "meaning": "换语境用：强烈反对（后接名词或动词-ing）",
+    "example": "Many parents strongly oppose banning mobile phones in schools, as they need to contact their children after class.",
+    "translation": "许多家长强烈反对在学校禁用手机，因为他们需要在课后联系孩子。"
+   }
+  ],
+  "note": "比 totally disagree 更书面有力；oppose 后直接接名词或动词-ing（不加 with），后可接 as 引出核心立场理由。",
+  "page": ""
+ },
+ {
+  "id": "写作-health-05:pose health risks",
+  "book": "写作-health-05",
+  "term": "pose health risks",
+  "meaning": "带来健康风险",
+  "phonetic": "",
+  "source": "写作-health-05 · 写作词块",
+  "sentence": "Although sweet foods may pose health risks, they are an important source of happiness as they trigger the release of dopamine.",
+  "translation": "尽管甜食可能带来健康风险，但它们能刺激多巴胺分泌，是快乐的重要来源。",
+  "target": "pose health risks",
+  "extensions": [
+   {
+    "meaning": "换语境用：带来健康风险",
+    "example": "Although staying up late may pose health risks, many young workers still work overtime to meet tight deadlines.",
+    "translation": "尽管熬夜可能带来健康风险，但许多年轻上班族仍会加班以赶上紧迫的截止日期。"
+   }
+  ],
+  "note": "正式写作中表示「带来风险/威胁」常用 pose risks / pose a threat，替代口语化的 bring/lead to problems；搭配让步句型 Although ..., ... as ... 非常好用。",
+  "page": ""
+ },
+ {
+  "id": "写作-health-05:one of the few affordable ways to",
+  "book": "写作-health-05",
+  "term": "one of the few affordable ways to",
+  "meaning": "少数负担得起的……方式之一",
+  "phonetic": "",
+  "source": "写作-health-05 · 写作词块",
+  "sentence": "For low-income families, eating sweet foods may be one of the few affordable ways to relieve stress, and higher prices alone cannot change this reality.",
+  "translation": "对低收入家庭来说，吃甜食可能是少数负担得起的解压方式之一，单靠提价无法改变这一现实。",
+  "target": "one of the few affordable ways to",
+  "extensions": [
+   {
+    "meaning": "换语境用：少数负担得起的……方式之一",
+    "example": "For university students, visiting public museums may be one of the few affordable ways to relax at weekends.",
+    "translation": "对大学生来说，参观公共博物馆可能是周末少数负担得起的放松方式之一。"
+   }
+  ],
+  "note": "句式：For + 特定群体, ... may be one of the few affordable ways to + 动词原形（如 relieve stress 缓解压力）；后半句可顺接 and ... cannot change this reality（无法改变这一现实）。",
+  "page": ""
+ },
+ {
+  "id": "写作-health-05:far from",
+  "book": "写作-health-05",
+  "term": "far from",
+  "meaning": "非但没有……，反而……（句首反驳句式）",
+  "phonetic": "",
+  "source": "写作-health-05 · 写作词块",
+  "sentence": "Therefore, far from addressing the root causes of health problems, higher prices can only increase the financial burden on them.",
+  "translation": "因此，提价非但不能解决健康问题的根本原因，反而只会加重他们的经济负担。",
+  "target": "far from",
+  "extensions": [
+   {
+    "meaning": "换语境用：非但没有……，反而……（句首反驳句式）",
+    "example": "Far from reducing traffic congestion, widening city roads can only encourage more people to drive.",
+    "translation": "拓宽城市道路非但没有缓解交通拥堵，反而只会鼓励更多人开车。"
+   }
+  ],
+  "note": "万能反驳句式：Far from + 动词-ing, 主语 + can only / actually ...，用来直接反驳某项措施的效果，跨所有议论文话题通用。",
+  "page": ""
  }
 ]
