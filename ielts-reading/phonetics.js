@@ -177,7 +177,16 @@
     "delineate": "dɪˈlɪnieɪt",
     "at right angles to": "æt raɪt ˈæŋɡəlz tuː",
     "mobilise": "ˈməʊbəlaɪz",
-    "menace": "ˈmenəs"
+    "menace": "ˈmenəs",
+    // A study of western celebrity
+    "cannot get enough (of) sth": "ˌkænɒt ɡet ɪˈnʌf əv ˈsʌmθɪŋ",
+    "involve sb in": "ɪnˈvɒlv ˈsʌmbədi ɪn",
+    "elevate ... to ...": "ˈelɪveɪt tuː",
+    "revere": "rɪˈvɪə",
+    "spiritual": "ˈspɪrɪtʃuəl",
+    "lend ... to ...": "lend tuː",
+    "intimately": "ˈɪntɪmətli",
+    "exploit": "ˈeksplɔɪt"
   };
 
   function fallback(term) {
