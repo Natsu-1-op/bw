@@ -106,7 +106,9 @@
     }
 
     const matching = group() ? catalog.filter(word => word.book === group()) : catalog;
-    const due = group() ? counts.get(group()) || 0 : all.length;
+    const dueWords = group() ? all.filter(word => word.book === group()) : all;
+    const learnedDue = dueWords.filter(word => progress[word.id]).length;
+    const due = learnedDue + Math.min(dueWords.length - learnedDue, remainingNewQuota(now));
     const total = matching.length;
     if (!total) {
       label('availability', catalogReady ? '词库暂无可用词块' : '正在读取词库…');
