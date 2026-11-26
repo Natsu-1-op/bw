@@ -76,6 +76,7 @@
           <button id="end" type="button" class="quiet">结束本轮</button>
         </div>
         <p id="card-meaning" class="sub card-meaning"></p>
+        <p class="sub card-tip">先在心里完整说出整句英文，再点「查看答案」</p>
         <h3 id="prompt" class="prompt" tabindex="-1"></h3>
         <p id="cloze-sentence" class="cloze" lang="en" hidden></p>
         <div id="question-actions" class="actions">
@@ -96,10 +97,10 @@
       <div id="finish" class="exercise" hidden>
         <h3 id="finish-title" tabindex="-1">本轮回顾</h3>
         <p id="finish-note" class="sub"></p>
-        <div id="summary"></div>
         <div class="actions">
-          <button id="practice-recent" type="button" hidden>用本轮词块写一句</button>
+          <button id="practice-recent" type="button" class="primary" hidden>用本轮词块写一句</button>
         </div>
+        <div id="summary"></div>
       </div>
     </section>
 

@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'ielts-writing-';
-const CACHE = CACHE_PREFIX + 'offline-v15';
+const CACHE = CACHE_PREFIX + 'offline-v16';
 const ASSETS = [
   './', './index.html', './style.css', './app.js', './sync-core.js', './cloud.js', './study-core.js',
   './firebase-config.js',

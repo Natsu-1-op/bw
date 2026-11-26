@@ -7,6 +7,7 @@
   const records = window.WritingRecords;
   const ratings = {good: '认识', again: '忘记', skip: '跳过'};
   const DAILY_GOAL = 5;
+  const DAILY_NEW_LIMIT = 6;
   const DAY = 86400000;
   const settingsKey = 'ielts-writing-settings-v1';
   const lastRoundKey = 'ielts-writing-last-round-v1';
@@ -59,6 +60,16 @@
   const group = () => $('group').value;
   const available = (selected, limit = catalog.length) =>
     catalog.length ? study.select(catalog, progress, {group: selected, limit, now: Date.now()}) : [];
+  function countNewDoneToday(now = Date.now()) {
+    const todayKey = study.dayKey(now);
+    let count = 0;
+    for (const word of catalog) {
+      const firstReal = (progress[word.id]?.history || []).find(item => item.rate !== 'skip');
+      if (firstReal && study.dayKey(firstReal.at) === todayKey) count++;
+    }
+    return count;
+  }
+  const remainingNewQuota = (now = Date.now()) => Math.max(0, DAILY_NEW_LIMIT - countNewDoneToday(now));
   const label = (id, value) => {
     const element = $(id);
     if (element.textContent !== value) element.textContent = value;
@@ -122,11 +133,17 @@
         }
       }
       const newCount = matching.filter(word => !progress[word.id]).length;
+      const remainingNew = remainingNewQuota(now);
       label('daily-goal', '今日目标 ' + DAILY_GOAL + ' 张 · 已完成 ' + doneToday + ' 张');
       $('daily-goal').classList.toggle('is-done', doneToday >= DAILY_GOAL);
       if (newCount > 0) {
-        label('start-new', '新卡待学 ' + newCount + ' 张 · 立刻练');
-        $('start-new').disabled = Boolean(session) || Boolean(errorSession);
+        if (remainingNew > 0) {
+          label('start-new', '新卡待学 ' + newCount + ' 张 · 今日可学 ' + Math.min(newCount, remainingNew) + ' 张');
+          $('start-new').disabled = Boolean(session) || Boolean(errorSession);
+        } else {
+          label('start-new', '今日新卡已达上限（' + DAILY_NEW_LIMIT + '张）');
+          $('start-new').disabled = true;
+        }
         visible('start-new', true);
       } else {
         visible('start-new', false);
@@ -286,13 +303,27 @@
     const selectedGroup = group();
     const limit = Number($('limit').value);
     const now = Date.now();
+    const remainingNew = remainingNewQuota(now);
     let words;
     if (onlyNew) {
+      if (remainingNew === 0) {
+        updateOverview();
+        return;
+      }
       const pool = catalog.filter(word => (!selectedGroup || word.book === selectedGroup) && !progress[word.id]);
-      words = pool.slice(0, limit);
+      words = pool.slice(0, Math.min(limit, remainingNew));
     } else {
       const previous = readLocal(lastRoundKey, {});
-      words = study.round(available(selectedGroup), progress, limit,
+      let allowedNew = remainingNew;
+      const eligible = available(selectedGroup).filter(word => {
+        if (progress[word.id]) return true;
+        if (allowedNew > 0) {
+          allowedNew--;
+          return true;
+        }
+        return false;
+      });
+      words = study.round(eligible, progress, limit,
         previous.group === selectedGroup ? previous.ids : [], now);
     }
     if (!words.length) {

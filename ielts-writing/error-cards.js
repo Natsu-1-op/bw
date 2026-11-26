@@ -78,5 +78,29 @@ window.WritingErrorCards = [
     wrong: 'Waiting response with expection may lead to disappointment when the patience is used up.',
     right: 'Waiting for a response with expectation may lead to disappointment when patience runs out.',
     note: 'wait for a response（加 for 和 a）；泛指“耐心”不加 the 且常用 patience runs out；注意 expectation 拼写。'
+  },
+  {
+    id: '写作-纠错:e2-make-an-effect',
+    book: '写作-纠错',
+    tag: 'E2 · 安全动词替代硬译',
+    wrong: 'Raising the price can only make an effect on price-sensitive people.',
+    right: 'Raising prices can only affect price-sensitive people.',
+    note: '没把握的搭配优先退回安全动词 affect（不用中式直译 make an effect on）；泛指提价用复数 prices。'
+  },
+  {
+    id: '写作-纠错:e2-method-happiness',
+    book: '写作-纠错',
+    tag: 'E2 · 名词搭配 + E5 代词',
+    wrong: 'Though sweet foods may lead to some illnesses, it is a significant method to gain happiness.',
+    right: 'Although sweet foods may pose health risks, they are an important source of happiness.',
+    note: 'method 偏技术手段，表达“快乐来源”用 an important source of happiness（或安全写法 a way to feel happy）；主语 sweet foods 是复数，代词用 they are。'
+  },
+  {
+    id: '写作-纠错:e2-balance-eating',
+    book: '写作-纠错',
+    tag: 'E2 · 地道搭配 + 词性',
+    wrong: 'Rich people have a balance eating structure and will not intake over amount sugars.',
+    right: 'Wealthy people have a balanced diet and do not consume excessive sugar.',
+    note: '“均衡饮食”直接用 a balanced diet（不直译 balance eating structure）；“摄入过多糖分”用 consume excessive sugar（或安全写法 eat too much sugar）。'
   }
 ];
