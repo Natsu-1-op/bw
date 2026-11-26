@@ -186,7 +186,16 @@
     "spiritual": "ˈspɪrɪtʃuəl",
     "lend ... to ...": "lend tuː",
     "intimately": "ˈɪntɪmətli",
-    "exploit": "ˈeksplɔɪt"
+    "exploit": "ˈeksplɔɪt",
+    // Tunnelling under the Thames
+    "only to / only for sb to": "ˈəʊnli tuː",
+    "consignment": "kənˈsaɪnmənt",
+    "out of the question": "aʊt əv ðə ˈkwestʃən",
+    "primitive": "ˈprɪmətɪv",
+    "get oneself up as": "ɡet wʌnˈself ʌp æz",
+    "magnifying glass": "ˈmæɡnɪfaɪɪŋ ɡlɑːs",
+    "more of a than b": "mɔːr əv ... ðæn",
+    "cramped": "kræmpt"
   };
 
   function fallback(term) {
