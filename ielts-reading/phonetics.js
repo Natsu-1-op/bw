@@ -203,7 +203,16 @@
     "comprise": "kəmˈpraɪz",
     "receipts": "rɪˈsiːts",
     "given": "ˈɡɪvn",
-    "substitute": "ˈsʌbstɪtjuːt"
+    "substitute": "ˈsʌbstɪtjuːt",
+    // The Importance of Law
+    "permeate": "ˈpɜːmieɪt",
+    "seize up": "siːz ʌp",
+    "dice": "daɪs",
+    "make sense of": "meɪk sens əv",
+    "vindicate": "ˈvɪndɪkeɪt",
+    "in respect of": "ɪn rɪˈspekt əv",
+    "lavishly": "ˈlævɪʃli",
+    "dedication": "ˌdedɪˈkeɪʃən"
   };
 
   function fallback(term) {
