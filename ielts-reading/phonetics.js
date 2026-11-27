@@ -195,7 +195,15 @@
     "get oneself up as": "ɡet wʌnˈself ʌp æz",
     "magnifying glass": "ˈmæɡnɪfaɪɪŋ ɡlɑːs",
     "more of a than b": "mɔːr əv ... ðæn",
-    "cramped": "kræmpt"
+    "cramped": "kræmpt",
+    // Wood: A Valuable Resource in New Zealand's Economy
+    "indigenous": "ɪnˈdɪdʒənəs",
+    "residue": "ˈrezɪdjuː",
+    "integrated": "ˈɪntɪɡreɪtɪd",
+    "comprise": "kəmˈpraɪz",
+    "receipts": "rɪˈsiːts",
+    "given": "ˈɡɪvn",
+    "substitute": "ˈsʌbstɪtjuːt"
   };
 
   function fallback(term) {
